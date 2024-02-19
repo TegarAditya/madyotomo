@@ -19,6 +19,7 @@ use Closure;
 use DateTime;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -38,6 +39,14 @@ class OrderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public int $semester_id;
+
+    public int $curriculum_id;
+
+    public int $education_level_id;
+
+    public int $type_id;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -47,28 +56,12 @@ class OrderResource extends Resource
                         'md' => 2
                     ])
                     ->schema([
-                        Forms\Components\TextInput::make('document_number')
-                            ->name('Nomor Order')
-                            ->default("-/MT/OC/-/-/-"),
-                        Forms\Components\TextInput::make('proof_number')
-                            ->name('Nomor Bukti')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('name')
-                            ->name('Nama Order')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\Select::make('customer_id')
-                            ->name('Customer')
-                            ->options(
-                                Customer::all()->pluck('name', 'id'),
-                            )
-                            ->reactive()
-                            ->afterStateUpdated(function (callable $set, $get) {
+                        Forms\Components\Placeholder::make('document_number_pc')
+                            ->content(function (callable $set, $get) {
                                 $latestOrder = Order::orderBy('created_at', 'desc')->first()->document_number ?? null;
-                                $latestNumber = (int) explode('/', $latestOrder)[0];
+                                $latestNumber = (int) explode('/', $latestOrder)[0] ?? 0;
 
-                                $nomorTerakhir = (Order::all()->firstOrFail()) ? $latestNumber + 2 : 1;
+                                $nomorTerakhir = (Order::all()->first()) ? $latestNumber + 2 : 1;
                                 $month = (new DateTime('@' . strtotime($get('entry_date'))))->format('m');
                                 $year = (new DateTime('@' . strtotime($get('entry_date'))))->format('Y');
                                 $customer = Customer::find($get('customer_id')) ? Customer::find($get('customer_id'))->code : '-';
@@ -89,15 +82,35 @@ class OrderResource extends Resource
                                 $romanMonth = $romanNumerals[$month];
 
                                 $set('document_number', "{$nomorTerakhir}/MT/OC/{$customer}/{$romanMonth}/{$year}");
+
+                                return "{$nomorTerakhir}/MT/OC/{$customer}/{$romanMonth}/{$year}";
                             })
+                            ->hidden(),
+                        Forms\Components\TextInput::make('document_number')
+                            ->name('Nomor Order')
+                            ->default("-/MT/OC/-/-/-"),
+                        Forms\Components\TextInput::make('proof_number')
+                            ->name('Nomor Bukti')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('name')
+                            ->name('Nama Order')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('customer_id')
+                            ->name('Customer')
+                            ->options(
+                                Customer::all()->pluck('name', 'id'),
+                            )
+                            ->reactive()
                             ->searchable()
                             ->required(),
-                        Forms\Components\DateTimePicker::make('entry_date')
+                        Forms\Components\DatePicker::make('entry_date')
                             ->name('Tanggal Masuk')
                             ->default((new DateTime())->format('Y-m-d H:i:s'))
                             ->reactive()
                             ->required(),
-                        Forms\Components\DateTimePicker::make('deadline_date')
+                        Forms\Components\DatePicker::make('deadline_date')
                             ->name('Tanggal Deadline')
                             ->required(),
                         Forms\Components\Select::make('paper_id')
@@ -123,35 +136,58 @@ class OrderResource extends Resource
                     ->collapsed()
                     ->collapsible()
                     ->schema([
+                        Section::make()
+                            ->columns(3)
+                            ->schema([
+                                Forms\Components\Select::make('semester_id')
+                                    ->label('Semester')
+                                    ->options(
+                                        Semester::all()->pluck('name', 'id'),
+                                    )
+                                    ->afterStateUpdated(function ($state) {
+                                        $this->semester_id = $state;
+                                    })
+                                    ->reactive()
+                                    ->required(),
+                                Forms\Components\Select::make('curriculum_id')
+                                    ->label('Kurikulum')
+                                    ->options(
+                                        Curriculum::all()->pluck('name', 'id'),
+                                    )
+                                    ->afterStateUpdated(function ($state) {
+                                        $this->curriculum_id = $state;
+                                    })
+                                    ->reactive()
+                                    ->required(),
+                                Forms\Components\Select::make('education_level_id')
+                                    ->label('Jenjang')
+                                    ->options(
+                                        EducationLevel::all()->pluck('name', 'id')
+                                    )
+                                    ->afterStateUpdated(function ($state) {
+                                        $this->education_level_id = $state;
+                                    })
+                                    ->reactive()
+                                    ->required(),
+                                Forms\Components\Select::make('type_id')
+                                    ->name('Type')
+                                    ->afterStateUpdated(function ($state) {
+                                        $this->type_id = $state;
+                                    })
+                                    ->reactive()
+                                    ->options(
+                                        Type::all()->pluck('name', 'id'),
+                                    )
+                                    ->required(),
+                            ]),
                         Forms\Components\Repeater::make('products')
                             ->relationship()
                             ->schema([
-                                Section::make('Builder Produk')
-                                    ->columns(3)
+                                Section::make()
+                                    ->columns(2)
                                     ->collapsible()
                                     ->collapsed()
                                     ->schema([
-                                        Forms\Components\Select::make('semester_id')
-                                            ->label('Semester')
-                                            ->options(
-                                                Semester::all()->pluck('name', 'id'),
-                                            )
-                                            ->reactive()
-                                            ->required(),
-                                        Forms\Components\Select::make('curriculum_id')
-                                            ->label('Kurikulum')
-                                            ->options(
-                                                Curriculum::all()->pluck('name', 'id'),
-                                            )
-                                            ->reactive()
-                                            ->required(),
-                                        Forms\Components\Select::make('education_level_id')
-                                            ->label('Jenjang')
-                                            ->options(
-                                                EducationLevel::all()->pluck('name', 'id')
-                                            )
-                                            ->reactive()
-                                            ->required(),
                                         Forms\Components\Select::make('education_class_id')
                                             ->label('Kelas')
                                             ->options(
@@ -166,13 +202,6 @@ class OrderResource extends Resource
                                             )
                                             ->reactive()
                                             ->required(),
-                                        Forms\Components\Select::make('type_id')
-                                            ->name('Type')
-                                            ->reactive()
-                                            ->options(
-                                                Type::all()->pluck('name', 'id'),
-                                            )
-                                            ->required(),
                                     ]),
                                 Section::make()
                                     ->columns(2)
@@ -180,12 +209,12 @@ class OrderResource extends Resource
                                         Forms\Components\Placeholder::make('name')
                                             ->label('Nama Produk')
                                             ->content(function (callable $set, $get) {
-                                                $semester = Semester::find($get('semester_id'))->name ?? "-";
-                                                $semesterCode = Semester::find($get('semester_id'))->code ?? "-";
-                                                $curriculum = Curriculum::find($get('curriculum_id'))->name ?? "-";
-                                                $curriculumCode = Curriculum::find($get('curriculum_id'))->code ?? "-";
-                                                $level = EducationLevel::find($get('education_level_id'))->name ?? "-";
-                                                $levelCode = EducationLevel::find($get('education_level_id'))->code ?? "-";
+                                                $semester = Semester::find($this->semester_id)->name ?? "-";
+                                                $semesterCode = Semester::find($this->semester_id)->code ?? "-";
+                                                $curriculum = Curriculum::find($this->curriculum_id)->name ?? "-";
+                                                $curriculumCode = Curriculum::find($this->curriculum_id)->code ?? "-";
+                                                $level = EducationLevel::find($get($this->education_level_id))->name ?? "-";
+                                                $levelCode = EducationLevel::find($get($this->education_level_id))->code ?? "-";
                                                 $class = EducationClass::find($get('education_class_id'))->name ?? "-";
                                                 $classCode = EducationClass::find($get('education_class_id'))->code ?? "-";
                                                 $subject = EducationSubject::find($get('education_subject_id'))->name ?? "-";
