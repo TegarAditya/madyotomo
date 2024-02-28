@@ -2,15 +2,13 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use App\Models\Order;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SpksRelationManager extends RelationManager
 {
@@ -40,17 +38,43 @@ class SpksRelationManager extends RelationManager
                 Forms\Components\RichEditor::make('note')
                     ->columnSpanFull(),
                 Forms\Components\Repeater::make('spkProducts')
+                    ->relationship('spkProducts')
                     ->addActionLabel('Tambah Produk')
                     ->columnSpanFull()
                     ->schema([
-                        Forms\Components\TextInput::make('quantity')
-                            ->numeric()
-                            ->required(),
+                        Forms\Components\Placeholder::make('quantity')
+                            ->content(function ($get) {
+                                if (count($get('products')) > 1) {
+                                    $products = $get('products');
+                                    $totalQuantity = 0;
+
+                                    foreach ($products as $product) {
+                                        $quantity = (Product::find($product)->quantity) / 2;
+                                        $totalQuantity += $quantity;
+                                    }
+
+                                    return $totalQuantity;
+                                } else if (count($get('products')) === 1) {
+                                    $quantity = Product::find($get('products')[0])->quantity;
+                                    return $quantity;
+                                } else {
+                                    return 0;
+                                }
+                            }),
                         Forms\Components\Select::make('products')
                             ->multiple()
                             ->options(
-                                Product::all()->where('order_id', fn (Model $record) => $record->id)->pluck('name', 'id')
+                                Order::find($this->getOwnerRecord()->id)
+                                    ->products
+                                    ->mapWithKeys(function (Product $product) {
+                                        $subject = $product->educationSubject()->pluck('name')->implode(' ');
+                                        $class = $product->educationClass()->pluck('name')->implode(' ');
+                                        $quantity = $product->quantity;
+                                        return [$product->id => $subject . ' - ' . $class . ' - ' . ' (' . 'oplah ' . $quantity . ')'];
+                                    })
                             )
+                            ->reactive()
+                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                             ->required()
                     ])
             ]);
@@ -59,9 +83,18 @@ class SpksRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('name')
+            ->recordTitleAttribute('id')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('document_number')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('report_number')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('entry_date')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('deadline_date')
+                    ->sortable(),
             ])
             ->filters([
                 //

@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use App\Models\Curriculum;
+use App\Models\EducationLevel;
+use App\Models\Semester;
+use App\Models\Type;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -18,9 +22,42 @@ class ProductsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Select::make('semester_id')
+                    ->label('Semester')
+                    ->searchable()
+                    ->options(
+                        Semester::all()->pluck('name', 'id'),
+                    )
+                    ->dehydrated(false)
+                    ->reactive()
+                    ->required(),
+                Forms\Components\Select::make('curriculum_id')
+                    ->label('Kurikulum')
+                    ->searchable()
+                    ->options(
+                        Curriculum::all()->pluck('name', 'id'),
+                    )
+                    ->dehydrated(false)
+                    ->reactive()
+                    ->required(),
+                Forms\Components\Select::make('education_level_id')
+                    ->label('Jenjang')
+                    ->searchable()
+                    ->options(
+                        EducationLevel::all()->pluck('name', 'id')
+                    )
+                    ->dehydrated(false)
+                    ->reactive()
+                    ->required(),
+                Forms\Components\Select::make('type_id')
+                    ->name('Type')
+                    ->searchable()
+                    ->reactive()
+                    ->options(
+                        Type::all()->pluck('name', 'id'),
+                    )
+                    ->dehydrated(false)
+                    ->required(),
             ]);
     }
 
@@ -29,7 +66,14 @@ class ProductsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('educationSubject.name')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Mapel'),
+                Tables\Columns\TextColumn::make('educationClass.name')
+                    ->searchable()
+                    ->sortable()
+                    ->label('Kelas'),
             ])
             ->filters([
                 //

@@ -17,6 +17,7 @@ class Order extends Model
         'entry_date',
         'deadline_date',
         'paper_id',
+        'paper_config',
         'machine_id',
         'finished_size',
         'material_size',

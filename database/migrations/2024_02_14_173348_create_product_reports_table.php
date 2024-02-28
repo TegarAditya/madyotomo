@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('product_reports', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('spk_product_id');
+            $table->unsignedBigInteger('machine_id');
             $table->dateTime('date');
             $table->time('time');
             $table->integer('success_count');

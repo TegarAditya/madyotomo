@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('entry_date');
             $table->date('deadline_date');
             $table->unsignedBigInteger('paper_id');
+            $table->int('paper_config');
             $table->double('finished_size');
             $table->double('material_size');
             $table->timestamps();

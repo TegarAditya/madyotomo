@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\EducationClass;
 use App\Models\EducationLevel;
 use App\Models\EducationSubject;
+use App\Models\Machine;
 use App\Models\Order;
 use App\Models\Paper;
 use App\Models\Semester;
@@ -102,8 +103,14 @@ class OrderResource extends Resource
                                 Paper::all()->pluck('name', 'id'),
                             )
                             ->searchable()
-                            ->required()
-                            ->columnSpanFull(),
+                            ->required(),
+                        Forms\Components\Select::make('paper_config')
+                            ->label('Paper Config')
+                            ->options(
+                                Machine::distinct()->pluck('paper_config', 'paper_config'),
+                            )
+                            ->searchable()
+                            ->required(),
                         Forms\Components\TextInput::make('finished_size')
                             ->label('Ukuran Jadi')
                             ->required()
@@ -115,7 +122,8 @@ class OrderResource extends Resource
                             ->numeric()
                             ->suffix('mm'),
                     ]),
-                Section::make('Products')
+                Section::make('products_section')
+                    ->label('Produk')
                     ->collapsed()
                     ->collapsible()
                     ->schema([
@@ -124,31 +132,39 @@ class OrderResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('semester_id')
                                     ->label('Semester')
+                                    ->searchable()
                                     ->options(
                                         Semester::all()->pluck('name', 'id'),
                                     )
+                                    ->dehydrated(false)
                                     ->reactive()
                                     ->required(),
                                 Forms\Components\Select::make('curriculum_id')
                                     ->label('Kurikulum')
+                                    ->searchable()
                                     ->options(
                                         Curriculum::all()->pluck('name', 'id'),
                                     )
+                                    ->dehydrated(false)
                                     ->reactive()
                                     ->required(),
                                 Forms\Components\Select::make('education_level_id')
                                     ->label('Jenjang')
+                                    ->searchable()
                                     ->options(
                                         EducationLevel::all()->pluck('name', 'id')
                                     )
+                                    ->dehydrated(false)
                                     ->reactive()
                                     ->required(),
                                 Forms\Components\Select::make('type_id')
                                     ->name('Type')
+                                    ->searchable()
                                     ->reactive()
                                     ->options(
                                         Type::all()->pluck('name', 'id'),
                                     )
+                                    ->dehydrated(false)
                                     ->required(),
                             ]),
                         Forms\Components\Repeater::make('products')
@@ -157,11 +173,9 @@ class OrderResource extends Resource
                                 Section::make()
                                     ->columns(2)
                                     ->collapsible()
-                                    ->collapsed()
                                     ->schema([
                                         Forms\Components\Select::make('education_subject_id')
                                             ->label('Mata Pelajaran')
-                                            ->autofocus()
                                             ->searchable()
                                             ->options(
                                                 EducationSubject::all()->pluck('name', 'id')
@@ -170,7 +184,6 @@ class OrderResource extends Resource
                                             ->required(),
                                         Forms\Components\Select::make('education_class_id')
                                             ->label('Kelas')
-                                            ->autofocus()
                                             ->searchable()
                                             ->options(
                                                 EducationClass::all()->pluck('name', 'id')

@@ -20,4 +20,24 @@ class Spk extends Model
         'print_type',
         'spare',
     ];
+
+    protected $casts = [
+        'entry_date' => 'datetime',
+        'deadline_date' => 'datetime',
+    ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function spkProducts()
+    {
+        return $this->hasMany(SpkProduct::class);
+    }
+
+    public function machine()
+    {
+        return $this->belongsTo(Machine::class);
+    }
 }

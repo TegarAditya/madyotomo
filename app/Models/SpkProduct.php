@@ -11,6 +11,21 @@ class SpkProduct extends Model
 
     protected $fillable = [
         'spk_id',
+        'quantity',
         'products',
     ];
+
+    protected $casts = [
+        'products' => 'array',
+    ];
+
+    public function spk()
+    {
+        return $this->belongsTo(Spk::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }
