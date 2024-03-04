@@ -21,6 +21,8 @@ class EducationSubjectResource extends Resource
 
     protected static ?string $navigationGroup = 'Master Data';
 
+    protected static ?string $modelLabel = 'Mata Pelajaran';
+
     public static function form(Form $form): Form
     {
         return $form

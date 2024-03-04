@@ -13,16 +13,17 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('document_number');
+            $table->string('document_number')->unique();
             $table->string('proof_number');
-            $table->string('name');
+            $table->string('name')->nullable();
+            $table->date('entry_date')->nullable();
+            $table->date('deadline_date')->nullable();
+            $table->integer('paper_config');
+            $table->string('finished_size');
+            $table->string('material_size');
             $table->unsignedBigInteger('customer_id');
-            $table->date('entry_date');
-            $table->date('deadline_date');
             $table->unsignedBigInteger('paper_id');
-            $table->int('paper_config');
-            $table->double('finished_size');
-            $table->double('material_size');
+            $table->integer('sort')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

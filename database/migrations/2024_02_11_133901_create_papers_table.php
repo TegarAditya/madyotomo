@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('papers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('code')->nullable();
+            $table->integer('sort')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

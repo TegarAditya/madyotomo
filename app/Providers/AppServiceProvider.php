@@ -27,8 +27,10 @@ class AppServiceProvider extends ServiceProvider
                      ->label('Master Data')
                      ->collapsed(),
                 NavigationGroup::make()
-                    ->label('Master Order')
+                    ->label('Master Produksi')
                     ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Master Order')
             ]);
         });
     }

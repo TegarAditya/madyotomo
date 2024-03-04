@@ -19,7 +19,9 @@ class MachineResource extends Resource
 
     protected static ?string $navigationGroup = 'Master Produksi';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-printer';
+
+    protected static ?string $modelLabel = 'Mesin';
 
     public static function form(Form $form): Form
     {

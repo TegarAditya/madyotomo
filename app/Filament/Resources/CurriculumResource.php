@@ -21,6 +21,8 @@ class CurriculumResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
+    protected static ?string $modelLabel = 'Kurikulum';
+
     public static function form(Form $form): Form
     {
         return $form

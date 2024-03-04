@@ -19,7 +19,9 @@ return new class extends Migration
             $table->time('time');
             $table->integer('success_count');
             $table->integer('error_count');
+            $table->integer('sort')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

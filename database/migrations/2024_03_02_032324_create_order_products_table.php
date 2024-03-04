@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('machines', function (Blueprint $table) {
+        Schema::create('order_products', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->string('name');
-            $table->integer('paper_config');
+            $table->integer('order_id');
+            $table->integer('product_id');
+            $table->integer('quantity');
             $table->integer('sort')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('machines');
+        Schema::dropIfExists('order_products');
     }
 };

@@ -19,13 +19,20 @@ class PaperResource extends Resource
 
     protected static ?string $navigationGroup = 'Master Produksi';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
+
+    protected static ?string $modelLabel = 'Kertas';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nama')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('code')
+                    ->label('Kode')
                     ->required()
                     ->maxLength(255),
             ]);

@@ -13,15 +13,17 @@ return new class extends Migration
     {
         Schema::create('spks', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_id');
-            $table->string('document_number');
-            $table->string('report_number');
+            $table->unsignedBigInteger('order_id');
+            $table->string('document_number')->unique();
+            $table->string('report_number')->unique();
             $table->date('entry_date');
             $table->date('deadline_date');
-            $table->integer('machine_id');
+            $table->integer('paper_config');
+            $table->string('configuration');
             $table->text('note');
             $table->string('print_type');
-            $table->string('spare');
+            $table->integer('spare');
+            $table->integer('sort')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

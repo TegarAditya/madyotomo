@@ -28,9 +28,9 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationGroup = 'Master Produksi';
+    protected static ?string $navigationGroup = 'Master Order';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
 
     public static function form(Form $form): Form
     {
@@ -122,10 +122,10 @@ class OrderResource extends Resource
                             ->numeric()
                             ->suffix('mm'),
                     ]),
-                Section::make('products_section')
-                    ->label('Produk')
+                Section::make('Produk')
                     ->collapsed()
                     ->collapsible()
+                    ->hiddenOn(['view'])
                     ->schema([
                         Section::make()
                             ->columns(4)

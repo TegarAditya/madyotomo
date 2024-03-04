@@ -16,7 +16,10 @@ return new class extends Migration
             $table->integer('order_id');
             $table->integer('document_number');
             $table->date('entry_date');
+            $table->string('note');
+            $table->integer('sort')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

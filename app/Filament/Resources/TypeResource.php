@@ -19,7 +19,9 @@ class TypeResource extends Resource
 
     protected static ?string $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-square-3-stack-3d';
+
+    protected static ?string $modelLabel = 'Tipe';
 
     public static function form(Form $form): Form
     {

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('delivery_order_id');
             $table->integer('product_id');
             $table->integer('quantity');
+            $table->integer('sort')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

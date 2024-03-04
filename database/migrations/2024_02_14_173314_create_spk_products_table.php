@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('spk_id');
             $table->integer('quantity');
-            $table->json('products');
+            $table->json('order_products');
+            $table->integer('sort')->nullable();
             $table->timestamps();
         });
     }
