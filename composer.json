@@ -16,7 +16,8 @@
         "jeffgreco13/filament-breezy": "^2.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
-        "laravel/tinker": "^2.8"
+        "laravel/tinker": "^2.8",
+        "tomatophp/filament-users": "^1.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",
