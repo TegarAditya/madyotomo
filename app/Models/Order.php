@@ -40,7 +40,12 @@ class Order extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasManyThrough(Product::class, OrderProduct::class);
+    }
+
+    public function order_products()
+    {
+        return $this->hasMany(OrderProduct::class);
     }
 
     public function spkProducts()

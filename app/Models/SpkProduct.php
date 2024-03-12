@@ -12,11 +12,11 @@ class SpkProduct extends Model
     protected $fillable = [
         'spk_id',
         'quantity',
-        'products',
+        'order_products',
     ];
 
     protected $casts = [
-        'products' => 'array',
+        'order_products' => 'array',
     ];
 
     public function spk()

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('spk_products', function (Blueprint $table) {
             $table->id();
             $table->integer('spk_id');
-            $table->integer('quantity');
             $table->json('order_products');
             $table->integer('sort')->nullable();
             $table->timestamps();
