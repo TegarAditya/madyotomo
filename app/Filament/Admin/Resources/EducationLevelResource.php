@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Imports\EducationLevelImporter;
 use App\Filament\Admin\Resources\EducationLevelResource\Pages;
 use App\Filament\Admin\Resources\EducationLevelResource\RelationManagers;
+use App\Filament\Exports\EducationLevelExporter;
 use App\Models\EducationClass;
 use App\Models\EducationLevel;
 use Filament\Forms;
@@ -75,7 +76,9 @@ class EducationLevelResource extends Resource
             ])
             ->headerActions([
                 Tables\Actions\ImportAction::make()
-                    ->importer(EducationLevelImporter::class)
+                    ->importer(EducationLevelImporter::class),
+                Tables\Actions\ExportAction::make()
+                    ->exporter(EducationLevelExporter::class),
             ]);
     }
 

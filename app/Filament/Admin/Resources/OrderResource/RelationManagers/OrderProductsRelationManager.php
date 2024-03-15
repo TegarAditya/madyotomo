@@ -33,8 +33,15 @@ class OrderProductsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('number')
                     ->label('No.')
                     ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1),
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Kode MMJ')
+                    ->formatStateUsing(function (string $state) {
+                        $parts = explode('|', $state);
+                        return trim($parts[1]);
+                    }),
                 Tables\Columns\TextColumn::make('product.educationSubject.name')
-                    ->label('Mapel'),
+                    ->label('Mapel')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('product.educationClass.name')
                     ->label('Kelas'),
                 Tables\Columns\TextColumn::make('product.Curriculum.name')
@@ -42,25 +49,19 @@ class OrderProductsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('product.Type.name')
                     ->label('Tipe'),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
-                    ->default(function ($record) {
-                        if ($record->spks->count() > 0) {
-                            return 'Sudah Cetak';
-                        } else if ($record->deliveryOrders->count() > 0) {
-                            return 'Sudah Dikirim';
-                        } else {
-                            return 'Pending';
-                        }
-                    })
+                    ->default('Pending')
                     ->badge()
-                    ->color(function ($record) {
-                        if ($record->spks->count() > 0) {
-                            return 'success';
-                        } else if ($record->deliveryOrders->count() > 0) {
-                            return 'primary';
-                        } else {
-                            return 'danger';
-                        }
+                    ->color(fn (string $state): string => match ($state) {
+                        'Pending' => 'gray',
+                        'Dicetak' => 'warning',
+                        'Dikirim' => 'success',
+                        'Ditolak' => 'danger',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'Pending' => 'heroicon-o-clock',
+                        'Dicetak' => 'heroicon-o-printer',
+                        'Dikirim' => 'heroicon-o-truck',
+                        'Ditolak' => 'heroicon-o-ban',
                     }),
             ])
             ->filters([

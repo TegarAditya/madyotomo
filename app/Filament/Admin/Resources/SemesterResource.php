@@ -65,6 +65,10 @@ class SemesterResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('semester')
+                    ->badge()
+                    ->formatStateUsing(function ($state) {
+                        return $state === '1' ? 'Ganjil' : 'Genap';
+                    })
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('start_date')

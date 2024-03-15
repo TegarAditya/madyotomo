@@ -8,4 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class ProductReport extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'spk_product_id',
+        'machine_id',
+        'date',
+        'start_time',
+        'end_time',
+        'success_count',
+        'error_count',
+        'sort'
+    ];
+
+    protected $cast = [
+        'date' => 'date',
+        'time' => 'time'
+    ];
 }

@@ -15,6 +15,7 @@ use App\Models\Paper;
 use App\Models\Product;
 use App\Models\Semester;
 use App\Models\Type;
+use Carbon\Carbon;
 use DateTime;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -25,6 +26,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 
 class OrderResource extends Resource
 {
@@ -78,11 +80,25 @@ class OrderResource extends Resource
                         Forms\Components\TextInput::make('proof_number')
                             ->label('Nomor Bukti')
                             ->required()
+                            ->visibleOn(['create', 'edit'])
                             ->maxLength(255),
+                        Forms\Components\Placeholder::make('proof_number_ph')
+                            ->label('Nomor Bukti')
+                            ->content(function ($get) {
+                                return $get('proof_number');
+                            })
+                            ->visibleOn(['view']),
                         Forms\Components\TextInput::make('name')
                             ->label('Nama Order')
                             ->required()
+                            ->visibleOn(['create', 'edit'])
                             ->maxLength(255),
+                        Forms\Components\Placeholder::make('name_ph')
+                            ->label('Nama Order')
+                            ->content(function ($get) {
+                                return $get('name');
+                            })
+                            ->visibleOn(['view']),
                         Forms\Components\Select::make('customer_id')
                             ->label('Customer')
                             ->options(
@@ -90,39 +106,84 @@ class OrderResource extends Resource
                             )
                             ->reactive()
                             ->searchable()
-                            ->required(),
+                            ->required()
+                            ->visibleOn(['create', 'edit']),
+                        Forms\Components\Placeholder::make('customer_ph')
+                            ->label('Customer')
+                            ->content(function ($get) {
+                               return (new HtmlString('<strong>' . Customer::find($get('customer_id'))->name . '</strong>'));
+                            })
+                            ->visibleOn(['view']),
                         Forms\Components\DatePicker::make('entry_date')
                             ->label('Tanggal Masuk')
                             ->default((new DateTime())->format('Y-m-d H:i:s'))
                             ->reactive()
-                            ->required(),
+                            ->required()
+                            ->visibleOn(['create', 'edit']),
+                        Forms\Components\Placeholder::make('entry_date_ph')
+                            ->label('Tanggal Masuk')
+                            ->content(function ($get) {
+                                $dateString = Carbon::parse($get('entry_date'))->translatedFormat('l, j F Y');
+
+                                return (new HtmlString('<strong>' . $dateString . '</strong>'));
+                            })
+                            ->visibleOn(['view']),
                         Forms\Components\DatePicker::make('deadline_date')
                             ->label('Tanggal Deadline')
-                            ->required(),
+                            ->required()
+                            ->visibleOn(['create', 'edit']),
+                        Forms\Components\Placeholder::make('deadline_date_ph')
+                            ->label('Tanggal Deadline')
+                            ->content(function ($get) {
+                                $dateString = Carbon::parse($get('deadline_date'))->translatedFormat('l, j F Y');
+
+                                return (new HtmlString('<strong>' . $dateString . '</strong>'));
+                            })
+                            ->visibleOn(['view']),
                         Forms\Components\Select::make('paper_id')
                             ->label('Kertas')
                             ->options(
                                 Paper::all()->pluck('name', 'id'),
                             )
                             ->searchable()
-                            ->required(),
+                            ->required()
+                            ->visibleOn(['create', 'edit']),
+                        Forms\Components\Placeholder::make('paper_ph')
+                            ->label('Kertas')
+                            ->content(fn ($get) => Paper::find($get('paper_id'))->name)
+                            ->visibleOn(['view']),
                         Forms\Components\Select::make('paper_config')
                             ->label('Paper Config')
                             ->options(
                                 Machine::distinct()->pluck('paper_config', 'paper_config'),
                             )
                             ->searchable()
-                            ->required(),
+                            ->required()
+                            ->visibleOn(['create', 'edit']),
+                        Forms\Components\Placeholder::make('paper_config_ph')
+                            ->label('Paper Config')
+                            ->content(fn ($get) => $get('paper_config'))
+                            ->visibleOn(['view']),
                         Forms\Components\TextInput::make('finished_size')
                             ->label('Ukuran Jadi')
                             ->required()
                             ->numeric()
-                            ->suffix('mm'),
+                            ->suffix('mm')
+                            ->visibleOn(['create', 'edit']),
+                        Forms\Components\Placeholder::make('finished_size_ph')
+                            ->label('Ukuran Jadi')
+                            ->content(fn ($get) => $get('finished_size'))
+                            ->visibleOn(['view']),
                         Forms\Components\TextInput::make('material_size')
                             ->label('Ukuran Bahan')
                             ->required()
                             ->numeric()
-                            ->suffix('mm'),
+                            ->suffix('mm')
+                            ->visibleOn(['create', 'edit']),
+                        Forms\Components\Placeholder::make('material_size_ph')
+                            ->label('Ukuran Bahan')
+                            ->content(fn ($get) => $get('material_size'))
+                            ->visibleOn(['view']),
                     ]),
                 Section::make('Produk')
                     ->collapsed()
@@ -272,6 +333,7 @@ class OrderResource extends Resource
         return [
             RelationManagers\OrderProductsRelationManager::class,
             RelationManagers\SpksRelationManager::class,
+            RelationManagers\DeliveryOrdersRelationManager::class,
         ];
     }
 

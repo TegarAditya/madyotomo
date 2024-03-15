@@ -33,9 +33,9 @@ class Order extends Model
         return $this->belongsTo(Paper::class);
     }
 
-    public function deliveryOrder()
+    public function deliveryOrders()
     {
-        return $this->hasOne(DeliveryOrder::class);
+        return $this->hasMany(DeliveryOrder::class);
     }
 
     public function products()

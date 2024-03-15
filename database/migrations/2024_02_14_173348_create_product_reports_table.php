@@ -16,7 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('spk_product_id');
             $table->unsignedBigInteger('machine_id');
             $table->dateTime('date');
-            $table->time('time');
+            $table->time('start_time');
+            $table->time('end_time');
             $table->integer('success_count');
             $table->integer('error_count');
             $table->integer('sort')->nullable();

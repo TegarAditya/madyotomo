@@ -25,6 +25,8 @@ class OperatorPanelProvider extends PanelProvider
         return $panel
             ->id('operator')
             ->path('operator')
+            ->login()
+            ->databaseNotifications()
             ->colors([
                 'primary' => Color::Blue,
             ])

@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->sidebarCollapsibleOnDesktop()
+            ->databaseNotifications()
             ->id('admin')
             ->path('')
             ->login(Login::class) 

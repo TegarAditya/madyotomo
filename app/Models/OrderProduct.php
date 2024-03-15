@@ -12,7 +12,7 @@ class OrderProduct extends Model
 
     protected $fillable = [
         'order_id',
-        'product_id',
+        'order_product_id',
         'quantity',
     ];
 
@@ -26,7 +26,7 @@ class OrderProduct extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function spks()
+    public function spkOrderProdutcs()
     {
         return $this->hasMany(SpkProduct::class);
     }
@@ -34,5 +34,10 @@ class OrderProduct extends Model
     public function deliveryOrders()
     {
         return $this->hasMany(DeliveryOrderProduct::class);
+    }
+
+    public function isPrinted()
+    {
+        //
     }
 }

@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Imports\EducationSubjectImporter;
 use App\Filament\Admin\Resources\EducationSubjectResource\Pages;
 use App\Filament\Admin\Resources\EducationSubjectResource\RelationManagers;
+use App\Filament\Exports\EducationSubjectExporter;
 use App\Models\EducationSubject;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -74,7 +75,9 @@ class EducationSubjectResource extends Resource
             ])
             ->headerActions([
                 Tables\Actions\ImportAction::make()
-                    ->importer(EducationSubjectImporter::class)
+                    ->importer(EducationSubjectImporter::class),
+                Tables\Actions\ExportAction::make()
+                    ->exporter(EducationSubjectExporter::class),
             ]);
     }
 

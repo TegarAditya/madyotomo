@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Imports\ProductImporter;
 use App\Filament\Admin\Resources\ProductResource\Pages;
 use App\Filament\Admin\Resources\ProductResource\RelationManagers;
+use App\Filament\Exports\ProductExporter;
 use App\Models\Curriculum;
 use App\Models\EducationClass;
 use App\Models\EducationLevel;
@@ -38,7 +39,10 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 Section::make()
-                    ->columns(4)
+                    ->columns([
+                        'md' => 4,
+                        'sm' => 1,
+                    ])
                     ->schema([
                         Forms\Components\Select::make('semester_id')
                             ->label('Semester')
@@ -46,7 +50,10 @@ class ProductResource extends Resource
                             ->options(
                                 Semester::all()->pluck('name', 'id'),
                             )
-                            ->columnSpan(2)
+                            ->columnSpan([
+                                'md' => 2,
+                                'sm' => 1,
+                            ])
                             ->reactive()
                             ->required(),
                         Forms\Components\Select::make('curriculum_id')
@@ -68,7 +75,10 @@ class ProductResource extends Resource
                         Forms\Components\Select::make('education_subject_id')
                             ->label('Mata Pelajaran')
                             ->searchable()
-                            ->columnSpan(2)
+                            ->columnSpan([
+                                'md' => 2,
+                                'sm' => 1,
+                            ])
                             ->options(
                                 EducationSubject::all()->pluck('name', 'id')
                             )
@@ -128,25 +138,33 @@ class ProductResource extends Resource
 
     public static function table(Table $table): Table
     {
+        // dd(Curriculum::firstWhere('code', 13)->id);
         return $table
-            ->headerActions([
-                Tables\Actions\ImportAction::make()
-                    ->importer(ProductImporter::class)
-            ])
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('curriculum.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('semester.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('educationLevel.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('educationClass.name')
+                    ->label('Kode MMJ')
+                    ->formatStateUsing(function (string $state) {
+                        $parts = explode('|', $state);
+                        return trim($parts[1]);
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('educationSubject.name')
+                    ->label('Mapel')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('curriculum.code')
+                    ->label('Kurikulum')
+                    ->formatStateUsing(function (string $state) {
+                        return Curriculum::firstWhere('code', $state)->name;
+                    })
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('educationClass.name')
+                    ->label('Kelas')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('educationLevel.name')
+                    ->label('Jenjang')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('semester.name')
+                    ->label('Semester')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type.name')
                     ->sortable(),
@@ -181,6 +199,12 @@ class ProductResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
+            ])
+            ->headerActions([
+                Tables\Actions\ImportAction::make()
+                    ->importer(ProductImporter::class),
+                Tables\Actions\ExportAction::make()
+                    ->exporter(ProductExporter::class),
             ]);
     }
 
