@@ -196,9 +196,6 @@ class OrderResource extends Resource
                                             ->options(
                                                 Semester::all()->pluck('name', 'id'),
                                             )
-                                            ->default(
-                                                Semester::first()->id
-                                            )
                                             ->dehydrated(false)
                                             ->reactive(),
                                         Forms\Components\Select::make('curriculum_id')
