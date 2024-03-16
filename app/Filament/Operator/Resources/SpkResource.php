@@ -213,4 +213,9 @@ class SpkResource extends Resource
             'report' => Pages\FillReport::route('/{record}/fill-report'),
         ];
     }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 }
