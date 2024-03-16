@@ -13,9 +13,15 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Order', fn () => Order::withoutTrashed()->count()),
-            Stat::make('Customer', fn () => Customer::withoutTrashed()->count()),
-            Stat::make('Product', fn () => Product::withoutTrashed()->count()),
+            Stat::make('Order', fn () => Order::withoutTrashed()->count())
+                ->icon('heroicon-o-envelope')
+                ->url('orders'),
+            Stat::make('Pelanggan', fn () => Customer::withoutTrashed()->count())
+                ->icon('heroicon-o-identification')
+                ->url('customers'),
+            Stat::make('Produk', fn () => Product::withoutTrashed()->count())
+                ->icon('heroicon-o-beaker')
+                ->url('products'),
         ];
     }
 }
