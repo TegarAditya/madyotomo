@@ -7,9 +7,12 @@ use App\Filament\Operator\Resources\SpkResource\RelationManagers;
 use App\Models\OrderProduct;
 use App\Models\Spk;
 use Carbon\Carbon;
+use Faker\Provider\ar_EG\Text;
 use Filament\Forms;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -180,13 +183,64 @@ class SpkResource extends Resource
                     ->default(),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->hiddenLabel()
+                    ->icon(null),
+                Tables\Actions\Action::make('Penggunaan Kertas')
+                    ->infolist(
+                        function (Spk $record) {
+                            $spkProducts = $record->spkProducts->pluck('order_products');
+
+                            $infolist = [];
+
+                            foreach ($spkProducts as $spkProduct) {
+                                $product_1_name = OrderProduct::find($spkProduct[0])->product->educationSubject->name . ' - ' . OrderProduct::find($spkProduct[0])->product->educationClass->name;
+                                $product_2_name = isset($spkProduct[1]) ? OrderProduct::find($spkProduct[1])->product->educationSubject->name . ' - ' . OrderProduct::find($spkProduct[1])->product->educationClass->name : '';
+
+                                $productName = $product_1_name . ($product_2_name ? ' ' . $product_2_name : '');
+
+                                $product_1_quantity = OrderProduct::find($spkProduct[0])->quantity;
+                                $product_2_quantity = isset($spkProduct[1]) ? OrderProduct::find($spkProduct[1])->quantity : 0;
+
+                                $productQuantity = $product_1_quantity + $product_2_quantity;
+
+                                // dd($productQuantity);
+
+                                $infolist[] = Section::make($productName)
+                                    ->schema([
+                                        TextEntry::make('id')
+                                            ->label('Kebutuhan Kertas (1 PLANO)')
+                                            ->formatStateUsing(function () use ($productQuantity) {
+                                                return new HtmlString('<span class="font-bold text-2xl">' . $productQuantity /2 . '</span>');
+                                            })
+                                            ->color('primary'),
+                                        TextEntry::make('id')
+                                            ->label('Kebutuhan Kertas (½ PLANO)')
+                                            ->formatStateUsing(function () use ($productQuantity) {
+                                                return new HtmlString('<span class="font-bold text-2xl">' . $productQuantity / 1 . '</span>');
+                                            })
+                                            ->color('primary'),
+                                    ])
+                                    ->columns([
+                                        'md' => 2
+                                    ]);
+                            }
+
+                            return $infolist;
+                        }
+                        // [
+                        //     Section::make('Personal Information')
+                        //         ->schema([
+                        //             TextEntry::make('first_name'),
+                        //             TextEntry::make('last_name'),
+                        //         ])
+                        //         ->columns(),
+                        // ]
+                    ),
                 Tables\Actions\Action::make('Laporan')
                     ->label('Laporan')
                     ->icon('heroicon-o-document-text')
                     ->url(fn (Spk $record) => url('operator/spks/' . $record->id . '/fill-report')),
-                Tables\Actions\ViewAction::make()
-                    ->hiddenLabel()
-                    ->icon(null),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
@@ -194,7 +248,7 @@ class SpkResource extends Resource
                 // ]),
             ])
             ->recordUrl(null)
-            ->recordAction(Tables\Actions\ViewAction::class);
+            ->recordAction(false);
     }
 
     public static function getRelations(): array
