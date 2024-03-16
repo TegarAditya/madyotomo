@@ -131,7 +131,11 @@ class ProductResource extends Resource
 
                                 return $productName;
                             }),
-                        Forms\Components\Hidden::make('name'),
+                        Forms\Components\Hidden::make('name')
+                            ->unique()
+                            ->validationMessages([
+                                'unique' => 'The product has already been registered.',
+                            ]),
                     ])
             ]);
     }
