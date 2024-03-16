@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use stdClass;
 
 class SpksRelationManager extends RelationManager
@@ -86,31 +87,9 @@ class SpksRelationManager extends RelationManager
                 Forms\Components\Repeater::make('spkProducts')
                     ->relationship('spkProducts')
                     ->addActionLabel('Tambah Produk')
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull()
                     ->schema([
-                        Forms\Components\Placeholder::make('quantity_ph')
-                            ->label('Jumlah')
-                            ->content(function ($get, $set) {
-                                if ($get('order_products') !== null) {
-                                    if (count($get('order_products')) > 1) {
-                                        $products = $get('order_products');
-                                        $totalQuantity = 0;
-
-                                        foreach ($products as $product) {
-                                            $quantity = (OrderProduct::find($product)->quantity) / 2;
-                                            $totalQuantity += $quantity;
-                                        }
-
-                                        return $totalQuantity;
-                                    } else if (count($get('order_products')) === 1) {
-                                        $quantity = OrderProduct::find($get('order_products')[0])->quantity/2;
-                                        return $quantity;
-                                    }
-                                } else {
-                                    return 0;
-                                }
-                            }),
                         Forms\Components\Select::make('order_products')
                             ->multiple()
                             ->options(
@@ -123,9 +102,47 @@ class SpksRelationManager extends RelationManager
                                         return [$product->id => $subject . ' - ' . $class . ' - ' . ' (' . 'oplah ' . $quantity . ')'];
                                     })
                             )
+                            ->columnSpan(2)
                             ->reactive()
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                            ->required()
+                            ->required(),
+                        Forms\Components\Placeholder::make('quantity_ph')
+                            ->label('Jumlah')
+                            ->content(function ($get, $set) {
+                                if ($get('order_products') !== null) {
+                                    $products = $get('order_products');
+
+                                    if (count($products) === 1) {
+                                        $quantity = OrderProduct::find($products[0])->quantity / 2;
+                                        return new HtmlString("<span class='text-2xl font-bold'>{$quantity}</span>");
+                                    }
+
+                                    $firstQuantity = null;
+                                    $quantitiesEqual = true;
+                                    foreach ($products as $product) {
+                                        $quantity = OrderProduct::find($product)->quantity / 2;
+
+                                        if ($firstQuantity === null) {
+                                            $firstQuantity = $quantity;
+                                        } else {
+                                            if ($quantity !== $firstQuantity) {
+                                                $quantitiesEqual = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    $totalQuantity = $firstQuantity * count($products);
+
+                                    if ($quantitiesEqual) {
+                                        return new HtmlString("<span class='text-2xl font-bold'>{$totalQuantity}</span>");
+                                    } else {
+                                        return new HtmlString("<span class='text-2xl font-bold mb-2'>{$totalQuantity}</span><br><span>Oplah tidak sama!</span>");
+                                    }
+                                } else {
+                                    return 0;
+                                }
+                            }),
                     ])
             ]);
     }
