@@ -107,14 +107,14 @@ class SpksRelationManager extends RelationManager
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                             ->required(),
                         Forms\Components\Placeholder::make('quantity_ph')
-                            ->label('Jumlah')
+                            ->label('Jumlah InSheet')
                             ->content(function ($get, $set) {
                                 if ($get('order_products') !== null) {
                                     $products = $get('order_products');
 
                                     if (count($products) === 1) {
                                         $quantity = OrderProduct::find($products[0])->quantity / 2;
-                                        return new HtmlString("<span class='text-2xl font-bold'>{$quantity}</span>");
+                                        return new HtmlString("<span class='text-2xl font-bold'>{$quantity}<span class='text-sm font-thin'> sheets</span></span>");
                                     }
 
                                     $firstQuantity = null;
@@ -135,7 +135,9 @@ class SpksRelationManager extends RelationManager
                                     $totalQuantity = $firstQuantity * count($products);
 
                                     if ($quantitiesEqual) {
-                                        return new HtmlString("<span class='text-2xl font-bold'>{$totalQuantity}</span>");
+                                        return new HtmlString(
+                                            "<span class='text-2xl font-bold'>{$totalQuantity}<span class='text-sm font-thin'> sheets</span></span>"
+                                        );
                                     } else {
                                         return new HtmlString("<span class='text-2xl font-bold mb-2'>{$totalQuantity}</span><br><span>Oplah tidak sama!</span>");
                                     }
