@@ -47,4 +47,9 @@ class FillReport extends Page implements HasForms, HasInfolists
                 ]),
         ];
     }
+
+    public static function canAccess(array $parameters = []): bool
+    {
+        return false;
+    }
 }
