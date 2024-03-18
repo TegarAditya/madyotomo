@@ -105,7 +105,7 @@ class SpkResource extends Resource
 
                                 foreach ($spkProduct as $index => $productId) {
                                     $product = OrderProduct::find($productId)->product;
-                                    $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
+                                    $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name . ' -> ' . OrderProduct::find($productId)->quantity . ' sheet';
 
                                     // Append separator unless it's the last product
                                     if ($index < count($spkProduct) - 1) {
@@ -114,7 +114,7 @@ class SpkResource extends Resource
 
                                     $spare = $record->spare;
                                     $productQuantity = OrderProduct::find($productId)->quantity + $spare;
-                                    $totalQuantity += $productQuantity;
+                                    $totalQuantity += $productQuantity / 2;
                                 }
 
                                 $productNameHtml = new HtmlString('<span class="font-thin">' . $productName . '</span>');
@@ -140,10 +140,11 @@ class SpkResource extends Resource
                                             ->label('HASIL')
                                             ->formatStateUsing(function () use ($totalQuantity) {
                                                 return new HtmlString('<span class="font-bold text-lg">' . $totalQuantity * 2 . '<span class="font-thin text-sm"> sheet</span></span>');
-                                            }),
+                                            })
+                                            ->hidden(),
                                     ])
                                     ->columns([
-                                        'md' => 4
+                                        'md' => 3
                                     ]);
                             }
 
