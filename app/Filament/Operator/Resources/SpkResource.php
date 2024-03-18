@@ -14,6 +14,7 @@ use Filament\Forms\Form;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontFamily;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,105 +28,6 @@ class SpkResource extends Resource
     protected static ?string $modelLabel = 'Laporan';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('info')
-                    ->label('Informasi SPK')
-                    ->columns(2)
-                    ->schema([
-                        Forms\Components\Placeholder::make('order_name')
-                            ->label('Order')
-                            ->content(fn (?Spk $record) => $record->order->name ?? '-'),
-                        Forms\Components\Placeholder::make('order_customer')
-                            ->label('Pelanggan')
-                            ->content(fn (?Spk $record) => $record->order->customer->name ?? '-'),
-                        Forms\Components\Placeholder::make('document_number')
-                            ->label('Nomor SPK')
-                            ->content(fn (?Spk $record) => $record->document_number ?? '-'),
-                        Forms\Components\Placeholder::make('document_number')
-                            ->label('Nomor Laporan')
-                            ->content(fn (?Spk $record) => $record->document_number ?? '-'),
-                        Forms\Components\Placeholder::make('entry_date')
-                            ->content(function (?Spk $record) {
-                                $date = $record->entry_date ?? now();
-
-                                $dateString = Carbon::parse($date)->translatedFormat('l, j F Y');
-
-                                return (new HtmlString('<strong>' . $dateString . '</strong>'));
-                            }),
-                        Forms\Components\Placeholder::make('deadline_date')
-                            ->content(function (?Spk $record) {
-                                $date = $record->deadline_date ?? now();
-
-                                $dateString = Carbon::parse($date)->translatedFormat('l, j F Y');
-
-                                return (new HtmlString('<strong>' . $dateString . '</strong>'));
-                            }),
-                        Forms\Components\Placeholder::make('paper_config')
-                            ->content(fn (?Spk $record) => $record->paper_config ?? '-'),
-                        Forms\Components\Placeholder::make('configuration')
-                            ->content(fn (?Spk $record) => $record->configuration ?? '-'),
-                        Forms\Components\Placeholder::make('print_type')
-                            ->content(fn (?Spk $record) => $record->print_type ?? '-'),
-                        Forms\Components\Placeholder::make('spare')
-                            ->content(fn (?Spk $record) => $record->spare ?? '-'),
-                        Forms\Components\Section::make('Catatan')
-                            ->schema([
-                                Forms\Components\Placeholder::make('note')
-                                    ->hiddenLabel()
-                                    ->content(function (?Spk $record) {
-                                        $note = $record->note ?? '-';
-                                        return (new HtmlString($note));
-                                    })
-                                    ->columnSpanFull(),
-                            ]),
-                    ]),
-                Forms\Components\Section::make('Laporan')
-                    ->schema(function (Spk $record) {
-                        $formSchema = [];
-
-                        $spkProducts = $record->spkProducts->pluck('order_products');
-
-                        foreach ($spkProducts as $spkProduct) {
-                            // dd(OrderProduct::find($spkProduct[0])->product->name);
-                            $formSchema[] = Forms\Components\Section::make(OrderProduct::find($spkProduct[0])->product->educationSubject->name . ' - ' . OrderProduct::find($spkProduct[0])->product->educationClass->name)
-                                ->schema([
-                                    Forms\Components\Section::make()
-                                        ->schema([
-                                            // Forms\Components\Placeholder::make('paper_supply')
-                                            //     ->label('Kebutuhan Kertas (½ plano)')
-                                            //     ->content(fn (?Spk $record) => OrderProduct::whereIn('id', $record->spkProducts->pluck('order_products')) ?? '-'),
-                                        ]),
-                                    Forms\Components\Repeater::make('report')
-                                        ->columns(3)
-                                        ->minItems(1)
-                                        ->schema([
-                                            Forms\Components\DatePicker::make('date')
-                                                ->label('Tanggal')
-                                                ->required(),
-                                            Forms\Components\TimePicker::make('start_time')
-                                                ->label('Waktu Mulai')
-                                                ->required(),
-                                            Forms\Components\TimePicker::make('end_time')
-                                                ->label('Waktu Selesai')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('hasil_baik')
-                                                ->label('Hasil Baik')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('hasil_rusak')
-                                                ->label('Hasil Rusak')
-                                                ->required(),
-                                        ])
-                                ]);
-                        }
-
-                        return $formSchema;
-                    }),
-            ]);
-    }
 
     public static function table(Table $table): Table
     {
@@ -179,67 +81,137 @@ class SpkResource extends Resource
             ->filters([
                 Tables\Filters\Filter::make('only_has_order')
                     ->label('Hanya SPK yang memiliki order')
-                    ->query(fn (Builder $query) => $query->whereHas('order', fn (Builder $query) => $query->withTrashed()))
-                    ->default(),
+                    ->query(fn (Builder $query) => $query->whereHas('order', fn (Builder $query) => $query->withTrashed())),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->hiddenLabel()
-                    ->icon(null),
-                Tables\Actions\Action::make('Penggunaan Kertas')
+                Tables\Actions\Action::make('Info')
+                    ->button()
+                    ->icon('heroicon-o-information-circle')
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(false)
+                    ->modalHeading()
+                    ->stickyModalHeader()
                     ->infolist(
                         function (Spk $record) {
                             $spkProducts = $record->spkProducts->pluck('order_products');
 
+                            $schema = [];
+
                             $infolist = [];
 
                             foreach ($spkProducts as $spkProduct) {
-                                $product_1_name = OrderProduct::find($spkProduct[0])->product->educationSubject->name . ' - ' . OrderProduct::find($spkProduct[0])->product->educationClass->name;
-                                $product_2_name = isset($spkProduct[1]) ? OrderProduct::find($spkProduct[1])->product->educationSubject->name . ' - ' . OrderProduct::find($spkProduct[1])->product->educationClass->name : '';
+                                $productName = '';
+                                $totalQuantity = 0;
 
-                                $productName = $product_1_name . ($product_2_name ? ' ' . $product_2_name : '');
+                                foreach ($spkProduct as $index => $productId) {
+                                    $product = OrderProduct::find($productId)->product;
+                                    $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
 
-                                $product_1_quantity = OrderProduct::find($spkProduct[0])->quantity;
-                                $product_2_quantity = isset($spkProduct[1]) ? OrderProduct::find($spkProduct[1])->quantity : 0;
+                                    // Append separator unless it's the last product
+                                    if ($index < count($spkProduct) - 1) {
+                                        $productName .= '&nbsp&nbsp | &nbsp&nbsp';
+                                    }
 
-                                $productQuantity = $product_1_quantity + $product_2_quantity;
+                                    $spare = $record->spare;
+                                    $productQuantity = OrderProduct::find($productId)->quantity + $spare;
+                                    $totalQuantity += $productQuantity;
+                                }
 
-                                // dd($productQuantity);
+                                $productNameHtml = new HtmlString('<span class="font-thin">' . $productName . '</span>');
 
-                                $infolist[] = Section::make($productName)
+                                $infolist[] = Section::make($productNameHtml)
                                     ->schema([
                                         TextEntry::make('id')
-                                            ->label('Kebutuhan Kertas (1 PLANO)')
-                                            ->formatStateUsing(function () use ($productQuantity) {
-                                                return new HtmlString('<span class="font-bold text-2xl">' . $productQuantity /2 . '</span>');
-                                            })
-                                            ->color('primary'),
+                                            ->label('RIM')
+                                            ->formatStateUsing(function () use ($totalQuantity) {
+                                                return new HtmlString('<span class="font-bold text-lg">' . $totalQuantity / 1000 . '<span class="font-thin text-sm"> rim</span></span>');
+                                            }),
                                         TextEntry::make('id')
-                                            ->label('Kebutuhan Kertas (½ PLANO)')
-                                            ->formatStateUsing(function () use ($productQuantity) {
-                                                return new HtmlString('<span class="font-bold text-2xl">' . $productQuantity / 1 . '</span>');
-                                            })
-                                            ->color('primary'),
+                                            ->label('PLANO')
+                                            ->formatStateUsing(function () use ($totalQuantity) {
+                                                return new HtmlString('<span class="font-bold text-lg">' . $totalQuantity / 2 . '<span class="font-thin text-sm"> sheet</span></span>');
+                                            }),
+                                        TextEntry::make('id')
+                                            ->label('1/2 PLANO')
+                                            ->formatStateUsing(function () use ($totalQuantity) {
+                                                return new HtmlString('<span class="font-bold text-lg">' . $totalQuantity / 1 . '<span class="font-thin text-sm"> sheet</span></span>');
+                                            }),
+                                        TextEntry::make('id')
+                                            ->label('HASIL')
+                                            ->formatStateUsing(function () use ($totalQuantity) {
+                                                return new HtmlString('<span class="font-bold text-lg">' . $totalQuantity * 2 . '<span class="font-thin text-sm"> sheet</span></span>');
+                                            }),
                                     ])
                                     ->columns([
-                                        'md' => 2
+                                        'md' => 4
                                     ]);
                             }
 
-                            return $infolist;
+                            $schema = [
+                                Section::make('Informasi SPK')
+                                    ->columns([
+                                        'md' => 2
+                                    ])
+                                    ->schema([
+                                        TextEntry::make('order.name')
+                                            ->label('Order')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => $record->order->name ?? '-'),
+                                        TextEntry::make('order.customer')
+                                            ->label('Pelanggan')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => $record->order->customer->name ?? '-'),
+                                        TextEntry::make('document_number')
+                                            ->label('Nomor SPK')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => $record->document_number ?? '-'),
+                                        TextEntry::make('report_number')
+                                            ->label('Nomor Laporan')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => $record->document_number ?? '-'),
+                                        TextEntry::make('entry_date')
+                                            ->label('Tanggal Masuk')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => Carbon::parse($record->entry_date)->translatedFormat('l, j F Y')),
+                                        TextEntry::make('deadline_date')
+                                            ->label('Tanggal Deadline')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => Carbon::parse($record->deadline_date)->translatedFormat('l, j F Y')),
+                                        TextEntry::make('paper_config')
+                                            ->label('Konfigurasi Kertas')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => $record->paper_config ?? '-'),
+                                        TextEntry::make('configuration')
+                                            ->label('Konfigurasi Warna')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => $record->configuration ?? '-'),
+                                        TextEntry::make('print_type')
+                                            ->label('Jenis Cetak')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => $record->print_type ?? '-'),
+                                        TextEntry::make('spare')
+                                            ->label('Spare')
+                                            ->inlineLabel()
+                                            ->formatStateUsing(fn ($record) => $record->spare ?? '-'),
+                                        TextEntry::make('note')
+                                            ->columnSpanFull()
+                                            ->label('Catatan')
+                                            ->html()
+                                            ->formatStateUsing(fn ($record) => $record->note ?? '-'),
+                                    ]),
+                                Section::make('Kebutuhan Kertas')
+                                    ->description('Kebutuhan kertas termasuk spare')
+                                    ->schema($infolist),
+                            ];
+
+                            return $schema;
                         }
-                        // [
-                        //     Section::make('Personal Information')
-                        //         ->schema([
-                        //             TextEntry::make('first_name'),
-                        //             TextEntry::make('last_name'),
-                        //         ])
-                        //         ->columns(),
-                        // ]
                     ),
                 Tables\Actions\Action::make('Laporan')
+                    ->button()
                     ->label('Laporan')
                     ->icon('heroicon-o-document-text')
+                    ->color('primary')
                     ->url(fn (Spk $record) => url('operator/spks/' . $record->id . '/fill-report')),
             ])
             ->bulkActions([
@@ -247,6 +219,14 @@ class SpkResource extends Resource
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
             ])
+            ->groups([
+                Tables\Grouping\Group::make('order.name')
+                    ->label('Order')
+                    ->titlePrefixedWithLabel(false)
+                    ->getTitleFromRecordUsing(fn (Spk $record) => $record->order->name . ' - ' . $record->order->document_number)
+                    ->collapsible(),
+            ])
+            ->defaultGroup('order.name')
             ->recordUrl(null)
             ->recordAction(false);
     }
