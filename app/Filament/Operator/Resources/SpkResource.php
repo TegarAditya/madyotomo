@@ -171,7 +171,7 @@ class SpkResource extends Resource
                                         TextEntry::make('report_number')
                                             ->label('Nomor Laporan')
                                             ->inlineLabel()
-                                            ->formatStateUsing(fn ($record) => $record->document_number ?? '-'),
+                                            ->formatStateUsing(fn ($record) => $record->report_number ?? '-'),
                                         TextEntry::make('entry_date')
                                             ->label('Tanggal Masuk')
                                             ->inlineLabel()
