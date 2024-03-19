@@ -15,6 +15,7 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontFamily;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -91,6 +92,7 @@ class SpkResource extends Resource
                     ->modalCancelAction(false)
                     ->modalHeading()
                     ->stickyModalHeader()
+                    ->modalWidth(MaxWidth::FiveExtraLarge)
                     ->infolist(
                         function (Spk $record) {
                             $spkProducts = $record->spkProducts->pluck('order_products');
@@ -102,17 +104,17 @@ class SpkResource extends Resource
                             foreach ($spkProducts as $spkProduct) {
                                 $productName = '';
                                 $totalQuantity = 0;
+                                $spare = $record->spare;
 
                                 foreach ($spkProduct as $index => $productId) {
                                     $product = OrderProduct::find($productId)->product;
-                                    $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name . ' -> ' . OrderProduct::find($productId)->quantity . ' sheet';
+                                    $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name . ' -> ' . OrderProduct::find($productId)->quantity + $spare . ' sheet';
 
                                     // Append separator unless it's the last product
                                     if ($index < count($spkProduct) - 1) {
                                         $productName .= '&nbsp&nbsp | &nbsp&nbsp';
                                     }
 
-                                    $spare = $record->spare;
                                     $productQuantity = OrderProduct::find($productId)->quantity + $spare;
                                     $totalQuantity += $productQuantity / 2;
                                 }
