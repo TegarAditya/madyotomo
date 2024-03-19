@@ -265,12 +265,16 @@ class OrderResource extends Resource
                                     ->addActionLabel('Tambah Produk')
                                     ->columns(2)
                                     ->defaultItems(1),
-                                Forms\Components\Placeholder::make('total')
-                                    ->content(function ($get) {
-                                        $total = collect($get('order_products'))->pluck('quantity')->sum();
+                                Forms\Components\Section::make('total_section')
+                                    ->heading()
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('total')
+                                            ->content(function ($get) {
+                                                $total = collect($get('order_products'))->pluck('quantity')->sum();
 
-                                        return new HtmlString('<span class="font-bold text-xl">'. $total .'</span>');
-                                    }),
+                                                return new HtmlString('<span class="font-bold text-xl">' . $total . '</span>');
+                                            }),
+                                    ]),
                             ]),
 
                     ]),
