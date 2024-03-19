@@ -151,26 +151,33 @@ class ProductResource extends Resource
                         $parts = explode('|', $state);
                         return trim($parts[1]);
                     })
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('educationSubject.name')
                     ->label('Mapel')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('curriculum.code')
                     ->label('Kurikulum')
                     ->formatStateUsing(function (string $state) {
                         return Curriculum::firstWhere('code', $state)->name;
                     })
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('educationClass.name')
                     ->label('Kelas')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('educationLevel.name')
                     ->label('Jenjang')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('semester.name')
                     ->label('Semester')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type.name')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -188,8 +195,13 @@ class ProductResource extends Resource
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\SelectFilter::make('semester')
-                    ->relationship('semester', 'name')
-                    ->preload()
+                    ->relationship('semester', 'name'),
+                Tables\Filters\SelectFilter::make('educationClass')
+                    ->label('Kelas')
+                    ->relationship('educationClass', 'name'),
+                Tables\Filters\SelectFilter::make('educationSubject')
+                    ->label('Mapel')
+                    ->relationship('educationSubject', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
