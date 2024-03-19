@@ -48,6 +48,11 @@ class OrderProductsRelationManager extends RelationManager
                     ->label('Kurikulum'),
                 Tables\Columns\TextColumn::make('product.Type.name')
                     ->label('Tipe'),
+                Tables\Columns\TextColumn::make('quantity')
+                    ->label('Oplah')
+                    ->summarize([
+                        Tables\Columns\Summarizers\Sum::make(),
+                    ]),
                 Tables\Columns\TextColumn::make('status')
                     ->default('Pending')
                     ->badge()
