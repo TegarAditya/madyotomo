@@ -264,7 +264,7 @@ class OrderResource extends Resource
                                             ->label('Oplah')
                                             ->required()
                                             ->reactive()
-                                            ->numeric()
+                                            ->integer()
                                             ->default(1),
                                     ])
                                     ->addActionLabel('Tambah Produk')
@@ -275,7 +275,9 @@ class OrderResource extends Resource
                                     ->schema([
                                         Forms\Components\Placeholder::make('total')
                                             ->content(function ($get) {
-                                                $total = collect($get('order_products'))->pluck('quantity')->sum();
+                                                $total = collect($get('order_products'))->pluck('quantity')->map(function ($quantity) {
+                                                    return intval($quantity);
+                                                })->sum();
 
                                                 return new HtmlString('<span class="font-bold text-xl">' . $total . '</span>');
                                             }),
