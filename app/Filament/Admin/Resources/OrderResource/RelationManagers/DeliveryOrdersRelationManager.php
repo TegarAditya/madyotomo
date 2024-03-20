@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use stdClass;
 
 class DeliveryOrdersRelationManager extends RelationManager
 {
@@ -106,8 +107,11 @@ class DeliveryOrdersRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('document_number')
             ->columns([
+                Tables\Columns\TextColumn::make('number')
+                    ->label('No.')
+                    ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1 . '.')
+                    ->extraHeaderAttributes(['style' => 'width:80px']),
                 Tables\Columns\TextColumn::make('document_number'),
             ])
             ->filters([
