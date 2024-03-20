@@ -263,6 +263,7 @@ class OrderResource extends Resource
                                         Forms\Components\TextInput::make('quantity')
                                             ->label('Oplah')
                                             ->required()
+                                            ->reactive()
                                             ->numeric()
                                             ->default(1),
                                     ])
