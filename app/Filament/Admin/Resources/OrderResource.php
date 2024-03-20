@@ -48,7 +48,7 @@ class OrderResource extends Resource
                             ->schema([
                                 Forms\Components\Placeholder::make('document_number_pc')
                                     ->label('Nomor Order')
-                                    ->visibleOn(['create'])
+                                    ->hiddenOn(['edit'])
                                     ->content(function (callable $set, $get) {
                                         $latestOrder = Order::orderBy('created_at', 'desc')->first()->document_number ?? null;
                                         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
