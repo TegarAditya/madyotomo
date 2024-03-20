@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.2",
         "awcodes/light-switch": "^1.0",
+        "barryvdh/laravel-dompdf": "^2.1",
         "bezhansalleh/filament-shield": "^3.2",
         "filament/filament": "^3.2",
         "guzzlehttp/guzzle": "^7.2",
