@@ -48,6 +48,7 @@ class OrderResource extends Resource
                             ->schema([
                                 Forms\Components\Placeholder::make('document_number_pc')
                                     ->label('Nomor Order')
+                                    ->visibleOn(['create'])
                                     ->content(function (callable $set, $get) {
                                         $latestOrder = Order::orderBy('created_at', 'desc')->first()->document_number ?? null;
                                         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
@@ -77,7 +78,10 @@ class OrderResource extends Resource
                                         return "{$nomorTerakhir}/MT/OC/{$customer}/{$romanMonth}/{$year}";
                                     }),
                                 Forms\Components\Hidden::make('document_number')
-                                    ->default("-/MT/OC/-/-/-"),
+                                    ->default("-/MT/OC/-/-/-")
+                                    ->visibleOn(['create']),
+                                Forms\Components\TextInput::make('document_number')
+                                    ->visibleOn(['edit']),
                                 Forms\Components\TextInput::make('proof_number')
                                     ->label('Nomor Bukti')
                                     ->required()
