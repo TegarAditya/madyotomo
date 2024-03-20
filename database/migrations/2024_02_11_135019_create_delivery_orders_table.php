@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('delivery_orders', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id');
-            $table->integer('document_number');
+            $table->varchar('document_number');
             $table->date('entry_date');
             $table->string('note');
             $table->integer('sort')->nullable();

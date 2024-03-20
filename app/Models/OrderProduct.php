@@ -32,13 +32,8 @@ class OrderProduct extends Model
         return $this->hasMany(SpkProduct::class);
     }
 
-    public function deliveryOrders()
+    public function deliveryOrderProducts()
     {
         return $this->hasMany(DeliveryOrderProduct::class);
-    }
-
-    public function isPrinted()
-    {
-        //
     }
 }
