@@ -6,12 +6,14 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\Spk;
+use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use stdClass;
 
@@ -73,6 +75,7 @@ class SpksRelationManager extends RelationManager
                     ->default($this->getOwnerRecord()->paper_config)
                     ->maxLength(255),
                 Forms\Components\TextInput::make('configuration')
+                    ->label('Color config')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('print_type')
@@ -175,6 +178,18 @@ class SpksRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
+                Tables\Actions\Action::make('pdf')
+                    ->label('Download')
+                    ->color('success')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->authorize(true)
+                    ->action(function (Spk $record) {
+                        return response()->streamDownload(function () use ($record) {
+                            echo Pdf::loadHtml(
+                                Blade::render('pdf.spk', ['record' => $record])
+                            )->stream();
+                        }, str_replace('/', '_', $record->document_number) . '.pdf');
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

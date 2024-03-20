@@ -1,0 +1,1 @@
+<div>Number: {{ $record->id }}</div>
