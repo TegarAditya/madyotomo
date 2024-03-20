@@ -13,6 +13,7 @@ class Order extends Model
     protected $fillable = [
         'document_number',
         'proof_number',
+        'name',
         'customer_id',
         'entry_date',
         'deadline_date',
