@@ -29,11 +29,12 @@ class SpksRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Placeholder::make('document_number_ph')
                     ->label('Nomor SPK')
+                    ->visibleOn(['create'])
                     ->content(function (callable $set, $get) {
                         $latestOrder = Spk::orderBy('created_at', 'desc')->first()->document_number ?? null;
                         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
 
-                        $nomorTerakhir = (Spk::all()->first()) ? $latestNumber + 2 : 1;
+                        $nomorTerakhir = (Spk::all()->first()) ? $latestNumber + 1 : 1;
                         $month = (new DateTime('@' . strtotime($get('entry_date'))))->format('m');
                         $year = (new DateTime('@' . strtotime($get('entry_date'))))->format('Y');
                         $romanNumerals = [
@@ -57,12 +58,15 @@ class SpksRelationManager extends RelationManager
 
                         return "{$nomorTerakhir}/MT/SPK/{$romanMonth}/{$year}";
                     }),
+                Forms\Components\Hidden::make('document_number')
+                    ->visibleOn(['create']),
+                Forms\Components\TextInput::make('document_number')
+                    ->visibleOn(['edit']),
                 Forms\Components\Placeholder::make('report_number_ph')
                     ->label('Nomor Laporan')
                     ->content(function ($get) {
                         return $get('document_number');
                     }),
-                Forms\Components\Hidden::make('document_number'),
                 Forms\Components\Hidden::make('report_number'),
                 Forms\Components\DatePicker::make('entry_date')
                     ->reactive()

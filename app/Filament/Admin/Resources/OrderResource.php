@@ -53,7 +53,7 @@ class OrderResource extends Resource
                                         $latestOrder = Order::orderBy('created_at', 'desc')->first()->document_number ?? null;
                                         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
 
-                                        $nomorTerakhir = (Order::all()->first()) ? $latestNumber + 2 : 1;
+                                        $nomorTerakhir = (Order::all()->first()) ? $latestNumber + 1 : 1;
                                         $month = (new DateTime('@' . strtotime($get('entry_date'))))->format('m');
                                         $year = (new DateTime('@' . strtotime($get('entry_date'))))->format('Y');
                                         $customer = Customer::find($get('customer_id')) ? Customer::find($get('customer_id'))->code : '-';
