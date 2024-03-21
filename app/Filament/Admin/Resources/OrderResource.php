@@ -302,13 +302,16 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Order')
                     ->searchable(isIndividual: true)
+                    ->sortable()
                     ->columnSpanFull(),
                 Tables\Columns\TextColumn::make('document_number')
                     ->label('Nomor Order')
-                    ->searchable(isIndividual: true),
+                    ->searchable(isIndividual: true)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('proof_number')
                     ->label('Nomor Bukti')
-                    ->searchable(isIndividual: true),
+                    ->searchable(isIndividual: true)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Customer')
                     ->searchable(isIndividual: true)
