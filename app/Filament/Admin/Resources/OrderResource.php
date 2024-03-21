@@ -25,6 +25,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
@@ -48,7 +49,7 @@ class OrderResource extends Resource
                             ->schema([
                                 Forms\Components\Placeholder::make('document_number_pc')
                                     ->label('Nomor Order')
-                                    ->hiddenOn(['edit'])
+                                    ->visibleOn(['create'])
                                     ->content(function (callable $set, $get) {
                                         $latestOrder = Order::orderBy('created_at', 'desc')->first()->document_number ?? null;
                                         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
@@ -77,6 +78,12 @@ class OrderResource extends Resource
 
                                         return "{$nomorTerakhir}/MT/OC/{$customer}/{$romanMonth}/{$year}";
                                     }),
+                                Forms\Components\Placeholder::make('document_number_pc')
+                                    ->label('Nomor Order')
+                                    ->content(function (Model $record) {
+                                        return $record->document_number;
+                                    })
+                                    ->visibleOn(['view']),
                                 Forms\Components\Hidden::make('document_number')
                                     ->default("-/MT/OC/-/-/-")
                                     ->visibleOn(['create']),
