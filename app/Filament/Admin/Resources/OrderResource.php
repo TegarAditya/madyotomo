@@ -330,11 +330,13 @@ class OrderResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('entry_date')
-                    ->date()
+                    ->label('Tanggal Masuk')
+                    ->date('l, j F Y', 'Asia/Jakarta')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('deadline_date')
-                    ->date()
+                    ->label('Tanggal Deadline')
+                    ->date('l, j F Y', 'Asia/Jakarta')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
