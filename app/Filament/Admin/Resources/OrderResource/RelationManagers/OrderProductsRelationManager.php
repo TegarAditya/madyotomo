@@ -57,7 +57,7 @@ class OrderProductsRelationManager extends RelationManager
                     ]),
                 Tables\Columns\TextColumn::make('status')
                     ->default(function (OrderProduct $record) {
-                        $deliveryStatus = $record->deliveryOrderProducts() ? true : false;
+                        $deliveryStatus = $record->hasDeliveryOrderProducts();
 
                         if ($deliveryStatus) {
                             return 'Dikirim';

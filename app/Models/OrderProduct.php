@@ -36,4 +36,9 @@ class OrderProduct extends Model
     {
         return $this->hasMany(DeliveryOrderProduct::class);
     }
+
+    public function hasDeliveryOrderProducts()
+    {
+        return $this->deliveryOrderProducts()->exists();
+    }
 }
