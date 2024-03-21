@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 
+use App\Models\OrderProduct;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -55,7 +56,15 @@ class OrderProductsRelationManager extends RelationManager
                         Tables\Columns\Summarizers\Sum::make(),
                     ]),
                 Tables\Columns\TextColumn::make('status')
-                    ->default('Pending')
+                    ->default(function (OrderProduct $record) {
+                        $deliveryStatus = $record->deliveryOrderProducts() ? true : false;
+
+                        if ($deliveryStatus) {
+                            return 'Dikirim';
+                        }
+
+                        return 'Pending';
+                    })
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'gray',
