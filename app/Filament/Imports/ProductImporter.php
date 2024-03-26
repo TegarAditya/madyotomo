@@ -2,13 +2,7 @@
 
 namespace App\Filament\Imports;
 
-use App\Models\Curriculum;
-use App\Models\EducationClass;
-use App\Models\EducationLevel;
-use App\Models\EducationSubject;
 use App\Models\Product;
-use App\Models\Semester;
-use App\Models\Type;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
@@ -24,47 +18,35 @@ class ProductImporter extends Importer
                 ->label('Nama')
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),
-            ImportColumn::make('curriculum_id')
+            ImportColumn::make('curriculum')
                 ->label('Kurikulum')
                 ->requiredMapping()
-                ->castStateUsing(function (string $state) {
-                    return Curriculum::firstWhere('code', $state)->id;
-                })
+                ->relationship(resolveUsing: 'code')
                 ->rules(['required']),
-            ImportColumn::make('semester_id')
+            ImportColumn::make('semester')
                 ->label('Semester')
                 ->requiredMapping()
-                ->castStateUsing(function (string $state) {
-                    return Semester::firstWhere('code', $state)->id;
-                })
+                ->relationship(resolveUsing: 'code')
                 ->rules(['required']),
-            ImportColumn::make('education_level_id')
+            ImportColumn::make('educationLevel')
                 ->label('Jenjang')
                 ->requiredMapping()
-                ->castStateUsing(function (string $state) {
-                    return EducationLevel::firstWhere('code', $state)->id;
-                })
+                ->relationship(resolveUsing: 'code')
                 ->rules(['required']),
-            ImportColumn::make('education_class_id')
+            ImportColumn::make('educationClass')
                 ->label('Kelas')
                 ->requiredMapping()
-                ->castStateUsing(function (string $state) {
-                    return EducationClass::firstWhere('code', $state)->id;
-                })
+                ->relationship(resolveUsing: 'code')
                 ->rules(['required']),
-            ImportColumn::make('education_subject_id')
+            ImportColumn::make('educationSubject')
                 ->label('Mata Pelajaran')
                 ->requiredMapping()
-                ->castStateUsing(function (string $state) {
-                    return EducationSubject::firstWhere('code', $state)->id;
-                })
+                ->relationship(resolveUsing: 'code')
                 ->rules(['required']),
-            ImportColumn::make('type_id')
+            ImportColumn::make('type')
                 ->label('Tipe')
                 ->requiredMapping()
-                ->castStateUsing(function (string $state) {
-                    return Type::firstWhere('code', $state)->id;
-                })
+                ->relationship(resolveUsing: 'code')
                 ->rules(['required']),
         ];
     }
