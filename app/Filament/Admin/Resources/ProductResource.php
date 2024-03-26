@@ -149,7 +149,10 @@ class ProductResource extends Resource
                     ->label('Kode MMJ')
                     ->formatStateUsing(function (string $state) {
                         $parts = explode('|', $state);
-                        return trim($parts[1]);
+                        if (count($parts) > 1) {
+                            return trim($parts[1]);
+                        }
+                        return "-";
                     })
                     ->searchable()
                     ->sortable(),
