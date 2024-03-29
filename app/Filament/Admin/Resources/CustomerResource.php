@@ -36,11 +36,11 @@ class CustomerResource extends Resource
                 Forms\Components\TextInput::make('representative')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('address')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\TextInput::make('phone')
                     ->tel()
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('address')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -57,6 +57,7 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('representative')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
+                    ->limit(50)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
