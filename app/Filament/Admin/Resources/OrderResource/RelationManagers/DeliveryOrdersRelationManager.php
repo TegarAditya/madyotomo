@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 use App\Models\DeliveryOrder;
 use App\Models\OrderProduct;
 use App\Models\Spk;
+use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,6 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Blade;
 use stdClass;
 
 class DeliveryOrdersRelationManager extends RelationManager
@@ -121,6 +123,30 @@ class DeliveryOrdersRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
+                Tables\Actions\Action::make('pdf')
+                    ->label('Download')
+                    ->color('success')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->authorize(true)
+                    ->action(function (DeliveryOrder $record) {
+                        return response()->streamDownload(function () use ($record) {
+                            $deliveryItems = $record->deliveryOrderProducts->map(function ($deliveryOrderProduct) {
+                                return [
+                                    'product' => $deliveryOrderProduct->orderProduct->product->educationSubject->name . ' - ' . $deliveryOrderProduct->orderProduct->product->educationClass->name,
+                                    'quantity' => $deliveryOrderProduct->quantity,
+                                ];
+                            });
+
+                            $total = $record->deliveryOrderProducts->sum('quantity');
+
+                            $index = 1;
+
+                            echo Pdf::loadView('pdf.surat-jalan', ['record' => $record, 'deliveryItems' => $deliveryItems, 'total' => $total, 'index' => $index])
+                                ->setOption(['defaultFont' => 'sans-serif'])
+                                ->setPaper('a4', 'portrait')
+                                ->stream();
+                        }, str_replace('/', '_', $record->document_number) . '.pdf');
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
