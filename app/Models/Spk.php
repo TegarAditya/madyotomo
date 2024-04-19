@@ -17,6 +17,7 @@ class Spk extends Model
         'entry_date',
         'deadline_date',
         'paper_config',
+        'configuration',
         'note',
         'print_type',
         'spare',
