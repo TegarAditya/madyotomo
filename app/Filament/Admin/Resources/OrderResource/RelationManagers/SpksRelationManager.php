@@ -65,7 +65,7 @@ class SpksRelationManager extends RelationManager
                 Forms\Components\Placeholder::make('report_number_ph')
                     ->label('Nomor Laporan')
                     ->content(function ($get) {
-                        return $get('document_number');
+                        return $get('report_number');
                     }),
                 Forms\Components\Hidden::make('report_number'),
                 Forms\Components\DatePicker::make('entry_date')
