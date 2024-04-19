@@ -88,8 +88,13 @@ class SpksRelationManager extends RelationManager
                         'cetak potong' => 'Cetak & Potong',
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('spare'),
+                Forms\Components\TextInput::make('spare')
+                    ->required()
+                    ->integer()
+                    ->default(0),
                 Forms\Components\RichEditor::make('note')
+                    ->required()
+                    ->default('-')
                     ->columnSpanFull(),
                 Forms\Components\Repeater::make('spkProducts')
                     ->relationship('spkProducts')
