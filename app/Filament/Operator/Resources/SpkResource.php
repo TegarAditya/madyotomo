@@ -229,6 +229,7 @@ class SpkResource extends Resource
                     ->getTitleFromRecordUsing(fn (Spk $record) => $record->order->name . ' - ' . $record->order->document_number)
                     ->collapsible(),
             ])
+            ->defaultSort('entry_date', 'desc')
             ->defaultGroup('order.name')
             ->recordUrl(null)
             ->recordAction(false);
