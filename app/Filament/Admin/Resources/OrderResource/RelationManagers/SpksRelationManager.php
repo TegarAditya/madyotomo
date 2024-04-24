@@ -136,11 +136,11 @@ class SpksRelationManager extends RelationManager
 
                                         if ($firstQuantity === null) {
                                             $firstQuantity = $quantity;
-                                        } else {
-                                            if ($quantity !== $firstQuantity) {
-                                                $quantitiesEqual = false;
-                                                break;
-                                            }
+                                        }
+
+                                        if ($quantity !== $firstQuantity) {
+                                            $quantitiesEqual = false;
+                                            break;
                                         }
                                     }
 
@@ -181,7 +181,7 @@ class SpksRelationManager extends RelationManager
                     ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
