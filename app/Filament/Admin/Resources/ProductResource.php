@@ -205,6 +205,12 @@ class ProductResource extends Resource
                 Tables\Filters\SelectFilter::make('educationSubject')
                     ->label('Mapel')
                     ->relationship('educationSubject', 'name'),
+                Tables\Filters\SelectFilter::make('educationLevel')
+                    ->label('Jenjang')
+                    ->relationship('educationLevel', 'name'),
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Tipe')
+                    ->relationship('type', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
