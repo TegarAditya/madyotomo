@@ -210,6 +210,7 @@ class ProductResource extends Resource
                     ->relationship('educationLevel', 'name'),
                 Tables\Filters\SelectFilter::make('type')
                     ->label('Tipe')
+                    ->multiple()
                     ->relationship('type', 'name'),
             ])
             ->actions([
