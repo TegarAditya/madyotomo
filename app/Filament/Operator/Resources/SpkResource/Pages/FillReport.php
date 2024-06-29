@@ -3,34 +3,29 @@
 namespace App\Filament\Operator\Resources\SpkResource\Pages;
 
 use App\Filament\Operator\Resources\SpkResource;
-use App\Models\Customer;
 use App\Models\Machine;
+use App\Models\Order;
 use App\Models\OrderProduct;
-use App\Models\Paper;
-use App\Models\ProductReport;
 use App\Models\Spk;
 use App\Models\SpkProduct;
 use Carbon\Carbon;
 use Filament\Forms;
-use Filament\Tables;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
 use Filament\Infolists;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
+use Filament\Support\Exceptions\Halt;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\HtmlString;
-use Termwind\Components\Span;
 
 class FillReport extends Page implements HasForms, HasInfolists
 {
@@ -39,6 +34,8 @@ class FillReport extends Page implements HasForms, HasInfolists
     public function mount(int | string $record): void
     {
         $this->record = $this->resolveRecord($record);
+
+        $this->form->fill($this->record->productReports->toArray());
     }
 
     public function getTitle(): string | Htmlable
@@ -50,11 +47,7 @@ class FillReport extends Page implements HasForms, HasInfolists
 
     protected static string $view = 'filament.operator.resources.spk-resource.pages.fill-report';
 
-    protected function getFormSchema(): array
-    {
-        
-        return $this->generateForm($this->record);
-    }
+    public ?array $data = [];
 
     public function reportInfolist(Infolist $infolist): Infolist
     {
@@ -113,66 +106,111 @@ class FillReport extends Page implements HasForms, HasInfolists
             ]);
     }
 
-    private static function generateForm(Spk $record) {
-        $spkProducts = $record->spkProducts->pluck('order_products');
-        $formSchema = [];
+    public function form(Form $form): Form
+    {
+        return $form
+            ->model($this->record)
+            ->schema([
+                Forms\Components\Section::make('Input Laporan')
+                    ->schema([
+                        Forms\Components\Repeater::make('productReports')
+                            ->relationship()
+                            ->hiddenLabel()
+                            ->columns(4)
+                            ->addActionLabel('Tambah Laporan')
+                            ->defaultItems(1)
+                            ->schema([
+                                Forms\Components\Select::make('spk_order_product_id')
+                                    ->label('Produk')
+                                    ->columnSpan(4)
+                                    ->options(
+                                        function () {
+                                            return SpkProduct::where('spk_id', $this->record->id)
+                                                ->get()
+                                                ->mapWithKeys(function ($spkProduct) {
+                                                    $productName = "";
 
-        foreach ($spkProducts as $spkProduct) {
-            $productName = '';
-            $totalQuantity = 0;
-            $spare = $record->spare;
-            $key = 'product_' . $spkProduct[0];
+                                                    foreach ($spkProduct->order_products as $index => $item) {
+                                                        $product = OrderProduct::find($item)->product;
+                                                        $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
 
-            foreach ($spkProduct as $index => $productId) {
-                $product = OrderProduct::find($productId)->product;
-                $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name . ' -> ' . (OrderProduct::find($productId)->quantity + $spare) . ' sheet';
+                                                        if ($index < count($spkProduct->order_products) - 1) {
+                                                            $productName .= ' & ';
+                                                        }
+                                                    }
 
-                // Append separator unless it's the last product
-                if ($index < count($spkProduct) - 1) {
-                    $productName .= '&nbsp;&nbsp; | &nbsp;&nbsp;';
-                }
+                                                    return [$spkProduct->id => $productName];
+                                                });
+                                        }
+                                    )
+                                    ->required(),
+                                Forms\Components\Select::make('machine_id')
+                                    ->label('Mesin')
+                                    ->columnSpan(2)
+                                    ->options(Machine::all()->pluck('name', 'id')->toArray())
+                                    ->required(),
+                                Forms\Components\DatePicker::make('date')
+                                    ->columnSpan(2)
+                                    ->label('Tanggal')
+                                    ->required(),
+                                Forms\Components\TimePicker::make('start_time')
+                                    ->label('Jam Mulai')
+                                    ->required(),
+                                Forms\Components\TimePicker::make('end_time')
+                                    ->label('Jam Selesai')
+                                    ->required(),
+                                Forms\Components\TextInput::make('success_count')
+                                    ->label('Jumlah Sukses')
+                                    ->integer()
+                                    ->required(),
+                                Forms\Components\TextInput::make('error_count')
+                                    ->label('Jumlah Gagal')
+                                    ->integer()
+                                    ->required(),
+                            ])
+                    ])
+            ])
+            ->statePath('data');
+    }
 
-                $productQuantity = OrderProduct::find($productId)->quantity + $spare;
-                $totalQuantity += $productQuantity / 2;
+    protected function getFormActions(): array
+    {
+        return [
+            Forms\Components\Actions\Action::make('save')
+                ->label(__('filament-panels::resources/pages/edit-record.form.actions.save.label'))
+                ->submit('save'),
+        ];
+    }
+
+    /**
+     * Saves the user detail form data.
+     *
+     * @return void
+     */
+    public function save(): void
+    {
+        try {
+            $data = $this->form->getState();
+
+            if ($this->record->productReports->count() == 0) {
+                $this->record->create($data);
+            } else {
+                $this->record->update($data);
             }
-
-            $productNameHtml = new HtmlString('<span class="font-thin">' . $productName . '</span>');
-
-            $formSchema[] = Forms\Components\Section::make($productNameHtml)
-                ->label($productNameHtml)
-                ->schema([
-                    Forms\Components\Repeater::make($key)
-                        ->hiddenLabel()
-                        ->columns(4)
-                        ->schema([
-                            Forms\Components\Select::make('machine_id')
-                                ->label('Mesin')
-                                ->columnSpan(2)
-                                ->options(Machine::all()->pluck('name', 'id')->toArray())
-                                ->required(),
-                            Forms\Components\DatePicker::make('date')
-                                ->columnSpan(2)
-                                ->label('Tanggal')
-                                ->required(),
-                            Forms\Components\TimePicker::make('start_time')
-                                ->label('Jam Mulai')
-                                ->required(),
-                            Forms\Components\TimePicker::make('end_time')
-                                ->label('Jam Selesai')
-                                ->required(),
-                            Forms\Components\TextInput::make('success_count')
-                                ->label('Jumlah Sukses')
-                                ->integer()
-                                ->required(),
-                            Forms\Components\TextInput::make('error_count')
-                                ->label('Jumlah Gagal')
-                                ->integer()
-                                ->required(),
-                        ])
-                ]);
+            
+        } catch (Halt $exception) {
+            return;
         }
 
-        return $formSchema;
+        Notification::make()
+            ->success()
+            ->title(__('filament-panels::resources/pages/edit-record.notifications.saved.title'))
+            ->send();
+    }
+
+    public function create(): void
+    {
+        dd($this->data);
     }
 
     public static function canAccess(array $parameters = []): bool
