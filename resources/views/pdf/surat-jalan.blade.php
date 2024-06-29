@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>Surat Jalan</title>
+    <title>{{ $record->document_number }}</title>
 
     <style>
         * {
@@ -77,7 +77,7 @@
             $logoCV =
                 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/logo-madyotomo.png')));
             $judulCV =
-                'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/title-madyotomo.png')));
+                'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/title_madyotomo.png')));
         @endphp
 
         {{-- Kop Surat --}}
@@ -131,7 +131,7 @@
                                 <td style="border: 0; vertical-align: top; min-width: 80px;">Tanggal</td>
                                 <td style="border: 0; vertical-align: top;">:</td>
                                 <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
-                                    {{ $record->entry_date }}
+                                    {{ $date }}
                                 </td>
                             </tr>
                         </table>
