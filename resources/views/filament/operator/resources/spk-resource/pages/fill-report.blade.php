@@ -1,8 +1,10 @@
 <x-filament-panels::page>
-    <div>
-        <h1 class="text-xl font-semibold mb-3">Laporan Cetak</h1>
-    </div>
-    <x-filament-panels::form>
+    {{ $this->reportInfolist }}
+    <x-filament-panels::form wire:submit="save">
         {{ $this->form }}
+
+        <x-filament-panels::form.actions 
+            :actions="$this->getFormActions()"
+        />
     </x-filament-panels::form>
 </x-filament-panels::page>
