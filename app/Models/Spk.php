@@ -42,4 +42,9 @@ class Spk extends Model
     {
         return $this->belongsTo(Machine::class);
     }
+
+    public function productReports()
+    {
+        return $this->hasMany(ProductReport::class);
+    }
 }
