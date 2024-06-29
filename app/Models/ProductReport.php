@@ -10,7 +10,9 @@ class ProductReport extends Model
     use HasFactory;
 
     protected $fillable = [
+        'spk_id',
         'spk_product_id',
+        'spk_order_product_id',
         'machine_id',
         'date',
         'start_time',
@@ -24,4 +26,14 @@ class ProductReport extends Model
         'date' => 'date',
         'time' => 'time'
     ];
+
+    public function spk()
+    {
+        return $this->belongsTo(Spk::class);
+    }
+
+    public function spkProduct()
+    {
+        return $this->belongsTo(SpkProduct::class);
+    }
 }
