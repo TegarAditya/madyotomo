@@ -192,12 +192,20 @@ class FillReport extends Page implements HasForms, HasInfolists
         try {
             $data = $this->form->getState();
 
-            if ($this->record->productReports->count() == 0) {
-                $this->record->create($data);
+            $hasReportArray = fn () => count($this->data['productReports']) > 0;
+            $hasReportData = fn () => $this->record->productReports->count() > 0;
+
+            if ($hasReportData) {
+                if ($hasReportArray) {
+                    $this->record->update($data);
+                } else {
+                    $this->record->productReports()->delete();
+                }
             } else {
-                $this->record->update($data);
+                if ($hasReportArray) {
+                    $this->record->create($data);
+                }
             }
-            
         } catch (Halt $exception) {
             return;
         }
