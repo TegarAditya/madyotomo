@@ -2,7 +2,9 @@
 
 namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 
+use App\Filament\Admin\Resources\ProductResource;
 use App\Models\OrderProduct;
+use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -57,23 +59,29 @@ class OrderProductsRelationManager extends RelationManager
                     ]),
                 Tables\Columns\TextColumn::make('status')
                     ->default(function (OrderProduct $record) {
+                        $spkStatus = $this->isIncludedInSpk($record->id);
                         $deliveryStatus = $record->hasDeliveryOrderProducts();
 
-                        if ($deliveryStatus) {
-                            return 'Dikirim';
+                        switch (true) {
+                            case $deliveryStatus:
+                                return 'Dikirim';
+                            case $spkStatus:
+                                return 'Diproses';
+                            default:
+                                return 'Pending';
                         }
-
-                        return 'Pending';
                     })
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'gray',
+                        'Diproses' => 'primary',
                         'Dicetak' => 'warning',
                         'Dikirim' => 'success',
                         'Ditolak' => 'danger',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
+                        'Diproses' => 'heroicon-o-clipboard-document-check',
                         'Dicetak' => 'heroicon-o-printer',
                         'Dikirim' => 'heroicon-o-truck',
                         'Ditolak' => 'heroicon-o-ban',
@@ -94,5 +102,21 @@ class OrderProductsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected function isIncludedInSpk($id) {
+        $spkProductArray = [];
+        $orderProduct = OrderProduct::find($id);
+
+        foreach ($orderProduct->order->spks as $spk) {
+            foreach ($spk->spkProducts as $spkProduct) {
+                foreach ($spkProduct->order_products as $orderProduct) {
+                    $spkProductArray[] = $orderProduct;
+                }
+            }
+        }
+
+        return in_array($id, $spkProductArray);
+        
     }
 }
