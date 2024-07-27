@@ -6,14 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>{{ $record->document_number }}</title>
+    <title>Document</title>
 
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
         }
 
         body {
@@ -23,6 +22,7 @@
         .content {
             background-color: white;
             font-size: 12px;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         .underline {
@@ -67,6 +67,11 @@
             border-collapse: collapse;
             text-align: left;
         }
+
+        .form-ttd {
+            width: 100%;
+            height: 100px;
+        }
     </style>
 </head>
 
@@ -74,18 +79,17 @@
     <div class="content">
         {{-- Sesuaikan URL --}}
         @php
-            $logoCV =
-                'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/logo-madyotomo.png')));
-            $judulCV =
-                'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/title_madyotomo.png')));
+        $logoCV =
+        'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/logo-madyotomo.png')));
+        $judulCV =
+        'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/title_madyotomo.png')));
         @endphp
 
         {{-- Kop Surat --}}
         <table style="width: 100%;">
             <tr>
                 <td style="vertical-align: middle; text-align: center; position: relative; padding: 24px 0;">
-                    <img src="{{ $logoCV }}" alt="" style="position: absolute; top:0; left: 0;"
-                        width="190px">
+                    <img src="{{ $logoCV }}" alt="" style="position: absolute; top:0; left: 0;" width="190px">
 
                     <img src="{{ $judulCV }}" alt="" width="300px" style="text-align: center;">
                 </td>
@@ -105,15 +109,13 @@
 
         {{-- Isi Surat --}}
         <div>
-            <p class="underline bold" style="width: 100%; text-align: center; margin: 16px 0; font-size: 18px;">SURAT
-                JALAN</p>
+            <p class="underline bold" style="width: 100%; text-align: center; margin: 16px 0; font-size: 18px;">FAKTUR
+                TAGIHAN</p>
 
             {{-- Isi Kepala Surat --}}
             <table class="table-no-border">
                 <tr>
                     <td style="width: 100%;">
-                        {{-- Kalau mau lebih gampang, ubah jadi component --}}
-                        {{-- Component --}}
                         <table>
                             <tr>
                                 <td style="border: 0; vertical-align: top; min-width: 80px;">Nomor</td>
@@ -123,7 +125,6 @@
                                 </td>
                             </tr>
                         </table>
-                        {{-- Component --}}
                     </td>
                     <td style="min-width: 240px;">
                         <table>
@@ -132,6 +133,43 @@
                                 <td style="border: 0; vertical-align: top;">:</td>
                                 <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
                                     {{ $record->entry_date }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 100%;">
+                        <table>
+                            <tr>
+                                <td style="border: 0; vertical-align: top; min-width: 80px;">Nomor Order</td>
+                                <td style="border: 0; vertical-align: top;">:</td>
+                                <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
+                                    {{ $record->order->document_number }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="min-width: 240px;">
+                        <table>
+                            <tr>
+                                <td style="border: 0; vertical-align: top; min-width: 80px;">No. Bukti</td>
+                                <td style="border: 0; vertical-align: top;">:</td>
+                                <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
+                                    {{ $record->order->proof_number }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td style="border: 0; vertical-align: top; min-width: 80px;">Nama Order</td>
+                                <td style="border: 0; vertical-align: top;">:</td>
+                                <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
+                                    {{ $record->order->name }}
                                 </td>
                             </tr>
                         </table>
@@ -155,7 +193,7 @@
                                 <td style="border: 0; vertical-align: top; min-width: 80px;">No Telp</td>
                                 <td style="border: 0; vertical-align: top;">:</td>
                                 <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
-                                    {{ $record->order->customer->phone }}
+                                    0271-2878721
                                 </td>
                             </tr>
                         </table>
@@ -165,7 +203,7 @@
                     <td>
                         <table>
                             <tr>
-                                <td style="border: 0; vertical-align: top; min-width: 80px;">Narahubung</td>
+                                <td style="border: 0; vertical-align: top; min-width: 80px;"></td>
                                 <td style="border: 0; vertical-align: top;">:</td>
                                 <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
                                     {{ $record->order->customer->representative }}
@@ -175,19 +213,7 @@
                     </td>
                     <td></td>
                 </tr>
-                <tr>
-                    <td colspan="2">
-                        <table>
-                            <tr>
-                                <td style="border: 0; vertical-align: top; min-width: 80px;">Nama Order</td>
-                                <td style="border: 0; vertical-align: top;">:</td>
-                                <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
-                                    {{ $record->order->name }}
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
+
                 <tr>
                     <td colspan="2">
                         <table>
@@ -201,57 +227,94 @@
                         </table>
                     </td>
                 </tr>
+            </table>
+
+            <table class="table-no-border" style="margin-top: 24px;">
                 <tr>
-                    <td colspan="2">
+                    <td>
                         <table>
                             <tr>
-                                <td style="border: 0; vertical-align: top; min-width: 80px;">Keterangan</td>
+                                <td style="border: 0; vertical-align: top; min-width: 80px;" class="bold">Spesifikasi
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="width: 100%;">
+                        <table>
+                            <tr>
+                                <td style="border: 0; vertical-align: top; min-width: 80px;">Jenis Order</td>
                                 <td style="border: 0; vertical-align: top;">:</td>
                                 <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
-                                    {!! $record->note !!}
+                                    Cetak dan Potong
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="min-width: 240px;">
+                        <table>
+                            <tr>
+                                <td style="border: 0; vertical-align: top; min-width: 80px;">Konfigurasi</td>
+                                <td style="border: 0; vertical-align: top;">:</td>
+                                <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
+                                    4/0
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
+                <tr>
+                    <td style="min-width: 240px;">
+                        <table>
+                            <tr>
+                                <td style="border: 0; vertical-align: top; min-width: 80px;">Ongkos Cetak</td>
+                                <td style="border: 0; vertical-align: top;">:</td>
+                                <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
+                                    Rp {{ $record->price }} / druk
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td></td>
+                </tr>
             </table>
             {{-- End Isi Kepala Surat --}}
         </div>
 
-        <div style="margin-top: 24px;">
-            <p class="bold">
-                Dengan hormat,
-                <br>
-                Bersama ini kami kirimkan sejumlah barang berikut:
-            </p>
-
+        <div>
             <table class="table-border" style="margin: 12px 0;">
                 <tr>
                     <th style="width: 40px;">No.</th>
-                    <th>Nama</th>
-                    <th style="width: 150px;">Jumlah</th>
+                    <th>Produk</th>
+                    <th style="width: 150px;">Oplah</th>
+                    <th style="width: 150px;">Tagihan</th>
                 </tr>
             </table>
 
             <table class="table-border" style="margin-bottom: 24px;">
                 {{-- Perulangan data --}}
-                @foreach ($deliveryItems as $item)
+                @foreach ($invoiceItems as $item)
                     <tr style="width: 100%">
                         <td style="width: 40px;">{{ $index }}</td>
                         <td>{{ $item['product'] }}</td>
-                        <td style="width: 150px;">{{ $item['quantity'] }}</td>
+                        <td style="width: 150px; text-align: right;">{{ $item['quantity'] }}</td>
+                        <td style="width: 150px; text-align: right;">{{ $item['price'] }}</td>
                     </tr>
                     @php
                         $index++;
                     @endphp
                 @endforeach
-
                 {{-- End Perulangan data --}}
 
                 <tr>
                     <td></td>
                     <td>TOTAL:</td>
-                    <td>{{ $total }}</td>
+                    <td style="text-align: right;">{{ $total['quantity'] }}</td>
+                    <td style="text-align: right;">{{ $total['price'] }}</td>
                 </tr>
             </table>
         </div>
@@ -259,34 +322,32 @@
 
         {{-- Footer Surat --}}
         <div>
-            <p class="bold" style="margin-bottom: 48px;">
-                Mohon untuk diperiksa dan diterima.
-            </p>
-
             <table style="width: 100%; padding: 0;">
-                <tr style="font-weight: bold; text-align: center">
-                    <td style="width: 100%; padding-bottom: 100px">
-                        Diantar oleh,
-                    </td>
-                    <td style="width: 100%; padding-bottom: 100px">
+                <tr style="font-weight: bold;">
+                    <td style="width: 100%; vertical-align: top;">
                         Diterima oleh,
                     </td>
-                    <td style="width: 100%; padding-bottom: 100px">
-                        Hormat kami,
-                    </td>
-                </tr>
-                <tr style="font-weight: bold; text-align: center">
-                    <td style="width: 100%;">
-                        (.................................................)
-                    </td>
-                    <td style="width: 100%;">
-                        (.................................................)
-                    </td>
-                    <td style="width: 100%;">
-                        (.................................................)
+                    <td style="vertical-align: top; width: 100%; text-align: center">
+                        <div style="float: right;">
+                            <div class="bold">
+                                <p>Dibuat oleh,</p>
+                            </div>
+
+                            {{-- Jarak TTD atur disini --}}
+                            <div style="height: 80px;"></div>
+                            {{-- Jarak TTD atur disini --}}
+
+                            <div>
+                                <p class="bold">
+                                    Ringgo Ismoyo Buwono
+                                </p>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </table>
+
+            <div style="clear: both;"></div>
         </div>
         {{-- End Footer Surat --}}
     </div>
