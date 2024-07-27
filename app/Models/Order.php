@@ -58,4 +58,9 @@ class Order extends Model
     {
         return $this->hasMany(Spk::class);
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

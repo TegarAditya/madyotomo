@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Blade;
 use stdClass;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DeliveryOrdersRelationManager extends RelationManager
 {
@@ -128,25 +129,7 @@ class DeliveryOrdersRelationManager extends RelationManager
                     ->color('success')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->authorize(true)
-                    ->action(function (DeliveryOrder $record) {
-                        return response()->streamDownload(function () use ($record) {
-                            $deliveryItems = $record->deliveryOrderProducts->map(function ($deliveryOrderProduct) {
-                                return [
-                                    'product' => $deliveryOrderProduct->orderProduct->product->educationSubject->name . ' - ' . $deliveryOrderProduct->orderProduct->product->educationClass->name,
-                                    'quantity' => $deliveryOrderProduct->quantity,
-                                ];
-                            });
-
-                            $total = $record->deliveryOrderProducts->sum('quantity');
-
-                            $index = 1;
-
-                            echo Pdf::loadView('pdf.surat-jalan', ['record' => $record, 'deliveryItems' => $deliveryItems, 'total' => $total, 'index' => $index])
-                                ->setOption(['defaultFont' => 'sans-serif'])
-                                ->setPaper('a4', 'portrait')
-                                ->stream();
-                        }, str_replace('/', '_', $record->document_number) . '.pdf');
-                    }),
+                    ->action(fn (DeliveryOrder $record) => $this->downloadDeliveryOrder($record)),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -160,5 +143,26 @@ class DeliveryOrdersRelationManager extends RelationManager
     public function isReadOnly(): bool
     {
         return false;
+    }
+
+    protected function downloadDeliveryOrder(DeliveryOrder $record): StreamedResponse
+    {
+        return response()->streamDownload(function () use ($record) {
+            $deliveryItems = $record->deliveryOrderProducts->map(function ($deliveryOrderProduct) {
+                return [
+                    'product' => $deliveryOrderProduct->orderProduct->product->educationSubject->name . ' - ' . $deliveryOrderProduct->orderProduct->product->educationClass->name,
+                    'quantity' => $deliveryOrderProduct->quantity,
+                ];
+            });
+
+            $total = $record->deliveryOrderProducts->sum('quantity');
+
+            $index = 1;
+
+            echo Pdf::loadView('pdf.surat-jalan', ['record' => $record, 'deliveryItems' => $deliveryItems, 'total' => $total, 'index' => $index])
+                ->setOption(['defaultFont' => 'sans-serif'])
+                ->setPaper('a4', 'portrait')
+                ->stream();
+        }, str_replace('/', '_', $record->document_number) . '.pdf');
     }
 }

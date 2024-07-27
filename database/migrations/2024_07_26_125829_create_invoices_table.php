@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Order;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,13 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('delivery_orders', function (Blueprint $table) {
+        Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_id');
+            $table->foreignIdFor(Order::class)->constrained();
             $table->string('document_number');
             $table->date('entry_date');
-            $table->string('note');
-            $table->integer('sort')->nullable();
+            $table->date('due_date');
+            $table->float('price');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('delivery_orders');
+        Schema::dropIfExists('invoices');
     }
 };

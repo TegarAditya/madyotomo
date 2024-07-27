@@ -22,7 +22,9 @@ use Filament\Tables\Table;
 class SpkResource extends Resource
 {
     protected static ?string $model = Spk::class;
+
     protected static ?string $modelLabel = 'Laporan';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function table(Table $table): Table
@@ -111,7 +113,6 @@ class SpkResource extends Resource
                     ->collapsible(),
             ])
             ->defaultSort('entry_date', 'desc')
-            ->defaultGroup('order.name')
             ->recordUrl(null)
             ->recordAction(false);
     }
@@ -168,10 +169,10 @@ class SpkResource extends Resource
                         ->label('Order')
                         ->inlineLabel()
                         ->formatStateUsing(fn ($record) => $record->order->name ?? '-'),
-                    TextEntry::make('order.customer')
-                        ->label('Pelanggan')
+                    TextEntry::make('order.document_number')
+                        ->label('Nomor Order')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->order->customer->name ?? '-'),
+                        ->formatStateUsing(fn ($record) => $record->order->document_number ?? '-'),
                     TextEntry::make('document_number')
                         ->label('Nomor SPK')
                         ->inlineLabel()

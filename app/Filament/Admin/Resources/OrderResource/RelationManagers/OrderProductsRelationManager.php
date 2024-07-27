@@ -59,7 +59,7 @@ class OrderProductsRelationManager extends RelationManager
                     ]),
                 Tables\Columns\TextColumn::make('status')
                     ->default(function (OrderProduct $record) {
-                        $spkStatus = $this->isIncludedInSpk($record->id);
+                        $spkStatus = $record->hasSpkProducts();
                         $deliveryStatus = $record->hasDeliveryOrderProducts();
 
                         switch (true) {
@@ -102,21 +102,5 @@ class OrderProductsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    protected function isIncludedInSpk($id) {
-        $spkProductArray = [];
-        $orderProduct = OrderProduct::find($id);
-
-        foreach ($orderProduct->order->spks as $spk) {
-            foreach ($spk->spkProducts as $spkProduct) {
-                foreach ($spkProduct->order_products as $orderProduct) {
-                    $spkProductArray[] = $orderProduct;
-                }
-            }
-        }
-
-        return in_array($id, $spkProductArray);
-        
     }
 }

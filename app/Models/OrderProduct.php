@@ -32,6 +32,29 @@ class OrderProduct extends Model
         return $this->hasMany(SpkProduct::class);
     }
 
+    /**
+     * Check if the OrderProduct has related SpkProducts.
+     * 
+     * @package App\Models\SpkProduct
+     *
+     * @return bool Returns true if the OrderProduct has related SpkProducts, false otherwise.
+     */
+    public function hasSpkProducts()
+    {
+        $spkProductArray = [];
+        $orderProduct = $this;
+
+        foreach ($orderProduct->order->spks as $spk) {
+            foreach ($spk->spkProducts as $spkProduct) {
+                foreach ($spkProduct->order_products as $orderProduct) {
+                    $spkProductArray[] = $orderProduct;
+                }
+            }
+        }
+
+        return in_array($this->id, $spkProductArray);
+    }
+
     public function deliveryOrderProducts()
     {
         return $this->hasMany(DeliveryOrderProduct::class);
@@ -40,5 +63,10 @@ class OrderProduct extends Model
     public function hasDeliveryOrderProducts()
     {
         return $this->deliveryOrderProducts()->exists();
+    }
+
+    public function orderProductInvoices()
+    {
+        return $this->hasMany(OrderProductInvoice::class);
     }
 }
