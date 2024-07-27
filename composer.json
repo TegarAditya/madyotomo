@@ -16,12 +16,14 @@
         "guzzlehttp/guzzle": "^7.2",
         "jeffgreco13/filament-breezy": "^2.2",
         "laravel/framework": "^11.0",
+        "laravel/octane": "^2.4",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "tomatophp/filament-users": "^1.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",
+        "barryvdh/laravel-ide-helper": "^3.1",
         "fakerphp/faker": "^1.9.1",
         "larastan/larastan": "^2.0",
         "laravel/pint": "^1.0",
