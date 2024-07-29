@@ -83,6 +83,8 @@
         'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/logo-madyotomo.png')));
         $judulCV =
         'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/title_madyotomo.png')));
+        $capCV =
+        'data:image/png;base64,' . base64_encode(file_get_contents(public_path('img/stamp-madyotomo.jpg')));
         @endphp
 
         {{-- Kop Surat --}}
@@ -193,7 +195,7 @@
                                 <td style="border: 0; vertical-align: top; min-width: 80px;">No Telp</td>
                                 <td style="border: 0; vertical-align: top;">:</td>
                                 <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
-                                    0271-2878721
+                                    {{ $record->order->customer->phone }}
                                 </td>
                             </tr>
                         </table>
@@ -334,7 +336,9 @@
                             </div>
 
                             {{-- Jarak TTD atur disini --}}
-                            <div style="height: 80px;"></div>
+                            <div style="height: 80px;">
+                            <img src="{{ $capCV }}" alt="" height="80px">
+                            </div>
                             {{-- Jarak TTD atur disini --}}
 
                             <div>
