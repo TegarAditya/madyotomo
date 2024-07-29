@@ -217,7 +217,7 @@
                 </tr>
 
                 <tr>
-                    <td colspan="2">
+                    <td>
                         <table>
                             <tr>
                                 <td style="border: 0; vertical-align: top; min-width: 80px;">Alamat</td>
