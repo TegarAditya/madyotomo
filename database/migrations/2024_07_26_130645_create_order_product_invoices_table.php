@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('order_product_invoices', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(OrderProduct::class)->constrained();
-            $table->foreignIdFor(Invoice::class)->constrained();
+            $table->foreignIdFor(Invoice::class)->constrained()->cascadeOnDelete();
             $table->integer('quantity');
             $table->timestamps();
             $table->softDeletes();
