@@ -297,11 +297,6 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Order')
-                    ->searchable(isIndividual: true)
-                    ->sortable()
-                    ->columnSpanFull(),
                 Tables\Columns\TextColumn::make('document_number')
                     ->label('Nomor Order')
                     ->searchable(isIndividual: true)
@@ -309,6 +304,16 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('proof_number')
                     ->label('Nomor Bukti')
                     ->searchable(isIndividual: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Order')
+                    ->searchable(isIndividual: true)
+                    ->sortable()
+                    ->columnSpanFull(),
+                Tables\Columns\TextColumn::make('order_products_sum_quantity')
+                    ->label('Jumlah')
+                    ->numeric()
+                    ->sum('order_products', 'quantity')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Customer')
