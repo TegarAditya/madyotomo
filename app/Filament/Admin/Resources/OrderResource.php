@@ -315,8 +315,9 @@ class OrderResource extends Resource
                     ->numeric()
                     ->sum('order_products', 'quantity')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('customer.name')
+                Tables\Columns\TextColumn::make('customer.code')
                     ->label('Customer')
+                    ->tooltip(fn ($record) => $record->customer->name)
                     ->searchable(isIndividual: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('paper.name')
@@ -334,12 +335,12 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('entry_date')
                     ->label('Tanggal Masuk')
-                    ->date('l, j F Y', 'Asia/Jakarta')
+                    ->date('d-m-Y', 'Asia/Jakarta')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('deadline_date')
                     ->label('Tanggal Deadline')
-                    ->date('l, j F Y', 'Asia/Jakarta')
+                    ->date('d-m-Y', 'Asia/Jakarta')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
@@ -363,9 +364,11 @@ class OrderResource extends Resource
                     ),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
