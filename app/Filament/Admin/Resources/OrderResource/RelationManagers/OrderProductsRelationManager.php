@@ -54,6 +54,7 @@ class OrderProductsRelationManager extends RelationManager
                     ->label('Tipe'),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Oplah')
+                    ->numeric()
                     ->summarize([
                         Tables\Columns\Summarizers\Sum::make(),
                     ]),

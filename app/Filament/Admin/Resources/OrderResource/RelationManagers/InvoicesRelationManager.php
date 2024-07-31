@@ -49,29 +49,6 @@ class InvoicesRelationManager extends RelationManager
                 Forms\Components\DatePicker::make('due_date')
                     ->required()
                     ->default(now()->format('Y-m-d')),
-                Forms\Components\Repeater::make('orderProductInvoices')
-                    ->label('Order Product')
-                    ->columnSpanFull()
-                    ->columns(2)
-                    ->relationship()
-                    ->schema([
-                        Forms\Components\Select::make('order_product_id')
-                            ->label('Order Product')
-                            ->options(fn () => $this->getProductOptions())
-                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                            ->searchable()
-                            ->reactive()
-                            ->afterStateUpdated(function ($set, $get) {
-                                $quantity = $this->getProductQuantity($get('order_product_id'));
-
-                                $set('quantity', $quantity);
-                            })
-                            ->required(),
-                        Forms\Components\TextInput::make('quantity')
-                            ->label('Jumlah')
-                            ->required()
-                            ->numeric(),
-                    ]),
             ]);
     }
 
@@ -140,21 +117,6 @@ class InvoicesRelationManager extends RelationManager
         return $document_number;
     }
 
-    protected function getProductOptions(): array
-    {
-        $options = OrderProduct::all()
-            ->where('order_id', $this->getOwnerRecord()->id)
-            ->mapWithKeys(function (OrderProduct $product) {
-                $subject = $product->product->educationSubject()->pluck('name')->implode(' ');
-                $class = $product->product->educationClass()->pluck('name')->implode(' ');
-                $quantity = $product->quantity;
-                return [$product->id => $subject . ' - ' . $class];
-            })
-            ->toArray();
-
-        return $options;
-    }
-
     protected function getProductQuantity(int $orderProductId): int
     {
         return OrderProduct::query()
@@ -165,10 +127,9 @@ class InvoicesRelationManager extends RelationManager
     protected function downloadInvoice(Invoice $record): StreamedResponse
     {
         return response()->streamDownload(function () use ($record) {
-
-            $invoiceItems = $record->orderProductInvoices->map(function ($orderProductInvoice) use ($record) {
-                $productName = $orderProductInvoice->orderProduct->product->educationSubject->name . ' - ' . $orderProductInvoice->orderProduct->product->educationClass->name;
-                $productQuantity = $orderProductInvoice->quantity;
+            $invoiceItems = $record->order->orderProducts->map(function ($orderProduct) use ($record) {
+                $productName = $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name;
+                $productQuantity = $orderProduct->quantity;
                 $productPrice = $record->price * $productQuantity;
 
                 return [
@@ -178,8 +139,8 @@ class InvoicesRelationManager extends RelationManager
                 ];
             });
 
-            $totalQuantity = number_format($record->orderProductInvoices->sum('quantity'), 0, ',', '.');
-            $totalPrice = number_format($record->price * $record->orderProductInvoices->sum('quantity'), 2, ',', '.');
+            $totalQuantity = number_format($record->order->orderProducts->sum('quantity'), 0, ',', '.');
+            $totalPrice = number_format($record->price * $record->order->orderProducts->sum('quantity'), 2, ',', '.');
 
             $total = [
                 'quantity' => $totalQuantity,

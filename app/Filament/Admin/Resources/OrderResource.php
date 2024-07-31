@@ -20,6 +20,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -357,6 +358,24 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\Filter::make('semester')
+                    ->label('Semester')
+                    ->form([
+                        Forms\Components\Select::make('semester_form')
+                            ->options(
+                                Semester::all()->pluck('name', 'id'),
+                            )
+                            ->default(Semester::where('start_date', '<=', Carbon::now())->where('end_date', '>=', Carbon::now())->first()->id ?? 1),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['semester_form'],
+                                fn (Builder $query, $semester_id): Builder => $query
+                                    ->whereDate('entry_date', '>=', Semester::find($semester_id)->start_date)
+                                    ->whereDate('entry_date', '<=', Semester::find($semester_id)->end_date),
+                            );
+                    }),
                 Tables\Filters\SelectFilter::make('customer_id')
                     ->label('Customer')
                     ->options(
@@ -375,7 +394,8 @@ class OrderResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('created_at', 'desc')
+            ->deferLoading();
     }
 
     public static function getRelations(): array
