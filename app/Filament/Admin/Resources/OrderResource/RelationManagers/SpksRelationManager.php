@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 
+use App\Filament\Operator\Resources\SpkResource;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
@@ -187,6 +188,11 @@ class SpksRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
+                Tables\Actions\Action::make('open')
+                    ->label('Laporan')
+                    ->icon('heroicon-o-document-text')
+                    ->color('info')
+                    ->url(fn (Spk $record): string => SpkResource::getUrl('report', ['record' => $record], panel: 'operator')),
                 Tables\Actions\Action::make('pdf')
                     ->label('Download')
                     ->color('success')
@@ -199,9 +205,11 @@ class SpksRelationManager extends RelationManager
                             )->stream();
                         }, str_replace('/', '_', $record->document_number) . '.pdf');
                     }),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
