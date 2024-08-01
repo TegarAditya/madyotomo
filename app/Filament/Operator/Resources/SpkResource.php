@@ -31,8 +31,8 @@ class SpkResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('document_number')
-                    ->label('Nomor SPK')
+                Tables\Columns\TextColumn::make('order.proof_number')
+                    ->label('Nomor SPK Order')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('report_number')
