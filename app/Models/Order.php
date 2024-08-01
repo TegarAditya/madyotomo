@@ -68,4 +68,9 @@ class Order extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function hasInvoice()
+    {
+        return $this->invoices()->exists();
+    }
 }

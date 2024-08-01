@@ -321,6 +321,26 @@ class OrderResource extends Resource
                     ->tooltip(fn ($record) => $record->customer->name)
                     ->searchable(isIndividual: true)
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->default(function (Order $record) {
+                        $status = $record->hasInvoice();
+
+                        switch (true) {
+                            case $status:
+                                return 'Invoice Dicetak';
+                            default:
+                                return 'Diproses';
+                        }
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Diproses' => 'primary',
+                        'Invoice Dicetak' => 'success',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'Diproses' => 'heroicon-o-clock',
+                        'Invoice Dicetak' => 'heroicon-o-printer',
+                    }),
                 Tables\Columns\TextColumn::make('paper.name')
                     ->label('Kertas')
                     ->numeric()
