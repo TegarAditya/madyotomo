@@ -40,7 +40,7 @@ class FillReport extends Page implements HasForms, HasInfolists
 
     public function getTitle(): string | Htmlable
     {
-        return $this->record->report_number;
+        return $this->record->order->proof_number . ' - ' . $this->record->report_number;
     }
 
     protected static string $resource = SpkResource::class;
