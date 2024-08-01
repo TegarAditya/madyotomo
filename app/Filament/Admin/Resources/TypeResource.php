@@ -30,10 +30,12 @@ class TypeResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label('Nama')
                     ->required()
+                    ->unique()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('code')
                     ->label('Kode')
                     ->required()
+                    ->unique()
                     ->maxLength(255),
             ]);
     }
@@ -47,6 +49,11 @@ class TypeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('code')
                     ->label('Kode')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('products_count')
+                    ->label('Jumlah Produk')
+                    ->counts('products')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -75,10 +82,21 @@ class TypeResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\ProductsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageTypes::route('/'),
+            // 'index' => Pages\ManageTypes::route('/'),
+            'index' => Pages\ListTypes::route('/'),
+            'create' => Pages\CreateType::route('/create'),
+            'view' => Pages\ViewType::route('/{record}'),
+            'edit' => Pages\EditType::route('/{record}/edit'),
         ];
     }
 
