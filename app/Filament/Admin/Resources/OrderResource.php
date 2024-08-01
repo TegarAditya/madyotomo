@@ -382,6 +382,7 @@ class OrderResource extends Resource
                     ->label('Semester')
                     ->form([
                         Forms\Components\Select::make('semester_form')
+                            ->label('Semester')
                             ->options(
                                 Semester::all()->pluck('name', 'id'),
                             )
@@ -401,6 +402,23 @@ class OrderResource extends Resource
                     ->options(
                         Customer::all()->pluck('name', 'id'),
                     ),
+                Tables\Filters\Filter::make('type')
+                    ->label('Tipe')
+                    ->form([
+                        Forms\Components\Select::make('type_form')
+                            ->label('Tipe')
+                            ->options(
+                                Type::all()->pluck('name', 'id'),
+                            )
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['type_form'],
+                                fn (Builder $query, $type_id): Builder => $query
+                                    ->whereHas('orderProducts', fn (Builder $query) => $query->whereHas('product', fn (Builder $query) => $query->where('type_id', $type_id))),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
