@@ -53,8 +53,7 @@ class TypeResource extends Resource
                 Tables\Columns\TextColumn::make('products_count')
                     ->label('Jumlah Produk')
                     ->counts('products')
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
