@@ -320,7 +320,8 @@ class OrderResource extends Resource
                     ->label('Customer')
                     ->tooltip(fn ($record) => $record->customer->name)
                     ->searchable(isIndividual: true)
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('status')
                     ->default(function (Order $record) {
                         $status = $record->hasInvoice();
@@ -396,6 +397,13 @@ class OrderResource extends Resource
                                     ->whereDate('entry_date', '>=', Semester::find($semester_id)->start_date)
                                     ->whereDate('entry_date', '<=', Semester::find($semester_id)->end_date),
                             );
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (!$data['semester_form']) {
+                            return null;
+                        }
+
+                        return 'Semester: ' . Semester::find($data['semester_form'])->name;
                     }),
                 Tables\Filters\SelectFilter::make('customer_id')
                     ->label('Customer')
@@ -418,6 +426,13 @@ class OrderResource extends Resource
                                 fn (Builder $query, $type_id): Builder => $query
                                     ->whereHas('orderProducts', fn (Builder $query) => $query->whereHas('product', fn (Builder $query) => $query->where('type_id', $type_id))),
                             );
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (!$data['type_form']) {
+                            return null;
+                        }
+
+                        return 'Tipe: ' . Type::find($data['type_form'])->name;
                     }),
             ])
             ->actions([
