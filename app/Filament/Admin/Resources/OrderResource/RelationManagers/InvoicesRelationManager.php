@@ -48,7 +48,7 @@ class InvoicesRelationManager extends RelationManager
                     ->default(now()->format('Y-m-d')),
                 Forms\Components\DatePicker::make('due_date')
                     ->required()
-                    ->default(now()->format('Y-m-d')),
+                    ->default(now()->addDays(7)->format('Y-m-d')),
             ]);
     }
 
@@ -89,10 +89,8 @@ class InvoicesRelationManager extends RelationManager
 
     protected function getInvoiceNumber(string $entryDate): string
     {
-        $latestOrder = Invoice::orderBy('created_at', 'desc')->first()->document_number ?? null;
-        $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
-
-        $nomorTerakhir = $latestNumber + 1;
+        $document_number = $this->getOwnerRecord()->document_number;
+        $used_number = strstr($document_number, '/', true);
         $customer = $this->getOwnerRecord()->customer->code;
         $month = (new \DateTime('@' . strtotime($entryDate)))->format('m');
         $year = (new \DateTime('@' . strtotime($entryDate)))->format('Y');
@@ -112,7 +110,7 @@ class InvoicesRelationManager extends RelationManager
         ];
         $romanMonth = $romanNumerals[$month];
 
-        $document_number = "{$nomorTerakhir}/MT/FT/{$customer}/{$romanMonth}/{$year}";
+        $document_number = "{$used_number}/MT/FT/{$customer}/{$romanMonth}/{$year}";
 
         return $document_number;
     }
