@@ -387,7 +387,6 @@ class OrderResource extends Resource
                             ->options(
                                 Semester::all()->pluck('name', 'id'),
                             )
-                            ->default(Semester::where('start_date', '<=', Carbon::now())->where('end_date', '>=', Carbon::now())->first()->id ?? 1),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -440,15 +439,14 @@ class OrderResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
-                ])
+                ])->label('Aksi'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc')
-            ->deferLoading();
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
