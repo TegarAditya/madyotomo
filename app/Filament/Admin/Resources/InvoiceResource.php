@@ -7,8 +7,12 @@ use App\Filament\Admin\Resources\InvoiceResource\RelationManagers;
 use App\Models\Invoice;
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use DateTime;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -33,10 +37,19 @@ class InvoiceResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('order_id')
-                    ->relationship('order', 'name')
+                    ->label('SPK Order')
+                    ->options(fn () => Order::query()->get()->pluck('proof_number', 'id')->toArray())
+                    ->disableOptionWhen(fn (string $value) => Order::find($value)->hasInvoice())
                     ->searchable(['name', 'proof_number', 'document_number'])
-                    ->disableOptionWhen(fn (Order $order) => $order->hasInvoice())
                     ->columnSpanFull()
+                    ->live()
+                    ->afterStateUpdated(function ($state, Set $set) {
+                        $order = Order::find($state);
+
+                        if ($order) {
+                            $set('entry_date', Carbon::parse($order->entry_date)->addDays(14)->format('Y-m-d'));
+                        }
+                    })
                     ->required(),
                 Forms\Components\TextInput::make('document_number')
                     ->label('Nomor Invoice')
@@ -44,17 +57,19 @@ class InvoiceResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Hidden::make('document_number')
                     ->hiddenOn(['update']),
+                Forms\Components\TextInput::make('entry_date')
+                    ->label('Tanggal Input')
+                    ->hiddenOn(['edit'])
+                    ->required(),
                 Forms\Components\DatePicker::make('entry_date')
                     ->label('Tanggal Input')
-                    ->default(now()->format('Y-m-d'))
+                    ->hiddenOn(['create'])
                     ->required(),
                 Forms\Components\DatePicker::make('due_date')
                     ->label('Tanggal Jatuh Tempo')
                     ->default(now()->addDays(7)->format('Y-m-d'))
                     ->hiddenOn(['create'])
                     ->required(),
-                Forms\Components\Hidden::make('due_date')
-                    ->hiddenOn(['update']),
                 Forms\Components\TextInput::make('price')
                     ->label('Harga')
                     ->required()
@@ -66,38 +81,6 @@ class InvoiceResource extends Resource
 
     public static function table(Table $table): Table
     {
-        function downloadInvoice(Invoice $record): StreamedResponse
-        {
-            return response()->streamDownload(function () use ($record) {
-                $invoiceItems = $record->order->orderProducts->map(function ($orderProduct) use ($record) {
-                    $productName = $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name;
-                    $productQuantity = $orderProduct->quantity;
-                    $productPrice = $record->price * $productQuantity;
-
-                    return [
-                        'product' => $productName,
-                        'quantity' => number_format($productQuantity, 0, ',', '.'),
-                        'price' => number_format($productPrice, 2, ',', '.'),
-                    ];
-                });
-
-                $totalQuantity = number_format($record->order->orderProducts->sum('quantity'), 0, ',', '.');
-                $totalPrice = number_format($record->price * $record->order->orderProducts->sum('quantity'), 2, ',', '.');
-
-                $total = [
-                    'quantity' => $totalQuantity,
-                    'price' => $totalPrice,
-                ];
-
-                $index = 1;
-
-                echo Pdf::loadView('pdf.invoice', ['record' => $record, 'invoiceItems' => $invoiceItems, 'total' => $total, 'index' => $index])
-                    ->setOption(['defaultFont' => 'sans-serif'])
-                    ->setPaper('a4', 'portrait')
-                    ->stream();
-            }, str_replace('/', '_', $record->document_number) . '.pdf');
-        }
-
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('order.proof_number')
@@ -151,7 +134,8 @@ class InvoiceResource extends Resource
                     ->label('Download')
                     ->color('success')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->action(fn (Invoice $record) => downloadInvoice($record)),
+                    ->authorize(true)
+                    ->action(fn (Invoice $record) => (new static)->downloadInvoice($record)),
                 Tables\Actions\Action::make('open')
                     ->label('Open Order')
                     ->icon('heroicon-o-arrow-top-right-on-square')
