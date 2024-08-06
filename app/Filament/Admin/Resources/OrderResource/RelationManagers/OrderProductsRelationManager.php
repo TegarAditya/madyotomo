@@ -2,16 +2,12 @@
 
 namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 
-use App\Filament\Admin\Resources\ProductResource;
 use App\Models\OrderProduct;
-use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use stdClass;
 
 class OrderProductsRelationManager extends RelationManager
@@ -41,6 +37,7 @@ class OrderProductsRelationManager extends RelationManager
                     ->toggleable()
                     ->formatStateUsing(function (string $state) {
                         $parts = explode('|', $state);
+
                         return trim($parts[1]);
                     }),
                 Tables\Columns\TextColumn::make('product.educationSubject.name')

@@ -6,18 +6,14 @@ use App\Filament\Operator\Resources\SpkResource\Pages;
 use App\Models\OrderProduct;
 use App\Models\Spk;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\HtmlString;
-use Filament\Forms;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Form;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\FontFamily;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class SpkResource extends Resource
 {
@@ -98,7 +94,7 @@ class SpkResource extends Resource
                     ->label('Laporan')
                     ->icon('heroicon-o-document-text')
                     ->color('primary')
-                    ->url(fn (Spk $record) => url('operator/spks/' . $record->id . '/fill-report')),
+                    ->url(fn (Spk $record) => url('operator/spks/'.$record->id.'/fill-report')),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
@@ -109,7 +105,7 @@ class SpkResource extends Resource
                 Tables\Grouping\Group::make('order.name')
                     ->label('Order')
                     ->titlePrefixedWithLabel(false)
-                    ->getTitleFromRecordUsing(fn (Spk $record) => $record->order->name . ' - ' . $record->order->document_number)
+                    ->getTitleFromRecordUsing(fn (Spk $record) => $record->order->name.' - '.$record->order->document_number)
                     ->collapsible(),
             ])
             ->defaultSort('entry_date', 'desc')
@@ -129,7 +125,7 @@ class SpkResource extends Resource
 
             foreach ($spkProduct as $index => $productId) {
                 $product = OrderProduct::find($productId)->product;
-                $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name . ' -> ' . (OrderProduct::find($productId)->quantity + $spare) . ' sheet';
+                $productName .= $product->educationSubject->name.' - '.$product->educationClass->name.' -> '.(OrderProduct::find($productId)->quantity + $spare).' sheet';
 
                 // Append separator unless it's the last product
                 if ($index < count($spkProduct) - 1) {
@@ -140,22 +136,22 @@ class SpkResource extends Resource
                 $totalQuantity += $productQuantity / 2;
             }
 
-            $productNameHtml = new HtmlString('<span class="font-thin">' . $productName . '</span>');
+            $productNameHtml = new HtmlString('<span class="font-thin">'.$productName.'</span>');
 
             $infolist[] = Section::make($productNameHtml)
                 ->schema([
                     TextEntry::make('id')
                         ->label('RIM')
-                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">' . ($totalQuantity / 1000) . '<span class="font-thin text-sm"> rim</span></span>')),
+                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">'.($totalQuantity / 1000).'<span class="font-thin text-sm"> rim</span></span>')),
                     TextEntry::make('id')
                         ->label('PLANO')
-                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">' . ($totalQuantity / 2) . '<span class="font-thin text-sm"> sheet</span></span>')),
+                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">'.($totalQuantity / 2).'<span class="font-thin text-sm"> sheet</span></span>')),
                     TextEntry::make('id')
                         ->label('1/2 PLANO')
-                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">' . $totalQuantity . '<span class="font-thin text-sm"> sheet</span></span>')),
+                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">'.$totalQuantity.'<span class="font-thin text-sm"> sheet</span></span>')),
                     TextEntry::make('id')
                         ->label('HASIL')
-                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">' . ($totalQuantity * 2) . '<span class="font-thin text-sm"> sheet</span></span>'))
+                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">'.($totalQuantity * 2).'<span class="font-thin text-sm"> sheet</span></span>'))
                         ->hidden(),
                 ])
                 ->columns(['md' => 3]);

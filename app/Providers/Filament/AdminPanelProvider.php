@@ -6,7 +6,6 @@ use App\Filament\Auth\Login;
 use Awcodes\LightSwitch\Enums\Alignment;
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use Filament\Forms\Components\FileUpload;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -35,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->id('admin')
             ->path('')
-            ->login(Login::class) 
+            ->login(Login::class)
             ->passwordReset()
             ->colors([
                 'primary' => Color::Amber,
@@ -72,14 +71,14 @@ class AdminPanelProvider extends PanelProvider
                         navigationGroup: 'Settings', // Sets the navigation group for the My Profile page (default = null)
                         hasAvatars: true, // Enables the avatar upload form component (default = false)
                     )
-                    ->avatarUploadComponent(fn($fileUpload) => $fileUpload)
+                    ->avatarUploadComponent(fn ($fileUpload) => $fileUpload)
                     ->enableTwoFactorAuthentication(
                         force: false, // force the user to enable 2FA before they can use the application (default = false)
                     ),
                 LightSwitchPlugin::make()
                     ->position(Alignment::TopCenter),
                 FilamentShieldPlugin::make(),
-                FilamentUsersPlugin::make()
+                FilamentUsersPlugin::make(),
             ]);
     }
 }

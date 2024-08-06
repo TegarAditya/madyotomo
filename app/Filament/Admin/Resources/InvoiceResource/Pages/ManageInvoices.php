@@ -30,8 +30,8 @@ class ManageInvoices extends ManageRecords
         $order = Order::find($order_id);
         $used_number = strstr($order->document_number, '/', true);
         $customer = $order->customer->code;
-        $month = (new \DateTime('@' . strtotime($entryDate)))->format('m');
-        $year = (new \DateTime('@' . strtotime($entryDate)))->format('Y');
+        $month = (new \DateTime('@'.strtotime($entryDate)))->format('m');
+        $year = (new \DateTime('@'.strtotime($entryDate)))->format('Y');
         $romanNumerals = [
             '01' => 'I',
             '02' => 'II',

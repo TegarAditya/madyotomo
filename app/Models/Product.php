@@ -20,7 +20,7 @@ class Product extends Model
         'education_class_id',
         'education_subject_id',
         'type_id',
-        'quantity'
+        'quantity',
     ];
 
     public function order()

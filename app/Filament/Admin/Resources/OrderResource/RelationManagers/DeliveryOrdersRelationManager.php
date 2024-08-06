@@ -12,9 +12,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Blade;
 use stdClass;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -37,8 +34,8 @@ class DeliveryOrdersRelationManager extends RelationManager
                         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
 
                         $nomorTerakhir = (Spk::all()->first()) ? $latestNumber + 1 : 1;
-                        $month = (new DateTime('@' . strtotime($get('entry_date'))))->format('m');
-                        $year = (new DateTime('@' . strtotime($get('entry_date'))))->format('Y');
+                        $month = (new DateTime('@'.strtotime($get('entry_date'))))->format('m');
+                        $year = (new DateTime('@'.strtotime($get('entry_date'))))->format('Y');
                         $romanNumerals = [
                             '01' => 'I',
                             '02' => 'II',
@@ -72,7 +69,7 @@ class DeliveryOrdersRelationManager extends RelationManager
                     ->hiddenLabel()
                     ->relationship()
                     ->columns([
-                        'md' => 2
+                        'md' => 2,
                     ])
                     ->columnSpanFull()
                     ->addActionLabel('Tambah Produk')
@@ -85,7 +82,7 @@ class DeliveryOrdersRelationManager extends RelationManager
                                     ->orderBy('id')
                                     ->get()
                                     ->mapWithKeys(fn ($orderProduct) => [
-                                        $orderProduct->id => $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name,
+                                        $orderProduct->id => $orderProduct->product->educationSubject->name.' - '.$orderProduct->product->educationClass->name,
                                     ])
                                     ->toArray();
                             })
@@ -103,7 +100,7 @@ class DeliveryOrdersRelationManager extends RelationManager
                             ->label('Jumlah')
                             ->numeric()
                             ->required(),
-                    ])
+                    ]),
             ]);
     }
 
@@ -113,7 +110,7 @@ class DeliveryOrdersRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('number')
                     ->label('No.')
-                    ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1 . '.')
+                    ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1 .'.')
                     ->extraHeaderAttributes(['style' => 'width:80px']),
                 Tables\Columns\TextColumn::make('document_number'),
             ])
@@ -150,7 +147,7 @@ class DeliveryOrdersRelationManager extends RelationManager
         return response()->streamDownload(function () use ($record) {
             $deliveryItems = $record->deliveryOrderProducts->map(function ($deliveryOrderProduct) {
                 return [
-                    'product' => $deliveryOrderProduct->orderProduct->product->educationSubject->name . ' - ' . $deliveryOrderProduct->orderProduct->product->educationClass->name,
+                    'product' => $deliveryOrderProduct->orderProduct->product->educationSubject->name.' - '.$deliveryOrderProduct->orderProduct->product->educationClass->name,
                     'quantity' => $deliveryOrderProduct->quantity,
                 ];
             });
@@ -163,6 +160,6 @@ class DeliveryOrdersRelationManager extends RelationManager
                 ->setOption(['defaultFont' => 'sans-serif'])
                 ->setPaper('a4', 'portrait')
                 ->stream();
-        }, str_replace('/', '_', $record->document_number) . '.pdf');
+        }, str_replace('/', '_', $record->document_number).'.pdf');
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\MachineResource\Pages;
-use App\Filament\Admin\Resources\MachineResource\RelationManagers;
 use App\Models\Machine;
 use Filament\Forms;
 use Filament\Forms\Form;

@@ -19,12 +19,12 @@ class ProductReport extends Model
         'end_time',
         'success_count',
         'error_count',
-        'sort'
+        'sort',
     ];
 
     protected $cast = [
         'date' => 'date',
-        'time' => 'time'
+        'time' => 'time',
     ];
 
     public function spk()

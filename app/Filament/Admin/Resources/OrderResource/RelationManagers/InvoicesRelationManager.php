@@ -11,9 +11,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use NumberFormatter;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InvoicesRelationManager extends RelationManager
@@ -92,8 +89,8 @@ class InvoicesRelationManager extends RelationManager
         $document_number = $this->getOwnerRecord()->document_number;
         $used_number = strstr($document_number, '/', true);
         $customer = $this->getOwnerRecord()->customer->code;
-        $month = (new \DateTime('@' . strtotime($entryDate)))->format('m');
-        $year = (new \DateTime('@' . strtotime($entryDate)))->format('Y');
+        $month = (new \DateTime('@'.strtotime($entryDate)))->format('m');
+        $year = (new \DateTime('@'.strtotime($entryDate)))->format('Y');
         $romanNumerals = [
             '01' => 'I',
             '02' => 'II',
@@ -126,7 +123,7 @@ class InvoicesRelationManager extends RelationManager
     {
         return response()->streamDownload(function () use ($record) {
             $invoiceItems = $record->order->orderProducts->map(function ($orderProduct) use ($record) {
-                $productName = $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name;
+                $productName = $orderProduct->product->educationSubject->name.' - '.$orderProduct->product->educationClass->name;
                 $productQuantity = $orderProduct->quantity;
                 $productPrice = $record->price * $productQuantity;
 
@@ -147,10 +144,12 @@ class InvoicesRelationManager extends RelationManager
 
             $index = 1;
 
-            echo Pdf::loadView('pdf.invoice', ['record' => $record, 'invoiceItems' => $invoiceItems, 'total' => $total, 'index' => $index])
+            $paperConfig = $record->order->spks->first()->configuration;
+
+            echo Pdf::loadView('pdf.invoice', ['record' => $record, 'invoiceItems' => $invoiceItems, 'total' => $total, 'index' => $index, 'config' => $paperConfig])
                 ->setOption(['defaultFont' => 'sans-serif'])
                 ->setPaper('a4', 'portrait')
                 ->stream();
-        }, str_replace('/', '_', $record->document_number) . '.pdf');
+        }, str_replace('/', '_', $record->document_number).'.pdf');
     }
 }

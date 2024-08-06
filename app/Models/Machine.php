@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Machine extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     protected $fillable = [
         'name',
         'code',
-        'paper_config'
+        'paper_config',
     ];
 
     public function products()

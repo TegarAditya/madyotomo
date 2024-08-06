@@ -4,43 +4,37 @@ namespace App\Filament\Operator\Resources\SpkResource\Pages;
 
 use App\Filament\Operator\Resources\SpkResource;
 use App\Models\Machine;
-use App\Models\Order;
 use App\Models\OrderProduct;
-use App\Models\Spk;
 use App\Models\SpkProduct;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Infolists;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
-use Filament\Infolists;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Support\HtmlString;
 
 class FillReport extends Page implements HasForms, HasInfolists
 {
-    use InteractsWithRecord, InteractsWithForms, InteractsWithInfolists;
+    use InteractsWithForms, InteractsWithInfolists, InteractsWithRecord;
 
-    public function mount(int | string $record): void
+    public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
 
         $this->form->fill($this->record->productReports->toArray());
     }
 
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
-        return $this->record->order->proof_number . ' - ' . $this->record->report_number;
+        return $this->record->order->proof_number.' - '.$this->record->report_number;
     }
 
     protected static string $resource = SpkResource::class;
@@ -128,11 +122,11 @@ class FillReport extends Page implements HasForms, HasInfolists
                                             return SpkProduct::where('spk_id', $this->record->id)
                                                 ->get()
                                                 ->mapWithKeys(function ($spkProduct) {
-                                                    $productName = "";
+                                                    $productName = '';
 
                                                     foreach ($spkProduct->order_products as $index => $item) {
                                                         $product = OrderProduct::find($item)->product;
-                                                        $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
+                                                        $productName .= $product->educationSubject->name.' - '.$product->educationClass->name;
 
                                                         if ($index < count($spkProduct->order_products) - 1) {
                                                             $productName .= ' & ';
@@ -167,8 +161,8 @@ class FillReport extends Page implements HasForms, HasInfolists
                                     ->label('Jumlah Gagal')
                                     ->integer()
                                     ->required(),
-                            ])
-                    ])
+                            ]),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -184,8 +178,6 @@ class FillReport extends Page implements HasForms, HasInfolists
 
     /**
      * Saves the user detail form data.
-     *
-     * @return void
      */
     public function save(): void
     {

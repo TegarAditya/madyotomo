@@ -2,10 +2,9 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Imports\ProductImporter;
 use App\Filament\Admin\Resources\ProductResource\Pages;
-use App\Filament\Admin\Resources\ProductResource\RelationManagers;
 use App\Filament\Exports\ProductExporter;
+use App\Filament\Imports\ProductImporter;
 use App\Models\Curriculum;
 use App\Models\EducationClass;
 use App\Models\EducationLevel;
@@ -112,18 +111,18 @@ class ProductResource extends Resource
                                 $education_level_id = $get('education_level_id');
                                 $type_id = $get('type_id');
 
-                                $semester = Semester::find($semester_id)->name ?? "-";
-                                $semesterCode = Semester::find($semester_id)->code ?? "-";
-                                $curriculum = Curriculum::find($curriculum_id)->name ?? "-";
-                                $curriculumCode = Curriculum::find($curriculum_id)->code ?? "-";
-                                $level = EducationLevel::find($education_level_id)->name ?? "-";
-                                $levelCode = EducationLevel::find($education_level_id)->code ?? "-";
-                                $class = EducationClass::find($get('education_class_id'))->name ?? "-";
-                                $classCode = EducationClass::find($get('education_class_id'))->code ?? "-";
-                                $subject = EducationSubject::find($get('education_subject_id'))->name ?? "-";
-                                $subjectCode = EducationSubject::find($get('education_subject_id'))->code ?? "-";
-                                $type = Type::find($type_id)->name ?? "-";
-                                $typeCode = Type::find($type_id)->code ?? "-";
+                                $semester = Semester::find($semester_id)->name ?? '-';
+                                $semesterCode = Semester::find($semester_id)->code ?? '-';
+                                $curriculum = Curriculum::find($curriculum_id)->name ?? '-';
+                                $curriculumCode = Curriculum::find($curriculum_id)->code ?? '-';
+                                $level = EducationLevel::find($education_level_id)->name ?? '-';
+                                $levelCode = EducationLevel::find($education_level_id)->code ?? '-';
+                                $class = EducationClass::find($get('education_class_id'))->name ?? '-';
+                                $classCode = EducationClass::find($get('education_class_id'))->code ?? '-';
+                                $subject = EducationSubject::find($get('education_subject_id'))->name ?? '-';
+                                $subjectCode = EducationSubject::find($get('education_subject_id'))->code ?? '-';
+                                $type = Type::find($type_id)->name ?? '-';
+                                $typeCode = Type::find($type_id)->code ?? '-';
 
                                 $productName = "{$level} - KELAS {$class} - {$subject} - KURIKULUM {$curriculum} - {$semester} - ({$type})  |  C-{$levelCode}{$curriculumCode}{$subjectCode}{$classCode}{$semesterCode}/{$typeCode}";
 
@@ -136,7 +135,7 @@ class ProductResource extends Resource
                             ->validationMessages([
                                 'unique' => 'The product has already been registered.',
                             ]),
-                    ])
+                    ]),
             ]);
     }
 
@@ -152,7 +151,8 @@ class ProductResource extends Resource
                         if (count($parts) > 1) {
                             return trim($parts[1]);
                         }
-                        return "-";
+
+                        return '-';
                     })
                     ->searchable()
                     ->sortable(),

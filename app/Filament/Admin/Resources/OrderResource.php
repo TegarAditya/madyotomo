@@ -20,11 +20,9 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
@@ -54,8 +52,8 @@ class OrderResource extends Resource
                                         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
 
                                         $nomorTerakhir = (Order::all()->first()) ? $latestNumber + 1 : 1;
-                                        $month = (new DateTime('@' . strtotime($get('entry_date'))))->format('m');
-                                        $year = (new DateTime('@' . strtotime($get('entry_date'))))->format('Y');
+                                        $month = (new DateTime('@'.strtotime($get('entry_date'))))->format('m');
+                                        $year = (new DateTime('@'.strtotime($get('entry_date'))))->format('Y');
                                         $customer = Customer::find($get('customer_id')) ? Customer::find($get('customer_id'))->code : '-';
                                         $romanNumerals = [
                                             '01' => 'I',
@@ -84,7 +82,7 @@ class OrderResource extends Resource
                                     })
                                     ->visibleOn(['view']),
                                 Forms\Components\Hidden::make('document_number')
-                                    ->default("-/MT/OC/-/-/-")
+                                    ->default('-/MT/OC/-/-/-')
                                     ->visibleOn(['create']),
                                 Forms\Components\TextInput::make('document_number')
                                     ->visibleOn(['edit']),
@@ -122,12 +120,12 @@ class OrderResource extends Resource
                                 Forms\Components\Placeholder::make('customer_ph')
                                     ->label('Customer')
                                     ->content(function ($get) {
-                                        return (new HtmlString('<strong>' . Customer::find($get('customer_id'))->name . '</strong>'));
+                                        return new HtmlString('<strong>'.Customer::find($get('customer_id'))->name.'</strong>');
                                     })
                                     ->visibleOn(['view']),
                                 Forms\Components\DatePicker::make('entry_date')
                                     ->label('Tanggal Masuk')
-                                    ->default((new DateTime())->format('Y-m-d H:i:s'))
+                                    ->default((new DateTime)->format('Y-m-d H:i:s'))
                                     ->reactive()
                                     ->required()
                                     ->visibleOn(['create', 'edit']),
@@ -136,7 +134,7 @@ class OrderResource extends Resource
                                     ->content(function ($get) {
                                         $dateString = Carbon::parse($get('entry_date'))->translatedFormat('l, j F Y');
 
-                                        return (new HtmlString('<strong>' . $dateString . '</strong>'));
+                                        return new HtmlString('<strong>'.$dateString.'</strong>');
                                     })
                                     ->visibleOn(['view']),
                                 Forms\Components\DatePicker::make('deadline_date')
@@ -148,7 +146,7 @@ class OrderResource extends Resource
                                     ->content(function ($get) {
                                         $dateString = Carbon::parse($get('deadline_date'))->translatedFormat('l, j F Y');
 
-                                        return (new HtmlString('<strong>' . $dateString . '</strong>'));
+                                        return new HtmlString('<strong>'.$dateString.'</strong>');
                                     })
                                     ->visibleOn(['view']),
                                 Forms\Components\Select::make('paper_id')
@@ -257,7 +255,7 @@ class OrderResource extends Resource
                                                         ->get();
 
                                                     $formattedData = $productData->mapWithKeys(function ($product) {
-                                                        return [$product->id => $product->educationSubject->name . ' - ' . $product->educationClass->name];
+                                                        return [$product->id => $product->educationSubject->name.' - '.$product->educationClass->name];
                                                     });
 
                                                     return $formattedData;
@@ -285,7 +283,7 @@ class OrderResource extends Resource
                                                     return intval($quantity);
                                                 })->sum();
 
-                                                return new HtmlString('<span class="font-bold text-xl">' . $total . '</span>');
+                                                return new HtmlString('<span class="font-bold text-xl">'.$total.'</span>');
                                             }),
                                     ]),
                             ]),
@@ -386,7 +384,7 @@ class OrderResource extends Resource
                             ->label('Semester')
                             ->options(
                                 Semester::all()->pluck('name', 'id'),
-                            )
+                            ),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -398,11 +396,11 @@ class OrderResource extends Resource
                             );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['semester_form']) {
+                        if (! $data['semester_form']) {
                             return null;
                         }
 
-                        return 'Semester: ' . Semester::find($data['semester_form'])->name;
+                        return 'Semester: '.Semester::find($data['semester_form'])->name;
                     }),
                 Tables\Filters\SelectFilter::make('customer_id')
                     ->label('Customer')
@@ -416,7 +414,7 @@ class OrderResource extends Resource
                             ->label('Tipe')
                             ->options(
                                 Type::all()->pluck('name', 'id'),
-                            )
+                            ),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -427,11 +425,11 @@ class OrderResource extends Resource
                             );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['type_form']) {
+                        if (! $data['type_form']) {
                             return null;
                         }
 
-                        return 'Tipe: ' . Type::find($data['type_form'])->name;
+                        return 'Tipe: '.Type::find($data['type_form'])->name;
                     }),
             ])
             ->actions([

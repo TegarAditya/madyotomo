@@ -2,10 +2,10 @@
 
 namespace App\Filament\Admin\Resources\UserResource\Pages;
 
-use App\Models\User;
 use App\Filament\Admin\Resources\UserResource;
-use Filament\Resources\Pages\EditRecord;
+use App\Models\User;
 use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
 use STS\FilamentImpersonate\Pages\Actions\Impersonate;
 
 class EditUser extends EditRecord
@@ -20,6 +20,7 @@ class EditUser extends EditRecord
                 $data['password'] = $getUser->password;
             }
         }
+
         return $data;
     }
 
@@ -30,7 +31,7 @@ class EditUser extends EditRecord
 
     protected function getActions(): array
     {
-        !config('filament-users.impersonate') ?: $ret[] = Impersonate::make()->record($this->getRecord());
+        ! config('filament-users.impersonate') ?: $ret[] = Impersonate::make()->record($this->getRecord());
         $ret[] = DeleteAction::make();
 
         return $ret;

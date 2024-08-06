@@ -3,21 +3,16 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\InvoiceResource\Pages;
-use App\Filament\Admin\Resources\InvoiceResource\RelationManagers;
 use App\Models\Invoice;
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use DateTime;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InvoiceResource extends Resource
@@ -139,7 +134,7 @@ class InvoiceResource extends Resource
                 Tables\Actions\Action::make('open')
                     ->label('Open Order')
                     ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->url(fn (Invoice $record): string => OrderResource::getUrl('edit', ['record' => $record->order->id]) . '?activeRelationManager=3'),
+                    ->url(fn (Invoice $record): string => OrderResource::getUrl('edit', ['record' => $record->order->id]).'?activeRelationManager=3'),
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
@@ -164,7 +159,7 @@ class InvoiceResource extends Resource
     {
         return response()->streamDownload(function () use ($record) {
             $invoiceItems = $record->order->orderProducts->map(function ($orderProduct) use ($record) {
-                $productName = $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name;
+                $productName = $orderProduct->product->educationSubject->name.' - '.$orderProduct->product->educationClass->name;
                 $productQuantity = $orderProduct->quantity;
                 $productPrice = $record->price * $productQuantity;
 
@@ -185,10 +180,12 @@ class InvoiceResource extends Resource
 
             $index = 1;
 
-            echo Pdf::loadView('pdf.invoice', ['record' => $record, 'invoiceItems' => $invoiceItems, 'total' => $total, 'index' => $index])
+            $paperConfig = $record->order->spks->first()->configuration;
+
+            echo Pdf::loadView('pdf.invoice', ['record' => $record, 'invoiceItems' => $invoiceItems, 'total' => $total, 'index' => $index, 'config' => $paperConfig])
                 ->setOption(['defaultFont' => 'sans-serif'])
                 ->setPaper('a4', 'portrait')
                 ->stream();
-        }, str_replace('/', '_', $record->document_number) . '.pdf');
+        }, str_replace('/', '_', $record->document_number).'.pdf');
     }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Imports\EducationClassImporter;
 use App\Filament\Admin\Resources\EducationClassResource\Pages;
-use App\Filament\Admin\Resources\EducationClassResource\RelationManagers;
 use App\Filament\Exports\EducationClassExporter;
+use App\Filament\Imports\EducationClassImporter;
 use App\Models\EducationClass;
 use Filament\Forms;
 use Filament\Forms\Form;

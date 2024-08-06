@@ -34,8 +34,7 @@ class OrderProduct extends Model
 
     /**
      * Check if the OrderProduct has related SpkProducts.
-     * 
-     * @package App\Models\SpkProduct
+     *
      *
      * @return bool Returns true if the OrderProduct has related SpkProducts, false otherwise.
      */

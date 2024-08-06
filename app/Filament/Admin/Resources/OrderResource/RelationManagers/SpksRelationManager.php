@@ -5,7 +5,6 @@ namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 use App\Filament\Operator\Resources\SpkResource;
 use App\Models\Order;
 use App\Models\OrderProduct;
-use App\Models\Product;
 use App\Models\Spk;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
@@ -36,8 +35,8 @@ class SpksRelationManager extends RelationManager
                         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
 
                         $nomorTerakhir = (Spk::all()->first()) ? $latestNumber + 1 : 1;
-                        $month = (new DateTime('@' . strtotime($get('entry_date'))))->format('m');
-                        $year = (new DateTime('@' . strtotime($get('entry_date'))))->format('Y');
+                        $month = (new DateTime('@'.strtotime($get('entry_date'))))->format('m');
+                        $year = (new DateTime('@'.strtotime($get('entry_date'))))->format('Y');
                         $romanNumerals = [
                             '01' => 'I',
                             '02' => 'II',
@@ -71,7 +70,7 @@ class SpksRelationManager extends RelationManager
                 Forms\Components\Hidden::make('report_number'),
                 Forms\Components\DatePicker::make('entry_date')
                     ->reactive()
-                    ->default((new DateTime())->format('Y-m-d'))
+                    ->default((new DateTime)->format('Y-m-d'))
                     ->required(),
                 Forms\Components\DatePicker::make('deadline_date')
                     ->required(),
@@ -112,7 +111,8 @@ class SpksRelationManager extends RelationManager
                                         $subject = $product->product->educationSubject()->pluck('name')->implode(' ');
                                         $class = $product->product->educationClass()->pluck('name')->implode(' ');
                                         $quantity = $product->quantity;
-                                        return [$product->id => $subject . ' - ' . $class . ' - ' . ' (' . 'oplah ' . $quantity . ')'];
+
+                                        return [$product->id => $subject.' - '.$class.' - '.' ('.'oplah '.$quantity.')'];
                                     })
                             )
                             ->columnSpan(2)
@@ -127,6 +127,7 @@ class SpksRelationManager extends RelationManager
 
                                     if (count($products) === 1) {
                                         $quantity = OrderProduct::find($products[0])->quantity / 2;
+
                                         return new HtmlString("<span class='text-2xl font-bold'>{$quantity}<span class='text-sm font-thin'> sheets</span></span>");
                                     }
 
@@ -158,7 +159,7 @@ class SpksRelationManager extends RelationManager
                                     return 0;
                                 }
                             }),
-                    ])
+                    ]),
             ]);
     }
 
@@ -203,13 +204,13 @@ class SpksRelationManager extends RelationManager
                             echo Pdf::loadHtml(
                                 Blade::render('pdf.spk', ['record' => $record])
                             )->stream();
-                        }, str_replace('/', '_', $record->document_number) . '.pdf');
+                        }, str_replace('/', '_', $record->document_number).'.pdf');
                     }),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

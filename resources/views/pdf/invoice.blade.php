@@ -263,7 +263,7 @@
                                 <td style="border: 0; vertical-align: top; min-width: 80px;">Konfigurasi</td>
                                 <td style="border: 0; vertical-align: top;">:</td>
                                 <td style="border: 0; width: 100%; padding-left: 8px; vertical-align: top;">
-                                    4/0
+                                    {{ $config }}
                                 </td>
                             </tr>
                         </table>
