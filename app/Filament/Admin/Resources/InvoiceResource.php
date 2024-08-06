@@ -84,6 +84,7 @@ class InvoiceResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document_number')
                     ->label('Nomor Invoice')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('entry_date')
                     ->label('Tanggal Masuk')
@@ -145,7 +146,7 @@ class InvoiceResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('document_number', 'desc');
+            ->defaultSort('order.proof_number', 'desc');
     }
 
     public static function getPages(): array
