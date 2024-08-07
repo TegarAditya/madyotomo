@@ -7,6 +7,7 @@ RUN install-php-extensions \
     exif \
     fileinfo \
     filter \
+    gd \
     hash \
     intl \
     mbstring \
