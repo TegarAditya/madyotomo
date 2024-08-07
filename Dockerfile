@@ -19,4 +19,4 @@ RUN install-php-extensions \
 
 COPY . /app
 
-ENTRYPOINT ["php", "artisan", "octane:frankenphp"]
+ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--env=staging"]
