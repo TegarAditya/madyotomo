@@ -10,6 +10,7 @@ RUN install-php-extensions \
     hash \
     intl \
     mbstring \
+    opcache \
     openssl \
     pcre \
     pdo \
