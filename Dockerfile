@@ -4,9 +4,11 @@ RUN install-php-extensions \
     ctype \
     curl \
     dom \
+    exif \
     fileinfo \
     filter \
     hash \
+    intl \
     mbstring \
     openssl \
     pcre \
