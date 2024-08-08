@@ -19,7 +19,8 @@ RUN install-php-extensions \
     pdo_mysql \
     session \
     tokenizer \
-    xml
+    xml \
+    zip
 
 COPY . /app
 
