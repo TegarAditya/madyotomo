@@ -13,7 +13,10 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+
+use function Laravel\Prompts\error;
 
 class InvoiceResource extends Resource
 {
@@ -135,7 +138,7 @@ class InvoiceResource extends Resource
                 Tables\Actions\Action::make('open')
                     ->label('Open Order')
                     ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->url(fn (Invoice $record): string => OrderResource::getUrl('edit', ['record' => $record->order->id]).'?activeRelationManager=3'),
+                    ->url(fn (Invoice $record): string => OrderResource::getUrl('edit', ['record' => $record->order->id]) . '?activeRelationManager=3'),
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
@@ -143,6 +146,28 @@ class InvoiceResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('download')
+                        ->label('Download')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('success')
+                        ->action(function (Collection $records) {
+                            $zip = new \ZipArchive;
+                            $zipFileName = 'invoices.zip';
+                            $zipPath = storage_path($zipFileName);
+
+                            if ($zip->open($zipPath, \ZipArchive::CREATE) === TRUE) {
+                                $records->each(function (Invoice $record) use ($zip) {
+                                    // Generate PDF content
+                                    $pdfContent = (new static)->generatePdfContent($record);
+                                    // Add PDF to ZIP
+                                    $zip->addFromString(str_replace('/', '_', $record->document_number) . '.pdf', $pdfContent);
+                                });
+
+                                $zip->close();
+
+                                return response()->download($zipPath)->deleteFileAfterSend(true);
+                            }
+                        }),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
@@ -158,9 +183,10 @@ class InvoiceResource extends Resource
 
     protected function downloadInvoice(Invoice $record): StreamedResponse
     {
+        error_log($record->document_number);
         return response()->streamDownload(function () use ($record) {
             $invoiceItems = $record->order->orderProducts->map(function ($orderProduct) use ($record) {
-                $productName = $orderProduct->product->educationSubject->name.' - '.$orderProduct->product->educationClass->name;
+                $productName = $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name;
                 $productQuantity = $orderProduct->quantity;
                 $productPrice = $record->price * $productQuantity;
 
@@ -187,6 +213,38 @@ class InvoiceResource extends Resource
                 ->setOption(['defaultFont' => 'sans-serif'])
                 ->setPaper('a4', 'portrait')
                 ->stream();
-        }, str_replace('/', '_', $record->document_number).'.pdf');
+        }, str_replace('/', '_', $record->document_number) . '.pdf');
+    }
+
+    protected function generatePdfContent(Invoice $record): string
+    {
+        $invoiceItems = $record->order->orderProducts->map(function ($orderProduct) use ($record) {
+            $productName = $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name;
+            $productQuantity = $orderProduct->quantity;
+            $productPrice = $record->price * $productQuantity;
+
+            return [
+                'product' => $productName,
+                'quantity' => number_format($productQuantity, 0, ',', '.'),
+                'price' => number_format($productPrice, 2, ',', '.'),
+            ];
+        });
+
+        $totalQuantity = number_format($record->order->orderProducts->sum('quantity'), 0, ',', '.');
+        $totalPrice = number_format($record->price * $record->order->orderProducts->sum('quantity'), 2, ',', '.');
+
+        $total = [
+            'quantity' => $totalQuantity,
+            'price' => $totalPrice,
+        ];
+
+        $index = 1;
+
+        $paperConfig = $record->order->spks->first()->configuration;
+
+        return Pdf::loadView('pdf.invoice', ['record' => $record, 'invoiceItems' => $invoiceItems, 'total' => $total, 'index' => $index, 'config' => $paperConfig])
+            ->setOption(['defaultFont' => 'sans-serif'])
+            ->setPaper('a4', 'portrait')
+            ->output();
     }
 }
