@@ -13,14 +13,14 @@ RUN install-php-extensions \
     mbstring \
     opcache \
     openssl \
+    pcntl \
     pcre \
     pdo \
     pdo_mysql \
     session \
     tokenizer \
-    xml \
-    pcntl
+    xml
 
 COPY . /app
 
-ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--env=staging"]
+ENTRYPOINT ["php", "artisan", "octane:frankenphp"]
