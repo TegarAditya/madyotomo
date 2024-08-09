@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "anourvalar/office": "^2.5",
         "awcodes/light-switch": "^1.0",
         "barryvdh/laravel-dompdf": "^2.1",
         "bezhansalleh/filament-shield": "^3.2",
@@ -20,6 +21,7 @@
         "laravel/octane": "^2.4",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "phpoffice/phpspreadsheet": "^1.29",
         "tomatophp/filament-users": "^1.0"
     },
     "require-dev": {
