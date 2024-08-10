@@ -26,4 +26,9 @@ class Invoice extends Model
     {
         return $this->hasMany(OrderProductInvoice::class);
     }
+
+    public function invoiceReports()
+    {
+        return $this->belongsToMany(InvoiceReport::class, 'invoice_report_invoice');
+    }
 }

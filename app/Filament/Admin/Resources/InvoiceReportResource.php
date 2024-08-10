@@ -3,15 +3,19 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\InvoiceReportResource\Pages;
-use App\Filament\Admin\Resources\InvoiceReportResource\RelationManagers;
+use App\Filament\Admin\Resources\InvoiceReportResource\RelationManagers\InvoicesRelationManager;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceReport;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class InvoiceReportResource extends Resource
@@ -30,28 +34,94 @@ class InvoiceReportResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('document_number')
-                    ->required()
-                    ->hiddenOn(['create'])
-                    ->maxLength(255),
-                Forms\Components\Placeholder::make('document_number')
-                    ->content(function (callable $get) {
-                        return $get('document_number') ?? 'Auto-generated';
-                    })
-                    ->hiddenOn(['edit']),
-                Forms\Components\DatePicker::make('entry_date')
-                    ->live()
-                    ->required(),
-                Forms\Components\DatePicker::make('start_date')
-                    ->required(),
-                Forms\Components\DatePicker::make('end_date')
-                    ->required(),
-                Forms\Components\Textarea::make('description')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('invoice_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Fieldset::make()
+                    ->label('Nomor Dokumen')
+                    ->schema([
+                        Forms\Components\Placeholder::make('document_number_create')
+                            ->hiddenLabel()
+                            ->visibleOn('create')
+                            ->content(function (Get $get, Set $set) {
+                                if ($get('entry_date') && $get('customer_id')) {
+                                    $document_number = (new static)->getInvoiceReportNumber($get('entry_date'), $get('customer_id'));
+
+                                    $set('document_number', $document_number);
+
+                                    return $document_number;
+                                }
+
+                                return 'Lengkapi kolom di bawah ini';
+                            }),
+                        Forms\Components\Placeholder::make('document_number_view')
+                            ->hiddenLabel()
+                            ->hiddenOn('create')
+                            ->content(fn ($record) => $record->document_number),
+                        Forms\Components\Hidden::make('document_number'),
+                    ]),
+                Forms\Components\Fieldset::make()
+                    ->label('Detail')
+                    ->hiddenOn('view')
+                    ->schema([
+                        Forms\Components\Select::make('customer_id')
+                            ->label('Pelanggan')
+                            ->relationship('customer', 'name')
+                            ->default(Customer::count() === 1 ? Customer::first()->getKey() : null)
+                            ->live()
+                            ->required(),
+                        Forms\Components\DatePicker::make('entry_date')
+                            ->label('Tanggal Buat')
+                            ->live()
+                            ->required(),
+                        Forms\Components\DatePicker::make('start_date')
+                            ->label('Tanggal Awal')
+                            ->live()
+                            ->required(),
+                        Forms\Components\DatePicker::make('end_date')
+                            ->label('Tanggal Akhir')
+                            ->live()
+                            ->required(),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Deskripsi')
+                            ->default('-')
+                            ->required()
+                            ->columnSpanFull(),
+                    ]),
+                Forms\Components\Fieldset::make()
+                    ->label('Detail')
+                    ->visibleOn('view')
+                    ->schema([
+                        Forms\Components\Placeholder::make('customer')
+                            ->label('Pelanggan')
+                            ->content(fn ($record) => $record->customer->name),
+                        Forms\Components\Placeholder::make('entry_date')
+                            ->label('Tanggal Buat')
+                            ->content(fn ($record) => $record->entry_date),
+                        Forms\Components\Placeholder::make('start_date')
+                            ->label('Tanggal Awal')
+                            ->content(fn ($record) => $record->start_date),
+                        Forms\Components\Placeholder::make('end_date')
+                            ->label('Tanggal Akhir')
+                            ->content(fn ($record) => $record->end_date),
+                        Forms\Components\Placeholder::make('description')
+                            ->label('Deskripsi')
+                            ->content(fn ($record) => $record->description)
+                            ->columnSpanFull(),
+                    ]),
+                Forms\Components\Fieldset::make()
+                    ->label('Daftar Invoice Terkait')
+                    ->hiddenOn('view')
+                    ->schema([
+                        Forms\Components\Placeholder::make('invoices')
+                            ->hiddenLabel()
+                            ->content(function (callable $get) {
+                                $start = $get('start_date');
+                                $end = $get('end_date');
+
+                                return Invoice::whereBetween('entry_date', [$start, $end])->orderBy('entry_date')->get()->map(function (Invoice $invoice) {
+                                    return $invoice->document_number;
+                                })->implode(', ');
+                            })
+                            ->columnSpanFull(),
+                    ])
             ]);
     }
 
@@ -60,18 +130,23 @@ class InvoiceReportResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('document_number')
+                    ->label('Nomor Dokumen')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('customer.code')
+                    ->label('Pelanggan')
+                    ->tooltip(fn ($record) => $record->customer->name)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('entry_date')
-                    ->date()
+                    ->label('Tanggal Dibuat')
+                    ->date('d-m-Y', 'Asia/Jakarta')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_date')
-                    ->date()
+                    ->label('Tanggal Awal')
+                    ->date('d-m-Y', 'Asia/Jakarta')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_date')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('invoice_id')
-                    ->numeric()
+                    ->label('Tanggal Akhir')
+                    ->date('d-m-Y', 'Asia/Jakarta')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -86,8 +161,10 @@ class InvoiceReportResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('Export')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(fn ($record) => $record->getInvoiceReportDocument()),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -99,7 +176,7 @@ class InvoiceReportResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            InvoicesRelationManager::class,
         ];
     }
 
@@ -113,13 +190,13 @@ class InvoiceReportResource extends Resource
         ];
     }
 
-    protected function getInvoiceReportNumber(string $entryDate): string
+    protected function getInvoiceReportNumber(string $entryDate, int $customerId): string
     {
         $latestOrder = InvoiceReport::orderBy('created_at', 'desc')->first()->document_number ?? null;
         $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
 
         $used_number = (Invoice::all()->first()) ? $latestNumber + 1 : 1;
-        $customer = $this->getOwnerRecord()->customer->code;
+        $customer = Customer::find($customerId)->code ?? 'XXX';
         $month = (new \DateTime('@' . strtotime($entryDate)))->format('m');
         $year = (new \DateTime('@' . strtotime($entryDate)))->format('Y');
         $romanNumerals = [
