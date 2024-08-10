@@ -7,6 +7,7 @@ use App\Models\Machine;
 use App\Models\OrderProduct;
 use App\Models\SpkProduct;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -20,6 +21,7 @@ use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Auth;
 
 class FillReport extends Page implements HasForms, HasInfolists
 {
@@ -34,7 +36,17 @@ class FillReport extends Page implements HasForms, HasInfolists
 
     public function getTitle(): string|Htmlable
     {
-        return $this->record->order->proof_number.' - '.$this->record->report_number;
+        return $this->record->order->proof_number . ' - ' . $this->record->report_number;
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('view')
+                ->label('Lihat SPK')
+                ->visible(fn () => Auth::user()->can('view_order'))
+                ->url(route('filament.admin.resources.orders.view', ['record' => $this->record->order->id])),
+        ];
     }
 
     protected static string $resource = SpkResource::class;
@@ -126,7 +138,7 @@ class FillReport extends Page implements HasForms, HasInfolists
 
                                                     foreach ($spkProduct->order_products as $index => $item) {
                                                         $product = OrderProduct::find($item)->product;
-                                                        $productName .= $product->educationSubject->name.' - '.$product->educationClass->name;
+                                                        $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
 
                                                         if ($index < count($spkProduct->order_products) - 1) {
                                                             $productName .= ' & ';
