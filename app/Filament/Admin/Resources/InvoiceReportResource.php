@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 
 class InvoiceReportResource extends Resource
 {
@@ -34,81 +35,141 @@ class InvoiceReportResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Fieldset::make()
-                    ->label('Nomor Dokumen')
+                Forms\Components\Section::make('Detail Rekap Invoice')
+                    ->columns(2)
                     ->schema([
-                        Forms\Components\Placeholder::make('document_number_create')
-                            ->hiddenLabel()
-                            ->visibleOn('create')
-                            ->content(function (Get $get, Set $set) {
-                                if ($get('entry_date') && $get('customer_id')) {
-                                    $document_number = (new static)->getInvoiceReportNumber($get('entry_date'), $get('customer_id'));
+                        Forms\Components\Fieldset::make()
+                            ->label('Nomor Dokumen')
+                            ->schema([
+                                Forms\Components\Placeholder::make('document_number_create')
+                                    ->hiddenLabel()
+                                    ->visibleOn('create')
+                                    ->content(function (Get $get, Set $set) {
+                                        if ($get('entry_date') && $get('customer_id')) {
+                                            $document_number = (new static)->getInvoiceReportNumber($get('entry_date'), $get('customer_id'));
 
-                                    $set('document_number', $document_number);
+                                            $set('document_number', $document_number);
 
-                                    return $document_number;
-                                }
+                                            return $document_number;
+                                        }
 
-                                return 'Lengkapi kolom di bawah ini';
-                            }),
-                        Forms\Components\Placeholder::make('document_number_view')
-                            ->hiddenLabel()
-                            ->hiddenOn('create')
-                            ->content(fn ($record) => $record->document_number),
-                        Forms\Components\Hidden::make('document_number'),
+                                        return 'Lengkapi kolom di bawah ini';
+                                    }),
+                                Forms\Components\Placeholder::make('document_number_view')
+                                    ->hiddenLabel()
+                                    ->hiddenOn('create')
+                                    ->content(fn ($record) => $record->document_number),
+                                Forms\Components\Hidden::make('document_number'),
+                            ]),
+                        Forms\Components\Fieldset::make()
+                            ->label('Detail')
+                            ->visibleOn('view')
+                            ->schema([
+                                Forms\Components\Placeholder::make('customer')
+                                    ->label('Pelanggan')
+                                    ->content(fn ($record) => $record->customer->name),
+                                Forms\Components\Placeholder::make('entry_date')
+                                    ->label('Tanggal Buat')
+                                    ->content(fn ($record) => $record->entry_date),
+                                Forms\Components\Placeholder::make('start_date')
+                                    ->label('Tanggal Awal')
+                                    ->content(fn ($record) => $record->start_date),
+                                Forms\Components\Placeholder::make('end_date')
+                                    ->label('Tanggal Akhir')
+                                    ->content(fn ($record) => $record->end_date),
+                                Forms\Components\Placeholder::make('description')
+                                    ->label('Deskripsi')
+                                    ->content(fn ($record) => $record->description)
+                                    ->columnSpanFull(),
+                            ]),
+                        Forms\Components\Fieldset::make()
+                            ->label('Detail')
+                            ->hiddenOn('view')
+                            ->schema([
+                                Forms\Components\Select::make('customer_id')
+                                    ->label('Pelanggan')
+                                    ->relationship('customer', 'name')
+                                    ->default(Customer::count() === 1 ? Customer::first()->getKey() : null)
+                                    ->live()
+                                    ->required(),
+                                Forms\Components\DatePicker::make('entry_date')
+                                    ->label('Tanggal Buat')
+                                    ->live()
+                                    ->required(),
+                                Forms\Components\DatePicker::make('start_date')
+                                    ->label('Tanggal Awal')
+                                    ->live()
+                                    ->required(),
+                                Forms\Components\DatePicker::make('end_date')
+                                    ->label('Tanggal Akhir')
+                                    ->live()
+                                    ->required(),
+                                Forms\Components\Textarea::make('description')
+                                    ->label('Deskripsi')
+                                    ->default('-')
+                                    ->required()
+                                    ->columnSpanFull(),
+                            ]),
+                        Forms\Components\Fieldset::make()
+                            ->label('Ringkasan Transaksi')
+                            ->columns(3)
+                            ->schema([
+                                Forms\Components\Placeholder::make('total_quantity')
+                                    ->label('Total Jumlah')
+                                    ->content(function ($get) {
+                                        if ($get('start_date') && $get('end_date')) {
+                                            $start = $get('start_date');
+                                            $end = $get('end_date');
+
+                                            $total = Invoice::whereBetween('entry_date', [$start, $end])->get()->map(function (Invoice $invoice) {
+                                                return $invoice->order->order_products->sum('quantity');
+                                            })->sum();
+
+                                            $total = number_format($total, 0, ',', '.');
+
+                                            return new HtmlString("<p class='text-2xl'><strong>{$total}</strong></p>");
+                                        }
+
+                                        return 'Data belum lengkap';
+                                    }),
+                                Forms\Components\Placeholder::make('average_price')
+                                    ->label('Rata-rata Harga (dibulatkan)')
+                                    ->content(function ($get) {
+                                        if ($get('start_date') && $get('end_date')) {
+                                            $start = $get('start_date');
+                                            $end = $get('end_date');
+
+                                            $average = Invoice::whereBetween('entry_date', [$start, $end])->avg('price');
+
+                                            $total = number_format($average, 2, ',', '.');
+
+                                            return new HtmlString("<p class='text-2xl'><strong>Rp {$total}..</strong></p>");
+                                        }
+
+                                        return 'Data belum lengkap';
+                                    }),
+                                Forms\Components\Placeholder::make('total_amount')
+                                    ->label('Total Transaksi')
+                                    ->content(function ($get) {
+                                        if ($get('start_date') && $get('end_date')) {
+                                            $start = $get('start_date');
+                                            $end = $get('end_date');
+
+                                            $total = Invoice::whereBetween('entry_date', [$start, $end])->get()->map(function (Invoice $invoice) {
+                                                return $invoice->price * $invoice->order->order_products->sum('quantity');
+                                            })->sum();
+
+                                            $total = number_format($total, 0, ',', '.');
+
+                                            return new HtmlString("<p class='text-2xl'><strong>Rp {$total},00</strong></p>");
+                                        }
+
+                                        return 'Data belum lengkap';
+                                    }),
+                            ]),
                     ]),
-                Forms\Components\Fieldset::make()
-                    ->label('Detail')
-                    ->hiddenOn('view')
-                    ->schema([
-                        Forms\Components\Select::make('customer_id')
-                            ->label('Pelanggan')
-                            ->relationship('customer', 'name')
-                            ->default(Customer::count() === 1 ? Customer::first()->getKey() : null)
-                            ->live()
-                            ->required(),
-                        Forms\Components\DatePicker::make('entry_date')
-                            ->label('Tanggal Buat')
-                            ->live()
-                            ->required(),
-                        Forms\Components\DatePicker::make('start_date')
-                            ->label('Tanggal Awal')
-                            ->live()
-                            ->required(),
-                        Forms\Components\DatePicker::make('end_date')
-                            ->label('Tanggal Akhir')
-                            ->live()
-                            ->required(),
-                        Forms\Components\Textarea::make('description')
-                            ->label('Deskripsi')
-                            ->default('-')
-                            ->required()
-                            ->columnSpanFull(),
-                    ]),
-                Forms\Components\Fieldset::make()
-                    ->label('Detail')
-                    ->visibleOn('view')
-                    ->schema([
-                        Forms\Components\Placeholder::make('customer')
-                            ->label('Pelanggan')
-                            ->content(fn ($record) => $record->customer->name),
-                        Forms\Components\Placeholder::make('entry_date')
-                            ->label('Tanggal Buat')
-                            ->content(fn ($record) => $record->entry_date),
-                        Forms\Components\Placeholder::make('start_date')
-                            ->label('Tanggal Awal')
-                            ->content(fn ($record) => $record->start_date),
-                        Forms\Components\Placeholder::make('end_date')
-                            ->label('Tanggal Akhir')
-                            ->content(fn ($record) => $record->end_date),
-                        Forms\Components\Placeholder::make('description')
-                            ->label('Deskripsi')
-                            ->content(fn ($record) => $record->description)
-                            ->columnSpanFull(),
-                    ]),
-                Forms\Components\Fieldset::make()
-                    ->label('Daftar Invoice Terkait')
-                    ->hiddenOn('view')
+                Forms\Components\Section::make('Daftar Invoice Terkait')
+                    ->visibleOn('create')
                     ->schema([
                         Forms\Components\Placeholder::make('invoices')
                             ->hiddenLabel()

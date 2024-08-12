@@ -8,8 +8,8 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Query\Builder;
 
 class InvoicesRelationManager extends RelationManager
 {
@@ -41,13 +41,11 @@ class InvoicesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('total')
                     ->label('Jumlah')
                     ->numeric(decimalSeparator: ',', thousandsSeparator: '.')
-                    ->default(fn (Invoice $record) => $record->order->order_products->sum('quantity'))
-                    ->sortable(),
+                    ->default(fn (Invoice $record) => $record->order->order_products->sum('quantity')),
                 Tables\Columns\TextColumn::make('total_price')
                     ->label('Total Harga')
                     ->money('IDR', locale: 'id-ID')
-                    ->default(fn (Invoice $record) => $record->price * $record->order->order_products->sum('quantity'))
-                    ->sortable(),
+                    ->default(fn (Invoice $record) => $record->price * $record->order->order_products->sum('quantity')),
             ])
             ->filters([
                 //
