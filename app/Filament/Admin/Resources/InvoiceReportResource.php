@@ -224,7 +224,7 @@ class InvoiceReportResource extends Resource
             ->actions([
                 Tables\Actions\Action::make('Export')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->action(fn ($record) => $record->getInvoiceReportDocument()),
+                    ->action(fn ($record) => $record->getInvoiceReportDocument($record->start_date, $record->end_date)),
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([

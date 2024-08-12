@@ -15,7 +15,7 @@ class ViewInvoiceReport extends ViewRecord
         return [
             Actions\Action::make('Export')
                 ->color('info')
-                ->action(fn ($record) => $record->getInvoiceReportDocument()),
+                ->action(fn ($record) => $record->getInvoiceReportDocument($record->start_date, $record->end_date)),
             Actions\EditAction::make(),
         ];
     }
