@@ -14,9 +14,6 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
 class InvoiceReportResource extends Resource
@@ -133,7 +130,7 @@ class InvoiceReportResource extends Resource
                                         return 'Data belum lengkap';
                                     }),
                                 Forms\Components\Placeholder::make('average_price')
-                                    ->label('Rata-rata Harga (dibulatkan)')
+                                    ->label('Rata-rata (dibulatkan)')
                                     ->content(function ($get) {
                                         if ($get('start_date') && $get('end_date')) {
                                             $start = $get('start_date');
@@ -143,7 +140,7 @@ class InvoiceReportResource extends Resource
 
                                             $total = number_format($average, 2, ',', '.');
 
-                                            return new HtmlString("<p class='text-2xl'><strong>Rp {$total}..</strong></p>");
+                                            return new HtmlString("<p class='text-2xl'><strong>Rp {$total}</strong></p>");
                                         }
 
                                         return 'Data belum lengkap';
@@ -182,7 +179,7 @@ class InvoiceReportResource extends Resource
                                 })->implode(', ');
                             })
                             ->columnSpanFull(),
-                    ])
+                    ]),
             ]);
     }
 
@@ -258,8 +255,8 @@ class InvoiceReportResource extends Resource
 
         $used_number = (Invoice::all()->first()) ? $latestNumber + 1 : 1;
         $customer = Customer::find($customerId)->code ?? 'XXX';
-        $month = (new \DateTime('@' . strtotime($entryDate)))->format('m');
-        $year = (new \DateTime('@' . strtotime($entryDate)))->format('Y');
+        $month = (new \DateTime('@'.strtotime($entryDate)))->format('m');
+        $year = (new \DateTime('@'.strtotime($entryDate)))->format('Y');
         $romanNumerals = [
             '01' => 'I',
             '02' => 'II',

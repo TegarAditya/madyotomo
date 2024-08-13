@@ -21,7 +21,7 @@ class EditInvoiceReport extends EditRecord
 
     protected function afterSave(): void
     {
-        $start_date = $this->record->start_date;    
+        $start_date = $this->record->start_date;
         $end_date = $this->record->end_date;
         $customer_id = $this->record->customer_id;
 

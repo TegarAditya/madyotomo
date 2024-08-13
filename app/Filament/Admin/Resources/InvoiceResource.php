@@ -16,8 +16,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-use function Laravel\Prompts\error;
-
 class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
@@ -138,7 +136,7 @@ class InvoiceResource extends Resource
                 Tables\Actions\Action::make('open')
                     ->label('Open Order')
                     ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->url(fn (Invoice $record): string => OrderResource::getUrl('edit', ['record' => $record->order->id]) . '?activeRelationManager=3'),
+                    ->url(fn (Invoice $record): string => OrderResource::getUrl('edit', ['record' => $record->order->id]).'?activeRelationManager=3'),
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
@@ -155,12 +153,12 @@ class InvoiceResource extends Resource
                             $zipFileName = 'invoices.zip';
                             $zipPath = storage_path($zipFileName);
 
-                            if ($zip->open($zipPath, \ZipArchive::CREATE) === TRUE) {
+                            if ($zip->open($zipPath, \ZipArchive::CREATE) === true) {
                                 $records->each(function (Invoice $record) use ($zip) {
                                     // Generate PDF content
                                     $pdfContent = (new static)->generatePdfContent($record);
                                     // Add PDF to ZIP
-                                    $zip->addFromString(str_replace('/', '_', $record->document_number) . '.pdf', $pdfContent);
+                                    $zip->addFromString(str_replace('/', '_', $record->document_number).'.pdf', $pdfContent);
                                 });
 
                                 $zip->close();
@@ -184,9 +182,10 @@ class InvoiceResource extends Resource
     protected function downloadInvoice(Invoice $record): StreamedResponse
     {
         error_log($record->document_number);
+
         return response()->streamDownload(function () use ($record) {
             $invoiceItems = $record->order->orderProducts->map(function ($orderProduct) use ($record) {
-                $productName = $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name;
+                $productName = $orderProduct->product->educationSubject->name.' - '.$orderProduct->product->educationClass->name;
                 $productQuantity = $orderProduct->quantity;
                 $productPrice = $record->price * $productQuantity;
 
@@ -213,13 +212,13 @@ class InvoiceResource extends Resource
                 ->setOption(['defaultFont' => 'sans-serif'])
                 ->setPaper('a4', 'portrait')
                 ->stream();
-        }, str_replace('/', '_', $record->document_number) . '.pdf');
+        }, str_replace('/', '_', $record->document_number).'.pdf');
     }
 
     protected function generatePdfContent(Invoice $record): string
     {
         $invoiceItems = $record->order->orderProducts->map(function ($orderProduct) use ($record) {
-            $productName = $orderProduct->product->educationSubject->name . ' - ' . $orderProduct->product->educationClass->name;
+            $productName = $orderProduct->product->educationSubject->name.' - '.$orderProduct->product->educationClass->name;
             $productQuantity = $orderProduct->quantity;
             $productPrice = $record->price * $productQuantity;
 

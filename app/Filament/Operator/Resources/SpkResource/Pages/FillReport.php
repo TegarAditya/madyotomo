@@ -36,7 +36,7 @@ class FillReport extends Page implements HasForms, HasInfolists
 
     public function getTitle(): string|Htmlable
     {
-        return $this->record->order->proof_number . ' - ' . $this->record->report_number;
+        return $this->record->order->proof_number.' - '.$this->record->report_number;
     }
 
     protected function getHeaderActions(): array
@@ -138,7 +138,7 @@ class FillReport extends Page implements HasForms, HasInfolists
 
                                                     foreach ($spkProduct->order_products as $index => $item) {
                                                         $product = OrderProduct::find($item)->product;
-                                                        $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
+                                                        $productName .= $product->educationSubject->name.' - '.$product->educationClass->name;
 
                                                         if ($index < count($spkProduct->order_products) - 1) {
                                                             $productName .= ' & ';

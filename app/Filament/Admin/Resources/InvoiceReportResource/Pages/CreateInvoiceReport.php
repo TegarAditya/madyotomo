@@ -4,7 +4,6 @@ namespace App\Filament\Admin\Resources\InvoiceReportResource\Pages;
 
 use App\Filament\Admin\Resources\InvoiceReportResource;
 use App\Models\Invoice;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateInvoiceReport extends CreateRecord
@@ -13,7 +12,7 @@ class CreateInvoiceReport extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $start_date = $this->record->start_date;    
+        $start_date = $this->record->start_date;
         $end_date = $this->record->end_date;
         $customer_id = $this->record->customer_id;
 

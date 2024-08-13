@@ -67,9 +67,9 @@ class InvoiceReport extends Model
         ];
 
         return response()->streamDownload(function () use ($data) {
-            echo (new \AnourValar\Office\SheetsService())
-                ->generate(resource_path() . '/template/invoice_summary_template.xlsx', $data)
+            echo (new \AnourValar\Office\SheetsService)
+                ->generate(resource_path().'/template/invoice_summary_template.xlsx', $data)
                 ->save(\AnourValar\Office\Format::Xlsx);
-        }, str_replace('/', '_', $this->document_number) . '.xlsx');
+        }, str_replace('/', '_', $this->document_number).'.xlsx');
     }
 }

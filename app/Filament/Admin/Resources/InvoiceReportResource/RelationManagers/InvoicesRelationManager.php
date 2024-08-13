@@ -8,8 +8,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Database\Query\Builder;
 
 class InvoicesRelationManager extends RelationManager
 {
@@ -33,7 +31,8 @@ class InvoicesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('document_number')
             ->columns([
-                Tables\Columns\TextColumn::make('document_number'),
+                Tables\Columns\TextColumn::make('document_number')
+                    ->label('No. Invoice'),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga/Druk')
                     ->money('IDR', locale: 'id-ID')
