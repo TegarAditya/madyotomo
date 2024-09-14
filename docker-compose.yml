@@ -8,3 +8,4 @@ services:
       - "8008:8000"
     volumes:
       - .:/app
+    restart: unless-stopped
