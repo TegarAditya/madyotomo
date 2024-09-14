@@ -31,10 +31,9 @@ class SpksRelationManager extends RelationManager
                     ->label('Nomor SPK')
                     ->visibleOn(['create'])
                     ->content(function (callable $set, $get) {
-                        $latestOrder = Spk::orderBy('created_at', 'desc')->first()->document_number ?? null;
-                        $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
 
-                        $nomorTerakhir = (Spk::all()->first()) ? $latestNumber + 1 : 1;
+                        $nomor_order = $this->getOwnerRecord()->document_number;
+                        $nomor = substr($nomor_order, 0, strpos($nomor_order, '/'));
                         $month = (new DateTime('@'.strtotime($get('entry_date'))))->format('m');
                         $year = (new DateTime('@'.strtotime($get('entry_date'))))->format('Y');
                         $romanNumerals = [
@@ -53,10 +52,10 @@ class SpksRelationManager extends RelationManager
                         ];
                         $romanMonth = $romanNumerals[$month];
 
-                        $set('document_number', "{$nomorTerakhir}/MT/SPK/{$romanMonth}/{$year}");
-                        $set('report_number', "{$nomorTerakhir}/MT/LP/{$romanMonth}/{$year}");
+                        $set('document_number', "{$nomor}/MT/SPK/{$romanMonth}/{$year}");
+                        $set('report_number', "{$nomor}/MT/LP/{$romanMonth}/{$year}");
 
-                        return "{$nomorTerakhir}/MT/SPK/{$romanMonth}/{$year}";
+                        return "{$nomor}/MT/SPK/{$romanMonth}/{$year}";
                     }),
                 Forms\Components\Hidden::make('document_number')
                     ->visibleOn(['create']),
@@ -222,6 +221,10 @@ class SpksRelationManager extends RelationManager
                     Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public function generateDocumentNumber() {
+
     }
 
     public function isReadOnly(): bool
