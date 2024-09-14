@@ -172,14 +172,18 @@ class SpksRelationManager extends RelationManager
                     ->label('No.')
                     ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1),
                 Tables\Columns\TextColumn::make('document_number')
+                    ->label('Nomor SPK')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('report_number')
+                    ->label('Nomor Laporan')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('entry_date')
+                    ->label('Tanggal Masuk')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('deadline_date')
+                    ->label('Tanggal Deadline')
                     ->sortable(),
             ])
             ->filters([

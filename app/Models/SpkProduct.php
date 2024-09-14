@@ -24,8 +24,8 @@ class SpkProduct extends Model
         return $this->belongsTo(Spk::class);
     }
 
-    public function products()
+    public function orderProducts()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(OrderProduct::class);
     }
 }

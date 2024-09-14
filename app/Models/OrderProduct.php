@@ -54,6 +54,16 @@ class OrderProduct extends Model
         return in_array($this->id, $spkProductArray);
     }
 
+    public function deliveryOrders()
+    {
+        return $this->belongsToMany(DeliveryOrder::class, 'delivery_order_products', 'order_product_id', 'delivery_order_id');
+    }
+
+    public function hasDeliveryOders()
+    {
+        return $this->deliveryOrders()->exists();
+    }
+
     public function deliveryOrderProducts()
     {
         return $this->hasMany(DeliveryOrderProduct::class);

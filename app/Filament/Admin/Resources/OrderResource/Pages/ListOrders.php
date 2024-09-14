@@ -45,4 +45,9 @@ class ListOrders extends ListRecords
 
         return $tabs;
     }
+
+    public function getDefaultActiveTab(): string | int | null
+    {
+        return 2;
+    }
 }

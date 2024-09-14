@@ -58,7 +58,7 @@ class OrderProductsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('status')
                     ->default(function (OrderProduct $record) {
                         $spkStatus = $record->hasSpkProducts();
-                        $deliveryStatus = $record->hasDeliveryOrderProducts();
+                        $deliveryStatus = $record->hasDeliveryOders();
 
                         switch (true) {
                             case $deliveryStatus:
@@ -86,7 +86,7 @@ class OrderProductsRelationManager extends RelationManager
                     }),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()
             ])
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),
