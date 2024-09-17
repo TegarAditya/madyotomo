@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use stdClass;
@@ -229,6 +230,10 @@ class SpksRelationManager extends RelationManager
 
     public function isReadOnly(): bool
     {
-        return false;
+        if (Auth::user()->can('create_order')) {
+            return false;
+        }
+        
+        return true;
     }
 }

@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use stdClass;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -139,9 +140,12 @@ class DeliveryOrdersRelationManager extends RelationManager
 
     public function isReadOnly(): bool
     {
-        return false;
+        if (Auth::user()->can('create_order')) {
+            return false;
+        }
+        
+        return true;
     }
-
     protected function downloadDeliveryOrder(DeliveryOrder $record): StreamedResponse
     {
         return response()->streamDownload(function () use ($record) {

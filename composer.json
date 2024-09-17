@@ -22,6 +22,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "phpoffice/phpspreadsheet": "^1.29",
+        "stechstudio/filament-impersonate": "^3.14",
         "tomatophp/filament-users": "^1.0"
     },
     "require-dev": {
