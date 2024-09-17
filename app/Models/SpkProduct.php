@@ -28,4 +28,9 @@ class SpkProduct extends Model
     {
         return $this->hasMany(OrderProduct::class);
     }
+
+    public function productReports()
+    {
+        return $this->hasMany(ProductReport::class, 'spk_order_product_id', 'id');
+    }
 }

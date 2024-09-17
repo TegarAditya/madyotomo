@@ -11,7 +11,6 @@ class ProductReport extends Model
 
     protected $fillable = [
         'spk_id',
-        'spk_product_id',
         'spk_order_product_id',
         'machine_id',
         'date',
