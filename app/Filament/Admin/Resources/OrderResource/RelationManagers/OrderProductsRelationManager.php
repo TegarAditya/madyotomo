@@ -31,7 +31,7 @@ class OrderProductsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('number')
                     ->label('No.')
-                    ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1),
+                    ->default(fn(stdClass $rowLoop) => $rowLoop->index + 1),
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Kode MMJ')
                     ->toggleable()
@@ -47,22 +47,32 @@ class OrderProductsRelationManager extends RelationManager
                     ->label('Kelas'),
                 Tables\Columns\TextColumn::make('product.Curriculum.name')
                     ->label('Kurikulum'),
-                Tables\Columns\TextColumn::make('product.Type.name')
-                    ->label('Tipe'),
+                Tables\Columns\TextColumn::make('product.Type.code')
+                    ->label('Tipe')
+                    ->tooltip(fn (OrderProduct $record) => $record->product->type->name),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Oplah')
                     ->numeric()
                     ->summarize([
                         Tables\Columns\Summarizers\Sum::make(),
                     ]),
+                Tables\Columns\TextColumn::make('result')
+                    ->label('Hasil')
+                    ->numeric()
+                    ->default(0),
                 Tables\Columns\TextColumn::make('status')
                     ->default(function (OrderProduct $record) {
                         $spkStatus = $record->hasSpkProducts();
+                        $reportStatus = $record->hasReport();
                         $deliveryStatus = $record->hasDeliveryOders();
+
+                        $record->result;
 
                         switch (true) {
                             case $deliveryStatus:
                                 return 'Dikirim';
+                            case $reportStatus:
+                                return 'Dicetak';
                             case $spkStatus:
                                 return 'Diproses';
                             default:
@@ -70,14 +80,14 @@ class OrderProductsRelationManager extends RelationManager
                         }
                     })
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Pending' => 'gray',
                         'Diproses' => 'primary',
-                        'Dicetak' => 'warning',
+                        'Dicetak' => 'info',
                         'Dikirim' => 'success',
                         'Ditolak' => 'danger',
                     })
-                    ->icon(fn (string $state): string => match ($state) {
+                    ->icon(fn(string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
                         'Diproses' => 'heroicon-o-clipboard-document-check',
                         'Dicetak' => 'heroicon-o-printer',

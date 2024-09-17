@@ -322,22 +322,27 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('status')
                     ->default(function (Order $record) {
-                        $status = $record->hasInvoice();
+                        $statusInvoice = $record->hasInvoice();
+                        $statusSpk = $record->hasSpk();
 
                         switch (true) {
-                            case $status:
+                            case $statusInvoice:
                                 return 'Invoice Dicetak';
-                            default:
+                            case $statusSpk:
                                 return 'Diproses';
+                            default:
+                                return 'Pending';
                         }
                     })
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
+                        'Pending' => 'gray',
                         'Diproses' => 'primary',
                         'Invoice Dicetak' => 'success',
                     })
                     ->icon(fn (string $state): string => match ($state) {
-                        'Diproses' => 'heroicon-o-clock',
+                        'Pending' => 'heroicon-o-clock',
+                        'Diproses' => 'heroicon-o-cog',
                         'Invoice Dicetak' => 'heroicon-o-printer',
                     }),
                 Tables\Columns\TextColumn::make('paper.name')
