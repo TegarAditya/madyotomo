@@ -133,7 +133,13 @@ class FillReport extends Page implements HasForms, HasInfolists
                     ->schema([
                         Forms\Components\Repeater::make('productReports')
                             ->relationship()
-                            ->hiddenLabel()
+                            ->itemLabel(function ($state) {
+                                if ($state['spk_order_product_id']) {
+                                    return $this->getProductQuantity($state['spk_order_product_id']) . ' Oplah';
+                                }
+
+                                return 'Oplah';
+                            })
                             ->columns(4)
                             ->addActionLabel('Tambah Laporan')
                             ->defaultItems(1)
@@ -165,6 +171,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                                                 });
                                         }
                                     )
+                                    ->reactive()
                                     ->required(),
                                 Forms\Components\Select::make('machine_id')
                                     ->label('Mesin')
@@ -253,6 +260,20 @@ class FillReport extends Page implements HasForms, HasInfolists
                 ->description('Kebutuhan kertas termasuk spare')
                 ->schema($infolist),
         ];
+    }
+
+    protected function getProductQuantity(int $id): int
+    {
+        $spkProduct = SpkProduct::find($id);
+        $totalQuantity = 0;
+        $spare = SpkProduct::find($id)->spk->spare;
+
+        foreach ($spkProduct->order_products as $productId) {
+            $productQuantity = OrderProduct::find($productId)->quantity + $spare;
+            $totalQuantity += $productQuantity;
+        }
+
+        return $totalQuantity;
     }
 
     /**
