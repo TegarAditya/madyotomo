@@ -42,7 +42,9 @@ class OrderResource extends Resource
                     ->columnSpanFull()
                     ->tabs([
                         Forms\Components\Tabs\Tab::make('Informasi Order')
-                            ->columns(2)
+                            ->columns([
+                                'md' => 2
+                            ])
                             ->schema([
                                 Forms\Components\Placeholder::make('document_number_pc')
                                     ->label('Nomor Order')
