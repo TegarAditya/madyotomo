@@ -33,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->id('admin')
+            ->brandName('Admin Cover')
             ->path('')
             ->login(Login::class)
             ->passwordReset()

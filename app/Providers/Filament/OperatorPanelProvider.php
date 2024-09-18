@@ -25,6 +25,7 @@ class OperatorPanelProvider extends PanelProvider
         return $panel
             ->id('operator')
             ->path('operator')
+            ->brandName('Operator Cover')
             ->login()
             ->databaseNotifications()
             ->colors([
