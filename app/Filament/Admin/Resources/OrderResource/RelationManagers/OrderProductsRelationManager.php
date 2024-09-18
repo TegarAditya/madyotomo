@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 
 use App\Models\OrderProduct;
+use App\Models\Semester;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -31,15 +32,11 @@ class OrderProductsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('number')
                     ->label('No.')
-                    ->default(fn(stdClass $rowLoop) => $rowLoop->index + 1),
-                Tables\Columns\TextColumn::make('product.name')
+                    ->rowIndex(),
+                Tables\Columns\TextColumn::make('product.code')
                     ->label('Kode MMJ')
                     ->toggleable()
-                    ->formatStateUsing(function (string $state) {
-                        $parts = explode('|', $state);
-
-                        return trim($parts[1]);
-                    }),
+                    ->default(fn (OrderProduct $record) => $this->getProductCode($record->product)),
                 Tables\Columns\TextColumn::make('product.educationSubject.name')
                     ->label('Mapel')
                     ->searchable(),
@@ -110,5 +107,17 @@ class OrderProductsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected function getProductCode($product): string
+    {
+        $semester = \App\Models\Semester::find($product->semester_id)->code ?? '-';
+        $curriculum = \App\Models\Curriculum::find($product->curriculum_id)->code ?? '-';
+        $level = \App\Models\EducationLevel::find($product->education_level_id)->code ?? '-';
+        $class = \App\Models\EducationClass::find($product->education_class_id)->code ?? '-';
+        $subject = \App\Models\EducationSubject::find($product->education_subject_id)->code ?? '-';
+        $type = \App\Models\Type::find($product->type_id)->code ?? '-';
+
+        return "C-{$level}{$curriculum}{$subject}{$class}{$semester}/{$type}";
     }
 }

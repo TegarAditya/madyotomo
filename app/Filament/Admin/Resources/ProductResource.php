@@ -16,7 +16,10 @@ use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontFamily;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -144,16 +147,9 @@ class ProductResource extends Resource
         // dd(Curriculum::firstWhere('code', 13)->id);
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('code')
                     ->label('Kode MMJ')
-                    ->formatStateUsing(function (string $state) {
-                        $parts = explode('|', $state);
-                        if (count($parts) > 1) {
-                            return trim($parts[1]);
-                        }
-
-                        return '-';
-                    })
+                    ->default(fn (Product $record) => (new static)->getProductCode($record))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('educationSubject.name')
@@ -231,6 +227,18 @@ class ProductResource extends Resource
                 Tables\Actions\ExportAction::make()
                     ->exporter(ProductExporter::class),
             ]);
+    }
+
+    protected function getProductCode($product): string
+    {
+        $semester = Semester::find($product->semester_id)->code ?? '-';
+        $curriculum = Curriculum::find($product->curriculum_id)->code ?? '-';
+        $level = EducationLevel::find($product->education_level_id)->code ?? '-';
+        $class = EducationClass::find($product->education_class_id)->code ?? '-';
+        $subject = EducationSubject::find($product->education_subject_id)->code ?? '-';
+        $type = Type::find($product->type_id)->code ?? '-';
+
+        return "C-{$level}{$curriculum}{$subject}{$class}{$semester}/{$type}";
     }
 
     public static function getPages(): array
