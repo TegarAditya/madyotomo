@@ -109,7 +109,7 @@ class SpkResource extends Resource
                     ->collapsible(),
             ])
             ->defaultSort('entry_date', 'desc')
-            ->recordUrl(null)
+            ->recordUrl(fn (Spk $record) => url('operator/spks/'.$record->id.'/fill-report'))
             ->recordAction(false);
     }
 
