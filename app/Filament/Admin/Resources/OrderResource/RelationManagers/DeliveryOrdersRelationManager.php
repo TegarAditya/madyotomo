@@ -58,8 +58,13 @@ class DeliveryOrdersRelationManager extends RelationManager
                         $set('document_number', $document_number);
 
                         return $document_number;
-                    }),
-                Forms\Components\Hidden::make('document_number'),
+                    })
+                    ->visibleOn(['create']),
+                Forms\Components\TextInput::make('document_number')
+                    ->label('Nomor SPK')
+                    ->unique(),
+                Forms\Components\Hidden::make('document_number')
+                    ->visibleOn(['create']),
                 Forms\Components\DatePicker::make('entry_date')
                     ->default(now())
                     ->required(),
