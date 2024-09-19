@@ -181,9 +181,11 @@ class SpksRelationManager extends RelationManager
                     ->sortable(),
                 Tables\Columns\TextColumn::make('entry_date')
                     ->label('Tanggal Masuk')
+                    ->date('l, d F Y', 'Asia/Jakarta')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('deadline_date')
                     ->label('Tanggal Deadline')
+                    ->date('l, d F Y', 'Asia/Jakarta')
                     ->sortable(),
             ])
             ->filters([
