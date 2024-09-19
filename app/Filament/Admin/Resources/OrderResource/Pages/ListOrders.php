@@ -35,11 +35,12 @@ class ListOrders extends ListRecords
 
         foreach ($semesters as $id => $name) {
             $tabs[$id] = Tab::make($name)->query(function ($query) use ($id) {
-                return $query->whereHas('order_products', function ($query) use ($id) {
-                    $query->whereHas('product', function ($query) use ($id) {
-                        $query->where('semester_id', $id);
-                    });
-                });
+                $semester = \App\Models\Semester::find($id);
+
+                $startDate = $semester->start_date;
+                $endDate = $semester->end_date;
+
+                return $query->whereBetween('entry_date', [$startDate, $endDate]);
             });
         }
 
