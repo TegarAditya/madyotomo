@@ -22,7 +22,7 @@ if (! function_exists('formatReam')) {
 
         return new HtmlString(
             '<span class="font-bold text-lg">' . $totalReam . '<span class="font-thin text-sm"> rim </span></span>' .
-                '<span class="font-bold text-lg">+' . $remainingSheets . '<span class="font-thin text-sm"> sheet</span></span>'
+                '<span class="font-bold text-lg">&nbsp&nbsp+' . $remainingSheets . '<span class="font-thin text-sm"> sheet</span></span>'
         );
     }
 }
