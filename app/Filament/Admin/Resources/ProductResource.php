@@ -226,7 +226,8 @@ class ProductResource extends Resource
                     ->importer(ProductImporter::class),
                 Tables\Actions\ExportAction::make()
                     ->exporter(ProductExporter::class),
-            ]);
+            ])
+            ->deferLoading();
     }
 
     protected function getProductCode($product): string
