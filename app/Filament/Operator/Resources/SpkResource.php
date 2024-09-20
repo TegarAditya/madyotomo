@@ -77,7 +77,7 @@ class SpkResource extends Resource
             ->filters([
                 Tables\Filters\Filter::make('only_has_order')
                     ->label('Hanya SPK yang memiliki order')
-                    ->query(fn (Builder $query) => $query->whereHas('order', fn (Builder $query) => $query->withTrashed())),
+                    ->query(fn(Builder $query) => $query->whereHas('order', fn(Builder $query) => $query->withTrashed())),
             ])
             ->actions([
                 Tables\Actions\Action::make('Detail')
@@ -88,13 +88,13 @@ class SpkResource extends Resource
                     ->modalHeading()
                     ->stickyModalHeader()
                     ->modalWidth(MaxWidth::FiveExtraLarge)
-                    ->infolist(fn (Spk $record) => self::generateInfolist($record)),
+                    ->infolist(fn(Spk $record) => self::generateInfolist($record)),
                 Tables\Actions\Action::make('Laporan')
                     ->button()
                     ->label('Laporan')
                     ->icon('heroicon-o-document-text')
                     ->color('primary')
-                    ->url(fn (Spk $record) => url('operator/spks/'.$record->id.'/fill-report')),
+                    ->url(fn(Spk $record) => url('operator/spks/' . $record->id . '/fill-report')),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
@@ -105,15 +105,15 @@ class SpkResource extends Resource
                 Tables\Grouping\Group::make('order.name')
                     ->label('Order')
                     ->titlePrefixedWithLabel(false)
-                    ->getTitleFromRecordUsing(fn (Spk $record) => $record->order->name.' - '.$record->order->document_number)
+                    ->getTitleFromRecordUsing(fn(Spk $record) => $record->order->name . ' - ' . $record->order->document_number)
                     ->collapsible(),
             ])
             ->defaultSort('entry_date', 'desc')
-            ->recordUrl(fn (Spk $record) => url('operator/spks/'.$record->id.'/fill-report'))
+            ->recordUrl(fn(Spk $record) => url('operator/spks/' . $record->id . '/fill-report'))
             ->recordAction(false);
     }
 
-    private static function generateInfolist(Spk $record): array
+    public static function generateInfolist(Spk $record): array
     {
         $spkProducts = $record->spkProducts->pluck('order_products');
         $infolist = [];
@@ -125,7 +125,7 @@ class SpkResource extends Resource
 
             foreach ($spkProduct as $index => $productId) {
                 $product = OrderProduct::find($productId)->product;
-                $productName .= $product->educationSubject->name.' - '.$product->educationClass->name.' -> '.(OrderProduct::find($productId)->quantity + $spare).' sheet';
+                $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
 
                 // Append separator unless it's the last product
                 if ($index < count($spkProduct) - 1) {
@@ -136,22 +136,22 @@ class SpkResource extends Resource
                 $totalQuantity += $productQuantity / 2;
             }
 
-            $productNameHtml = new HtmlString('<span class="font-thin">'.$productName.'</span>');
+            $productNameHtml = new HtmlString('<span class="font-reguler">' . $productName . '</span>');
 
             $infolist[] = Section::make($productNameHtml)
                 ->schema([
                     TextEntry::make('id')
                         ->label('RIM')
-                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">'.($totalQuantity / 1000).'<span class="font-thin text-sm"> rim</span></span>')),
+                        ->formatStateUsing(fn() => formatReam($totalQuantity)),
                     TextEntry::make('id')
                         ->label('PLANO')
-                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">'.($totalQuantity / 2).'<span class="font-thin text-sm"> sheet</span></span>')),
+                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($totalQuantity / 2) . '<span class="font-thin text-sm"> sheet</span></span>')),
                     TextEntry::make('id')
                         ->label('1/2 PLANO')
-                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">'.$totalQuantity.'<span class="font-thin text-sm"> sheet</span></span>')),
+                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($totalQuantity) . '<span class="font-thin text-sm"> sheet</span></span>')),
                     TextEntry::make('id')
                         ->label('HASIL')
-                        ->formatStateUsing(fn () => new HtmlString('<span class="font-bold text-lg">'.($totalQuantity * 2).'<span class="font-thin text-sm"> sheet</span></span>'))
+                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($totalQuantity * 2) . '<span class="font-thin text-sm"> sheet</span></span>'))
                         ->hidden(),
                 ])
                 ->columns(['md' => 3]);
@@ -164,48 +164,48 @@ class SpkResource extends Resource
                     TextEntry::make('order.name')
                         ->label('Order')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->order->name ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->order->name ?? '-'),
                     TextEntry::make('order.document_number')
                         ->label('Nomor Order')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->order->document_number ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->order->document_number ?? '-'),
                     TextEntry::make('document_number')
                         ->label('Nomor SPK')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->document_number ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->document_number ?? '-'),
                     TextEntry::make('report_number')
                         ->label('Nomor Laporan')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->report_number ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->report_number ?? '-'),
                     TextEntry::make('entry_date')
                         ->label('Tanggal Masuk')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => Carbon::parse($record->entry_date)->translatedFormat('l, j F Y')),
+                        ->formatStateUsing(fn($record) => Carbon::parse($record->entry_date)->translatedFormat('l, j F Y')),
                     TextEntry::make('deadline_date')
                         ->label('Tanggal Deadline')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => Carbon::parse($record->deadline_date)->translatedFormat('l, j F Y')),
+                        ->formatStateUsing(fn($record) => Carbon::parse($record->deadline_date)->translatedFormat('l, j F Y')),
                     TextEntry::make('paper_config')
                         ->label('Konfigurasi Kertas')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->paper_config ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->paper_config ?? '-'),
                     TextEntry::make('configuration')
                         ->label('Konfigurasi Warna')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->configuration ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->configuration ?? '-'),
                     TextEntry::make('print_type')
                         ->label('Jenis Cetak')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->print_type ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->print_type ?? '-'),
                     TextEntry::make('spare')
                         ->label('Spare')
                         ->inlineLabel()
-                        ->formatStateUsing(fn ($record) => $record->spare ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->spare ?? '-'),
                     TextEntry::make('note')
                         ->columnSpanFull()
                         ->label('Catatan')
                         ->html()
-                        ->formatStateUsing(fn ($record) => $record->note ?? '-'),
+                        ->formatStateUsing(fn($record) => $record->note ?? '-'),
                 ]),
             Section::make('Kebutuhan Kertas')
                 ->description('Kebutuhan kertas termasuk spare')

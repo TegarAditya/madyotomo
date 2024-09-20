@@ -53,7 +53,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                 ->modalHeading()
                 ->stickyModalHeader()
                 ->modalWidth(MaxWidth::FiveExtraLarge)
-                ->infolist(fn(Spk $record) => self::generateInfolist($record)),
+                ->infolist(fn(Spk $record) => SpkResource::generateInfolist($record)),
             Action::make('view')
                 ->label('Lihat SPK')
                 ->visible(fn() => Auth::user()->can('view_order'))
@@ -135,7 +135,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                             ->relationship()
                             ->itemLabel(function ($state) {
                                 if ($state['spk_order_product_id']) {
-                                    return $this->getProductQuantity($state['spk_order_product_id']) . ' Oplah';
+                                    return $this->getProductQuantity($state['spk_order_product_id']) . ' sheet';
                                 }
 
                                 return 'Oplah';
@@ -190,11 +190,11 @@ class FillReport extends Page implements HasForms, HasInfolists
                                     ->required(),
                                 Forms\Components\TextInput::make('success_count')
                                     ->label('Jumlah Sukses')
-                                    ->integer()
+                                    ->numeric()
                                     ->required(),
                                 Forms\Components\TextInput::make('error_count')
                                     ->label('Jumlah Gagal')
-                                    ->integer()
+                                    ->numeric()
                                     ->required(),
                             ]),
                     ]),
@@ -211,66 +211,66 @@ class FillReport extends Page implements HasForms, HasInfolists
         ];
     }
 
-    private static function generateInfolist(Spk $record): array
-    {
-        $spkProducts = $record->spkProducts->pluck('order_products');
-        $infolist = [];
+    // private static function generateInfolist(Spk $record): array
+    // {
+    //     $spkProducts = $record->spkProducts->pluck('order_products');
+    //     $infolist = [];
 
-        foreach ($spkProducts as $spkProduct) {
-            $productName = '';
-            $totalQuantity = 0;
-            $spare = $record->spare;
+    //     foreach ($spkProducts as $spkProduct) {
+    //         $productName = '';
+    //         $totalQuantity = 0;
+    //         $spare = $record->spare;
 
-            foreach ($spkProduct as $index => $productId) {
-                $product = OrderProduct::find($productId)->product;
-                $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name . ' -> ' . (OrderProduct::find($productId)->quantity + $spare) . ' sheet';
+    //         foreach ($spkProduct as $index => $productId) {
+    //             $product = OrderProduct::find($productId)->product;
+    //             $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
 
-                // Append separator unless it's the last product
-                if ($index < count($spkProduct) - 1) {
-                    $productName .= '&nbsp;&nbsp; | &nbsp;&nbsp;';
-                }
+    //             // Append separator unless it's the last product
+    //             if ($index < count($spkProduct) - 1) {
+    //                 $productName .= '&nbsp;&nbsp; | &nbsp;&nbsp;';
+    //             }
 
-                $productQuantity = OrderProduct::find($productId)->quantity + $spare;
-                $totalQuantity += $productQuantity / 2;
-            }
+    //             $productQuantity = OrderProduct::find($productId)->quantity + $spare;
+    //             $totalQuantity += $productQuantity / 2;
+    //         }
 
-            $productNameHtml = new HtmlString('<span class="font-thin">' . $productName . '</span>');
+    //         $productNameHtml = new HtmlString('<span class="font-reguler">' . $productName . '</span>');
 
-            $infolist[] = Infolists\Components\Section::make($productNameHtml)
-                ->schema([
-                    Infolists\Components\TextEntry::make('id')
-                        ->label('RIM')
-                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . ($totalQuantity / 1000) . '<span class="font-thin text-sm"> rim</span></span>')),
-                    Infolists\Components\TextEntry::make('id')
-                        ->label('PLANO')
-                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . ($totalQuantity / 2) . '<span class="font-thin text-sm"> sheet</span></span>')),
-                    Infolists\Components\TextEntry::make('id')
-                        ->label('1/2 PLANO')
-                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . $totalQuantity . '<span class="font-thin text-sm"> sheet</span></span>')),
-                    Infolists\Components\TextEntry::make('id')
-                        ->label('HASIL')
-                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . ($totalQuantity * 2) . '<span class="font-thin text-sm"> sheet</span></span>'))
-                        ->hidden(),
-                ])
-                ->columns(['md' => 3]);
-        }
+    //         $infolist[] = Infolists\Components\Section::make($productNameHtml)
+    //             ->schema([
+    //                 Infolists\Components\TextEntry::make('id')
+    //                     ->label('RIM')
+    //                     ->formatStateUsing(fn() => formatReam($totalQuantity)),
+    //                 Infolists\Components\TextEntry::make('id')
+    //                     ->label('PLANO')
+    //                     ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($totalQuantity / 2) . '<span class="font-thin text-sm"> sheet</span></span>')),
+    //                 Infolists\Components\TextEntry::make('id')
+    //                     ->label('1/2 PLANO')
+    //                     ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($totalQuantity) . '<span class="font-thin text-sm"> sheet</span></span>')),
+    //                 Infolists\Components\TextEntry::make('id')
+    //                     ->label('HASIL')
+    //                     ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($totalQuantity * 2) . '<span class="font-thin text-sm"> sheet</span></span>'))
+    //                     ->hidden(),
+    //             ])
+    //             ->columns(['md' => 3]);
+    //     }
 
-        return [
-            Infolists\Components\Section::make('Kebutuhan Kertas')
-                ->description('Kebutuhan kertas termasuk spare')
-                ->schema($infolist),
-        ];
-    }
+    //     return [
+    //         Infolists\Components\Section::make('Kebutuhan Kertas')
+    //             ->description('Kebutuhan kertas termasuk spare')
+    //             ->schema($infolist),
+    //     ];
+    // }
 
-    protected function getProductQuantity(int $id): int
+    protected function getProductQuantity(int $id): string
     {
         $spkProduct = SpkProduct::find($id);
-        $totalQuantity = 0;
+        $totalQuantity = '';
         $spare = SpkProduct::find($id)->spk->spare;
 
         foreach ($spkProduct->order_products as $productId) {
             $productQuantity = OrderProduct::find($productId)->quantity + $spare;
-            $totalQuantity += $productQuantity;
+            $totalQuantity = number_format($productQuantity, 0, ',', '.');
         }
 
         return $totalQuantity;
