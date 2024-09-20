@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:php8.2
+FROM dunglas/frankenphp:php8.2-alpine
 
 RUN install-php-extensions \
     ctype \
@@ -28,7 +28,5 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
     mv composer.phar /usr/local/bin/composer
 
 COPY . /app
-
-RUN composer install
 
 ENTRYPOINT ["php", "artisan", "octane:frankenphp"]
