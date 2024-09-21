@@ -11,16 +11,15 @@ class MaterialPurchase extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'supplier_id',
+        'material_supplier_id',
         'proof_number',
         'purchase_date',
-        'quantity',
         'is_paid',
         'paid_off_date',
         'notes',
     ];
 
-    public function supplier()
+    public function materialSupplier()
     {
         return $this->belongsTo(MaterialSupplier::class);
     }

@@ -17,18 +17,17 @@ class Material extends Model
         'unit',
     ];
 
-    private function getStocksAttribute()
+    public function getStocksAttribute()
     {
-        $purchases = $this->purchases->sum('quantity');
-        $usages = $this->usages->sum('quantity');
+        $purchases = $this->purchases->sum('pivot.quantity') ?? 0;
+        $usages = $this->usages->sum('pivot.quantity') ?? 0;
 
         return $purchases - $usages;
     }
 
     public function purchases()
     {
-        return $this->belongsToMany(MaterialPurchase::class, 'material_purchase_items')
-            ->using(MaterialPurchaseItem::class)
+        return $this->belongsToMany(MaterialPurchase::class, 'material_purchase_items', 'material_id', 'material_purchase_id')
             ->withPivot([
                 'quantity',
                 'price',
@@ -37,8 +36,7 @@ class Material extends Model
 
     public function usages()
     {
-        return $this->belongsToMany(MaterialUsage::class, 'material_usage_items')
-            ->using(MaterialUsageItem::class)
+        return $this->belongsToMany(MaterialUsage::class, 'material_usage_items', 'material_id', 'material_usage_id')
             ->withPivot([
                 'quantity',
                 'machine_id',

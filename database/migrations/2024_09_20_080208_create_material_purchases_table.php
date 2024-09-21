@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignIdFor(MaterialSupplier::class)->constrained()->cascadeOnDelete();
             $table->string('proof_number');
             $table->date('purchase_date');
-            $table->integer('quantity');
             $table->boolean('is_paid')->default(false);
             $table->date('paid_off_date')->nullable();
             $table->text('notes')->nullable();

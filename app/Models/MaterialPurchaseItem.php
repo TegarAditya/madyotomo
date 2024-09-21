@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MaterialPurchaseItem extends Model
@@ -16,6 +17,11 @@ class MaterialPurchaseItem extends Model
         'quantity',
         'price',
     ];
+
+    public function getTotalAttribute()
+    {
+        return $this->quantity * $this->price;
+    }
 
     public function materialPurchase()
     {
