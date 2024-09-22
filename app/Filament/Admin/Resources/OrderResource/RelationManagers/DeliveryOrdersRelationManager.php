@@ -151,6 +151,7 @@ class DeliveryOrdersRelationManager extends RelationManager
         
         return true;
     }
+    
     protected function downloadDeliveryOrder(DeliveryOrder $record): StreamedResponse
     {
         return response()->streamDownload(function () use ($record) {
