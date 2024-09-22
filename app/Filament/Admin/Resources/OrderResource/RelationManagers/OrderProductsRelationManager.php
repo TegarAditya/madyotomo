@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 
 use App\Models\OrderProduct;
+use App\Models\Semester;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -31,15 +32,11 @@ class OrderProductsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('number')
                     ->label('No.')
-                    ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1),
-                Tables\Columns\TextColumn::make('product.name')
+                    ->rowIndex(),
+                Tables\Columns\TextColumn::make('product.code')
                     ->label('Kode MMJ')
                     ->toggleable()
-                    ->formatStateUsing(function (string $state) {
-                        $parts = explode('|', $state);
-
-                        return trim($parts[1]);
-                    }),
+                    ->default(fn (OrderProduct $record) => $this->getProductCode($record->product)),
                 Tables\Columns\TextColumn::make('product.educationSubject.name')
                     ->label('Mapel')
                     ->searchable(),
@@ -47,22 +44,32 @@ class OrderProductsRelationManager extends RelationManager
                     ->label('Kelas'),
                 Tables\Columns\TextColumn::make('product.Curriculum.name')
                     ->label('Kurikulum'),
-                Tables\Columns\TextColumn::make('product.Type.name')
-                    ->label('Tipe'),
+                Tables\Columns\TextColumn::make('product.Type.code')
+                    ->label('Tipe')
+                    ->tooltip(fn (OrderProduct $record) => $record->product->type->name),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Oplah')
                     ->numeric()
                     ->summarize([
                         Tables\Columns\Summarizers\Sum::make(),
                     ]),
+                Tables\Columns\TextColumn::make('result')
+                    ->label('Hasil')
+                    ->numeric()
+                    ->default(0),
                 Tables\Columns\TextColumn::make('status')
                     ->default(function (OrderProduct $record) {
                         $spkStatus = $record->hasSpkProducts();
-                        $deliveryStatus = $record->hasDeliveryOrderProducts();
+                        $reportStatus = $record->hasReport();
+                        $deliveryStatus = $record->hasDeliveryOders();
+
+                        $record->result;
 
                         switch (true) {
                             case $deliveryStatus:
                                 return 'Dikirim';
+                            case $reportStatus:
+                                return 'Dicetak';
                             case $spkStatus:
                                 return 'Diproses';
                             default:
@@ -70,14 +77,14 @@ class OrderProductsRelationManager extends RelationManager
                         }
                     })
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Pending' => 'gray',
                         'Diproses' => 'primary',
-                        'Dicetak' => 'warning',
+                        'Dicetak' => 'info',
                         'Dikirim' => 'success',
                         'Ditolak' => 'danger',
                     })
-                    ->icon(fn (string $state): string => match ($state) {
+                    ->icon(fn(string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
                         'Diproses' => 'heroicon-o-clipboard-document-check',
                         'Dicetak' => 'heroicon-o-printer',
@@ -86,7 +93,7 @@ class OrderProductsRelationManager extends RelationManager
                     }),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()
             ])
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),
@@ -100,5 +107,17 @@ class OrderProductsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected function getProductCode($product): string
+    {
+        $semester = \App\Models\Semester::find($product->semester_id)->code ?? '-';
+        $curriculum = \App\Models\Curriculum::find($product->curriculum_id)->code ?? '-';
+        $level = \App\Models\EducationLevel::find($product->education_level_id)->code ?? '-';
+        $class = \App\Models\EducationClass::find($product->education_class_id)->code ?? '-';
+        $subject = \App\Models\EducationSubject::find($product->education_subject_id)->code ?? '-';
+        $type = \App\Models\Type::find($product->type_id)->code ?? '-';
+
+        return "C-{$level}{$curriculum}{$subject}{$class}{$semester}/{$type}";
     }
 }

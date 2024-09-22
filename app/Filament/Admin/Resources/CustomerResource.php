@@ -41,6 +41,7 @@ class CustomerResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Textarea::make('address')
                     ->required()
+                    ->columnSpanFull()
                     ->maxLength(255),
             ]);
     }

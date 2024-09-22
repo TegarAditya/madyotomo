@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use stdClass;
@@ -31,10 +32,9 @@ class SpksRelationManager extends RelationManager
                     ->label('Nomor SPK')
                     ->visibleOn(['create'])
                     ->content(function (callable $set, $get) {
-                        $latestOrder = Spk::orderBy('created_at', 'desc')->first()->document_number ?? null;
-                        $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
 
-                        $nomorTerakhir = (Spk::all()->first()) ? $latestNumber + 1 : 1;
+                        $nomor_order = $this->getOwnerRecord()->document_number;
+                        $nomor = substr($nomor_order, 0, strpos($nomor_order, '/'));
                         $month = (new DateTime('@'.strtotime($get('entry_date'))))->format('m');
                         $year = (new DateTime('@'.strtotime($get('entry_date'))))->format('Y');
                         $romanNumerals = [
@@ -53,10 +53,10 @@ class SpksRelationManager extends RelationManager
                         ];
                         $romanMonth = $romanNumerals[$month];
 
-                        $set('document_number', "{$nomorTerakhir}/MT/SPK/{$romanMonth}/{$year}");
-                        $set('report_number', "{$nomorTerakhir}/MT/LP/{$romanMonth}/{$year}");
+                        $set('document_number', "{$nomor}/MT/SPK/{$romanMonth}/{$year}");
+                        $set('report_number', "{$nomor}/MT/LP/{$romanMonth}/{$year}");
 
-                        return "{$nomorTerakhir}/MT/SPK/{$romanMonth}/{$year}";
+                        return "{$nomor}/MT/SPK/{$romanMonth}/{$year}";
                     }),
                 Forms\Components\Hidden::make('document_number')
                     ->visibleOn(['create']),
@@ -172,14 +172,20 @@ class SpksRelationManager extends RelationManager
                     ->label('No.')
                     ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1),
                 Tables\Columns\TextColumn::make('document_number')
+                    ->label('Nomor SPK')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('report_number')
+                    ->label('Nomor Laporan')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('entry_date')
+                    ->label('Tanggal Masuk')
+                    ->date('l, d F Y', 'Asia/Jakarta')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('deadline_date')
+                    ->label('Tanggal Deadline')
+                    ->date('l, d F Y', 'Asia/Jakarta')
                     ->sortable(),
             ])
             ->filters([
@@ -220,8 +226,16 @@ class SpksRelationManager extends RelationManager
             ]);
     }
 
+    public function generateDocumentNumber() {
+
+    }
+
     public function isReadOnly(): bool
     {
-        return false;
+        if (Auth::user()->can('create_order')) {
+            return false;
+        }
+        
+        return true;
     }
 }
