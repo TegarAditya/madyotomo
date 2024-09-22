@@ -184,9 +184,17 @@ class FillReport extends Page implements HasForms, HasInfolists
                                     ->required(),
                                 Forms\Components\TimePicker::make('start_time')
                                     ->label('Jam Mulai')
+                                    ->seconds(false)
+                                    ->live()
                                     ->required(),
                                 Forms\Components\TimePicker::make('end_time')
                                     ->label('Jam Selesai')
+                                    ->seconds(false)
+                                    ->afterOrEqual('start_time')
+                                    ->validationMessages([
+                                        'after_or_equal' => 'Jam selesai harus setelah jam mulai',
+                                    ])
+                                    ->disabled(fn($get) => $get('start_time') === null)
                                     ->required(),
                                 Forms\Components\TextInput::make('success_count')
                                     ->label('Jumlah Sukses')
