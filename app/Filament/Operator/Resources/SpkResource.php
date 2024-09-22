@@ -132,7 +132,8 @@ class SpkResource extends Resource
                     $productName .= '&nbsp;&nbsp; | &nbsp;&nbsp;';
                 }
 
-                $productQuantity = OrderProduct::find($productId)->quantity + $spare;
+                $oplage = OrderProduct::find($productId)->quantity;
+                $productQuantity = $oplage + $spare;
                 $totalQuantity += $productQuantity / 2;
             }
 
@@ -151,10 +152,9 @@ class SpkResource extends Resource
                         ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($totalQuantity) . '<span class="font-thin text-sm"> sheet</span></span>')),
                     TextEntry::make('id')
                         ->label('HASIL')
-                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($totalQuantity * 2) . '<span class="font-thin text-sm"> sheet</span></span>'))
-                        ->hidden(),
+                        ->formatStateUsing(fn() => new HtmlString('<span class="font-bold text-lg">' . formatNumber($oplage) . '<span class="font-thin text-sm"> sheet</span></span>')),
                 ])
-                ->columns(['md' => 3]);
+                ->columns(['md' => 4]);
         }
 
         return [
