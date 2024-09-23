@@ -74,16 +74,16 @@
         },
         {
             "name": "anourvalar/office",
-            "version": "2.5.0",
+            "version": "2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AnourValar/office.git",
-                "reference": "f7a8bb7df399332ba2ddf9681dbc1fb78acf41f8"
+                "reference": "bbacb52a7b1cd5805c7ac3fe602d41d72eab5de6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AnourValar/office/zipball/f7a8bb7df399332ba2ddf9681dbc1fb78acf41f8",
-                "reference": "f7a8bb7df399332ba2ddf9681dbc1fb78acf41f8",
+                "url": "https://api.github.com/repos/AnourValar/office/zipball/bbacb52a7b1cd5805c7ac3fe602d41d72eab5de6",
+                "reference": "bbacb52a7b1cd5805c7ac3fe602d41d72eab5de6",
                 "shasum": ""
             },
             "require": {
@@ -117,7 +117,6 @@
                 "engine",
                 "excel",
                 "export",
-                "fast",
                 "fill",
                 "generate",
                 "generator",
@@ -128,6 +127,7 @@
                 "placeholder",
                 "replacers",
                 "report",
+                "table",
                 "template",
                 "templater",
                 "variables",
@@ -138,9 +138,9 @@
             ],
             "support": {
                 "issues": "https://github.com/AnourValar/office/issues",
-                "source": "https://github.com/AnourValar/office/tree/2.5.0"
+                "source": "https://github.com/AnourValar/office/tree/2.5.1"
             },
-            "time": "2024-07-13T07:12:28+00:00"
+            "time": "2024-09-21T12:15:01+00:00"
         },
         {
             "name": "awcodes/light-switch",
