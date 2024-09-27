@@ -70,6 +70,10 @@ class MaterialResource extends Resource
                     ->label('Stok')
                     ->numeric()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('prices')
+                    ->label('Total Harga')
+                    ->numeric()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
