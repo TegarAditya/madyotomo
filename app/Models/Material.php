@@ -25,6 +25,12 @@ class Material extends Model
         return $purchases - $usages;
     }
 
+    public function getPricesAttribute()
+    {
+        $latestPurchase = $this->purchases()->orderBy('material_purchase_items.created_at', 'desc')->first();
+        return $latestPurchase ? $latestPurchase->pivot->price * $this->stocks : null;
+    }
+
     public function purchases()
     {
         return $this->belongsToMany(MaterialPurchase::class, 'material_purchase_items', 'material_id', 'material_purchase_id')

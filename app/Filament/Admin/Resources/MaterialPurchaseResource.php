@@ -105,6 +105,16 @@ class MaterialPurchaseResource extends Resource
                                         Forms\Components\Select::make('material_id')
                                             ->label('Bahan')
                                             ->relationship('material', 'name')
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, $set) {
+                                                $material = $state;
+                                                $latestMaterialPurchase = \App\Models\MaterialPurchaseItem::latest()
+                                                    ->whereHas('materialPurchase', function (Builder $query) use ($material) {
+                                                        $query->where('material_id', $material);
+                                                    })
+                                                    ->first();
+                                                $set('price', $latestMaterialPurchase ? $latestMaterialPurchase->price : 0);
+                                            })
                                             ->required(),
                                         Forms\Components\TextInput::make('quantity')
                                             ->label('Jumlah')
