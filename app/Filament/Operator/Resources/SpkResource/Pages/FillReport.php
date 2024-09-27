@@ -140,13 +140,19 @@ class FillReport extends Page implements HasForms, HasInfolists
 
                                 return 'Oplah';
                             })
-                            ->columns(4)
+                            ->columns([
+                                'sm' => 2,
+                                'md' => 4,
+                            ])
                             ->addActionLabel('Tambah Laporan')
                             ->defaultItems(1)
                             ->schema([
                                 Forms\Components\Select::make('spk_order_product_id')
                                     ->label('Produk')
-                                    ->columnSpan(4)
+                                    ->columnSpan([
+                                        'sm' => 2,
+                                        'md' => 4,
+                                    ])
                                     ->options(
                                         function () {
                                             return SpkProduct::where('spk_id', $this->record->id)
@@ -175,11 +181,17 @@ class FillReport extends Page implements HasForms, HasInfolists
                                     ->required(),
                                 Forms\Components\Select::make('machine_id')
                                     ->label('Mesin')
-                                    ->columnSpan(2)
+                                    ->columnSpan([
+                                        'sm' => 1,
+                                        'md' => 2,
+                                    ])
                                     ->options(Machine::all()->pluck('name', 'id')->toArray())
                                     ->required(),
                                 Forms\Components\DatePicker::make('date')
-                                    ->columnSpan(2)
+                                    ->columnSpan([
+                                        'sm' => 1,
+                                        'md' => 2,
+                                    ])
                                     ->label('Tanggal')
                                     ->required(),
                                 Forms\Components\TimePicker::make('start_time')
