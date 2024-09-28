@@ -32,6 +32,7 @@ class OperatorPanelProvider extends PanelProvider
                 'primary' => Color::Blue,
             ])
             ->font('Plus Jakarta Sans')
+            ->viteTheme('resources/css/filament/operator/theme.css')
             ->topNavigation()
             ->discoverResources(in: app_path('Filament/Operator/Resources'), for: 'App\\Filament\\Operator\\Resources')
             ->discoverPages(in: app_path('Filament/Operator/Pages'), for: 'App\\Filament\\Operator\\Pages')
