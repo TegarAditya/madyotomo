@@ -22,6 +22,8 @@ RUN install-php-extensions \
     xml \
     zip
 
+RUN apk add --no-cache nodejs npm
+
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php && \
     php -r "unlink('composer-setup.php');" && \
