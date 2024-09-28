@@ -28,6 +28,27 @@ class Spk extends Model
         'deadline_date' => 'datetime',
     ];
 
+    public function getResultAttribute()
+    {
+        return $this->productReports->sum('success_count');
+    }
+
+    public function getErrorAttribute()
+    {
+        return $this->productReports->sum('error_count');
+    }
+
+    public function getProgressAttribute()
+    {
+        $total = $this->order()->first()->orderProducts->sum('quantity') / 2;
+        return $total > 0 ? ($this->productReports->sum('success_count') / $total) * 100 : 0;
+    }
+
+    public function getIsPrintedAttribute()
+    {
+        return $this->result > 0;
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class);

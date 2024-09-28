@@ -63,6 +63,7 @@ class MaterialPurchaseResource extends Resource
                                                 1 => 'Sudah',
                                             ])
                                             ->required()
+                                            ->live()
                                             ->hiddenOn('view'),
                                     ]),
 
@@ -81,15 +82,34 @@ class MaterialPurchaseResource extends Resource
                                             ->content(fn(MaterialPurchase $record) => $record->purchase_date),
                                         Forms\Components\Placeholder::make('paid_off_date')
                                             ->label('Tanggal Pelunasan')
-                                            ->content(fn(MaterialPurchase $record) => $record->paid_off_date),
+                                            ->content(fn(MaterialPurchase $record) => $record->paid_off_date ?? '-'),
                                     ])
                                     ->visibleOn('view'),
                                 Forms\Components\Fieldset::make()
                                     ->label('Catatan Pelunasan')
                                     ->schema([
-                                        Forms\Components\Placeholder::make('notes')
+                                        Forms\Components\Placeholder::make('notes_ph')
                                             ->hiddenLabel()
-                                            ->content('Catatan pelunasan akan muncul setelah Anda memilih "Sudah" pada pilihan "Lunas?" di atas.')
+                                            ->hidden(fn($get) => $get('is_paid'))
+                                            ->hiddenOn('view')
+                                            ->content(function (MaterialPurchase $record) {
+                                                if (! $record->is_paid) {
+                                                    return 'Catatan pelunasan akan muncul setelah Anda memilih "Sudah" pada pilihan "Lunas?" di atas.';
+                                                }
+
+                                                return new HtmlString($record->notes ?? '-');
+                                            })
+                                            ->columnSpanFull(),
+                                        Forms\Components\Placeholder::make('paid_notes')
+                                            ->hiddenLabel()
+                                            ->visibleOn('view')
+                                            ->content(function (MaterialPurchase $record) {
+                                                return new HtmlString($record->notes ?? '-');
+                                            })
+                                            ->columnSpanFull(),
+                                        Forms\Components\RichEditor::make('notes')
+                                            ->hidden(fn($get) => ! $get('is_paid'))
+                                            ->hiddenOn('view')
                                             ->columnSpanFull(),
                                     ]),
                             ]),
