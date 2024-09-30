@@ -23,6 +23,23 @@ class Product extends Model
         'quantity',
     ];
 
+    public function getCodeAttribute()
+    {
+        $semester = $this->semester->code;
+        $curriculum = $this->curriculum->code;
+        $level = $this->educationLevel->code;
+        $class = $this->educationClass->code;
+        $subject = $this->educationSubject->code;
+        $type = $this->type->code;
+
+        return "C-{$level}{$curriculum}{$subject}{$class}{$semester}/{$type}";
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class);

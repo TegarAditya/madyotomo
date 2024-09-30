@@ -35,8 +35,7 @@ class OrderProductsRelationManager extends RelationManager
                     ->rowIndex(),
                 Tables\Columns\TextColumn::make('product.code')
                     ->label('Kode MMJ')
-                    ->toggleable()
-                    ->default(fn (OrderProduct $record) => $this->getProductCode($record->product)),
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('product.educationSubject.name')
                     ->label('Mapel')
                     ->searchable(),
@@ -46,7 +45,7 @@ class OrderProductsRelationManager extends RelationManager
                     ->label('Kurikulum'),
                 Tables\Columns\TextColumn::make('product.Type.code')
                     ->label('Tipe')
-                    ->tooltip(fn (OrderProduct $record) => $record->product->type->name),
+                    ->tooltip(fn(OrderProduct $record) => $record->product->type->name),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Oplah')
                     ->numeric()
@@ -107,17 +106,5 @@ class OrderProductsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    protected function getProductCode($product): string
-    {
-        $semester = \App\Models\Semester::find($product->semester_id)->code ?? '-';
-        $curriculum = \App\Models\Curriculum::find($product->curriculum_id)->code ?? '-';
-        $level = \App\Models\EducationLevel::find($product->education_level_id)->code ?? '-';
-        $class = \App\Models\EducationClass::find($product->education_class_id)->code ?? '-';
-        $subject = \App\Models\EducationSubject::find($product->education_subject_id)->code ?? '-';
-        $type = \App\Models\Type::find($product->type_id)->code ?? '-';
-
-        return "C-{$level}{$curriculum}{$subject}{$class}{$semester}/{$type}";
     }
 }
