@@ -246,25 +246,18 @@ class FillReport extends Page implements HasForms, HasInfolists
 
         foreach ($spkProducts as $spkProduct) {
             $productName = '';
-            $totalQuantity = 0;
-            $spare = $record->spare;
-            $printed = OrderProduct::find($spkProduct[0])->result;
+            $printed = OrderProduct::find($spkProduct[0])->raw_result;
+            $oplage = 0;
 
             foreach ($spkProduct as $index => $productId) {
                 $product = OrderProduct::find($productId)->product;
                 $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
 
-                // Append separator unless it's the last product
                 if ($index < count($spkProduct) - 1) {
                     $productName .= '&nbsp;&nbsp; | &nbsp;&nbsp; ';
                 }
 
-                $oplage = OrderProduct::find($productId)->quantity;
-                $productQuantity = $oplage + $spare;
-
-                if ($index < count($spkProduct) - 1) {
-                    $totalQuantity += $productQuantity;
-                }
+                $oplage += OrderProduct::find($productId)->quantity / 2;
             }
 
             $productNameHtml = new HtmlString('<span class="font-thin">' . $productName . '</span>');

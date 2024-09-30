@@ -18,6 +18,59 @@ class OrderProduct extends Model
         'quantity',
     ];
 
+    public function getResultAttribute()
+    {
+        $printedCountArray = [];
+        $orderProduct = $this;
+
+        foreach ($orderProduct->order->spks as $spk) {
+
+            $spkProducts = $spk->spkProducts()
+                ->whereRaw('order_products REGEXP ?', ['[[:<:]]' . $orderProduct->id . '[[:>:]]'])
+                ->whereHas('productReports')
+                ->first();
+
+            if ($spkProducts) {
+                $orderProductsArray = $spkProducts->order_products;
+
+                $isSingleProduct = count($orderProductsArray) === 1;
+
+                foreach ($spkProducts->productReports as $productReport) {
+                    if ($isSingleProduct) {
+                        $printedCountArray[] = $productReport->success_count * 2;
+                    } else {
+                        $printedCountArray[] = $productReport->success_count;
+                    }
+                }
+            }
+        }
+
+        return array_sum($printedCountArray);
+    }
+
+    public function getRawResultAttribute()
+    {
+        $printedCountArray = [];
+        $orderProduct = $this;
+
+        foreach ($orderProduct->order->spks as $spk) {
+
+            $spkProducts = $spk->spkProducts()
+                ->whereRaw('order_products REGEXP ?', ['[[:<:]]' . $orderProduct->id . '[[:>:]]'])
+                ->whereHas('productReports')
+                ->first();
+
+            if ($spkProducts) {
+                foreach ($spkProducts->productReports as $productReport) {
+                    $printedCountArray[] = $productReport->success_count;
+                }
+            }
+        }
+
+        return array_sum($printedCountArray);
+    }
+
+
     public function order()
     {
         return $this->belongsTo(Order::class);
@@ -97,24 +150,5 @@ class OrderProduct extends Model
         }
 
         return in_array($this->id, $reportedProductArray);
-    }
-
-    public function getResultAttribute()
-    {
-        $printedCountArray = [];
-        $orderProduct = $this;
-
-        foreach ($orderProduct->order->spks as $spk) {
-
-            $spkProducts = $spk->spkProducts()->where('order_products', 'LIKE', '%' . $orderProduct->id . '%')->whereHas('productReports')->first();
-
-            if ($spkProducts) {
-                foreach ($spkProducts->productReports as $productReport) {
-                    $printedCountArray[] = $productReport->success_count;
-                }
-            }
-        }
-
-        return array_sum($printedCountArray);
     }
 }

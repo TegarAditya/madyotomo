@@ -144,14 +144,10 @@ class ProductResource extends Resource
 
     public static function table(Table $table): Table
     {
-        // dd(Curriculum::firstWhere('code', 13)->id);
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Kode MMJ')
-                    ->default(fn (Product $record) => (new static)->getProductCode($record))
-                    ->searchable()
-                    ->sortable(),
+                    ->label('Kode MMJ'),
                 Tables\Columns\TextColumn::make('educationSubject.name')
                     ->label('Mapel')
                     ->searchable()
