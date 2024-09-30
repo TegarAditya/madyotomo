@@ -261,7 +261,10 @@ class FillReport extends Page implements HasForms, HasInfolists
 
                 $oplage = OrderProduct::find($productId)->quantity;
                 $productQuantity = $oplage + $spare;
-                $totalQuantity += $productQuantity / 2;
+
+                if ($index < count($spkProduct) - 1) {
+                    $totalQuantity += $productQuantity;
+                }
             }
 
             $productNameHtml = new HtmlString('<span class="font-thin">' . $productName . '</span>');
