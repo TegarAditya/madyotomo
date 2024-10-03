@@ -35,6 +35,14 @@ class Product extends Model
         return "C-{$level}{$curriculum}{$subject}{$class}{$semester}/{$type}";
     }
 
+    public function getShortNameAttribute()
+    {
+        $class = $this->educationClass->name;
+        $subject = $this->educationSubject->name;
+
+        return "{$subject} {$class}";
+    }
+
     public function product()
     {
         return $this->belongsTo(Product::class);
