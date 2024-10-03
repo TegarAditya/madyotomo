@@ -19,6 +19,21 @@ class SpkProduct extends Model
         'order_products' => 'array',
     ];
 
+    public function getProductsAttribute()
+    {
+        $products = "";
+
+        foreach ($this->order_products as $index => $item) {
+            if ($index === 0) {
+                $products .= OrderProduct::find($item)->product->short_name;
+            } else {
+                $products .= ", " . OrderProduct::find($item)->product->short_name;
+            }
+        }
+
+        return $products;
+    }
+
     public function spk()
     {
         return $this->belongsTo(Spk::class);
