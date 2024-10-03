@@ -34,6 +34,11 @@ class SpkResource extends Resource
                 Tables\Columns\TextColumn::make('report_number')
                     ->label('Nomor Laporan')
                     ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('order.name')
+                    ->label('Nama Order')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('entry_date')
                     ->label('Tanggal Masuk')
