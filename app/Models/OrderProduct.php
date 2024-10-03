@@ -26,7 +26,7 @@ class OrderProduct extends Model
         foreach ($orderProduct->order->spks as $spk) {
 
             $spkProducts = $spk->spkProducts()
-                ->whereRaw('order_products REGEXP ?', ['[[:<:]]' . $orderProduct->id . '[[:>:]]'])
+                ->whereRaw('order_products REGEXP ?', ['\\b' . $orderProduct->id . '\\b'])
                 ->whereHas('productReports')
                 ->first();
 
