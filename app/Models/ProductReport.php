@@ -33,6 +33,11 @@ class ProductReport extends Model
 
     public function spkProduct()
     {
-        return $this->belongsTo(SpkProduct::class);
+        return $this->belongsTo(SpkProduct::class, 'spk_order_product_id', 'id');
+    }
+
+    public function machine()
+    {
+        return $this->belongsTo(Machine::class);
     }
 }
