@@ -4,6 +4,10 @@ namespace App\Filament\Admin\Pages;
 
 use App\Models\OrderProduct;
 use App\Models\ProductReport;
+use Carbon\Carbon;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
@@ -12,11 +16,11 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
-use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
-class ReportSummary extends Page implements HasTable
+class ReportSummary extends Page implements HasTable, HasForms
 {
     use InteractsWithTable;
+    use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
@@ -64,7 +68,27 @@ class ReportSummary extends Page implements HasTable
                     ->date(),
             ])
             ->filters([
-                DateRangeFilter::make('date'),
+                Tables\Filters\Filter::make('date')
+                    ->label('Tanggal Produksi')
+                    ->form([
+                        DatePicker::make('date')
+                            ->label('Tanggal Produksi')
+                            ->required(),
+                    ])
+                    ->query(function ($query, $data) {
+                        if (! $data['date']) {
+                            return $query;
+                        } else {
+                            return $query->whereDate('date', $data['date']);
+                        }
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (! $data['date']) {
+                            return null;
+                        }
+                 
+                        return 'Diproduksi pada ' . Carbon::parse($data['date'])->toFormattedDateString();
+                    }),
                 Tables\Filters\SelectFilter::make('machine_id')
                     ->label('Mesin')
                     ->options(fn() => \App\Models\Machine::pluck('name', 'id')->toArray()),
