@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Models\OrderProduct;
 use App\Models\ProductReport;
+use Auth;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -15,6 +16,7 @@ use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 
 class ReportSummary extends Page implements HasTable, HasForms
@@ -92,7 +94,7 @@ class ReportSummary extends Page implements HasTable, HasForms
                         if (! $data['date']) {
                             return null;
                         }
-                 
+
                         return 'Diproduksi pada ' . Carbon::parse($data['date'])->toFormattedDateString();
                     }),
                 Tables\Filters\SelectFilter::make('machine_id')
@@ -104,10 +106,25 @@ class ReportSummary extends Page implements HasTable, HasForms
                     ->button()
                     ->icon('heroicon-o-eye')
                     ->color('info')
+                    ->visible(fn() => Auth::user()->hasRole('super_admin'))
                     ->url(fn($record) => route('filament.admin.resources.orders.view', ['record' => $record->spk->order])),
+                Tables\Actions\Action::make('Lihat Laporan')
+                    ->button()
+                    ->icon('heroicon-o-document-text')
+                    ->color('info')
+                    ->url(fn($record) => route('filament.operator.resources.spks.report', ['record' => $record->spk])),
             ])
             ->bulkActions([
-                // ...
+                Tables\Actions\BulkAction::make('Tandai Selesai')
+                    ->button()
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->action(fn(Collection $records) => $records->each->update(['status' => true])),
+                Tables\Actions\BulkAction::make('Tandai Belum Selesai')
+                    ->button()
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->action(fn(Collection $records) => $records->each->update(['status' => false])),
             ])
             ->defaultSort('created_at', 'desc');
     }
