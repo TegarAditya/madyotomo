@@ -158,8 +158,8 @@ class FillReport extends Page implements HasForms, HasInfolists
                                 Forms\Components\Select::make('spk_order_product_id')
                                     ->label('Produk')
                                     ->columnSpan([
-                                        'sm' => 2,
-                                        'md' => 4,
+                                        'sm' => 1,
+                                        'md' => 2,
                                     ])
                                     ->options(
                                         function () {
@@ -194,6 +194,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                                         'md' => 2,
                                     ])
                                     ->options(Machine::all()->pluck('name', 'id')->toArray())
+                                    ->suffixIcon('heroicon-o-printer')
                                     ->required(),
                                 Forms\Components\DatePicker::make('date')
                                     ->columnSpan([
@@ -201,11 +202,13 @@ class FillReport extends Page implements HasForms, HasInfolists
                                         'md' => 2,
                                     ])
                                     ->label('Tanggal')
+                                    ->suffixIcon('heroicon-o-calendar')
                                     ->required(),
                                 Forms\Components\TimePicker::make('start_time')
                                     ->label('Jam Mulai')
                                     ->seconds(false)
                                     ->live()
+                                    ->suffixIcon('heroicon-o-clock')
                                     ->required(),
                                 Forms\Components\TimePicker::make('end_time')
                                     ->label('Jam Selesai')
@@ -215,6 +218,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                                         'after_or_equal' => 'Jam selesai harus setelah jam mulai',
                                     ])
                                     ->disabled(fn($get) => $get('start_time') === null)
+                                    ->suffixIcon('heroicon-o-clock')
                                     ->required(),
                                 Forms\Components\TextInput::make('success_count')
                                     ->label('Jumlah Sukses')
@@ -223,6 +227,17 @@ class FillReport extends Page implements HasForms, HasInfolists
                                 Forms\Components\TextInput::make('error_count')
                                     ->label('Jumlah Gagal')
                                     ->numeric()
+                                    ->required(),
+                                Forms\Components\Select::make('status')
+                                    ->label('Sudah Selesai?')
+                                    ->options([
+                                        0 => 'Belum Selesai',
+                                        1 => 'Selesai',
+                                    ])
+                                    ->columnSpan([
+                                        'sm' => 1,
+                                        'md' => 2,
+                                    ])
                                     ->required(),
                             ]),
                     ]),

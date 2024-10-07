@@ -59,6 +59,12 @@ class ReportSummary extends Page implements HasTable, HasForms
                             ->formatStateUsing(fn($state) => formatNumber($state)),
                     ])
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn($record) => $record->status ? 'success' : 'info')
+                    ->formatStateUsing(fn($record) => $record->status ? 'Selesai' : 'Belum Selesai')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('machine.name')
                     ->label('Mesin')
                     ->sortable(),
@@ -73,7 +79,7 @@ class ReportSummary extends Page implements HasTable, HasForms
                     ->form([
                         DatePicker::make('date')
                             ->label('Tanggal Produksi')
-                            ->required(),
+                            ->suffixIcon('heroicon-o-calendar'),
                     ])
                     ->query(function ($query, $data) {
                         if (! $data['date']) {
