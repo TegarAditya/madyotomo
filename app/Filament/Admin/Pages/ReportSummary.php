@@ -100,6 +100,12 @@ class ReportSummary extends Page implements HasTable, HasForms
                 Tables\Filters\SelectFilter::make('machine_id')
                     ->label('Mesin')
                     ->options(fn() => \App\Models\Machine::pluck('name', 'id')->toArray()),
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        1 => 'Selesai',
+                        0 => 'Belum Selesai',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\Action::make('Lihat Order')
