@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "341d8e0e9b5b21734da944d9a431b2a1",
+    "content-hash": "5f62712b1ac7f602e0c41b56ff6610fe",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -9048,22 +9048,34 @@
         },
         {
             "name": "tomatophp/filament-users",
-            "version": "v1.0.12",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomatophp/filament-users.git",
-                "reference": "22c445457602c754bdabdaf91366a09b166efdb1"
+                "reference": "d876d0cf61c9cd8003c35409297399d6049c7c56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomatophp/filament-users/zipball/22c445457602c754bdabdaf91366a09b166efdb1",
-                "reference": "22c445457602c754bdabdaf91366a09b166efdb1",
+                "url": "https://api.github.com/repos/tomatophp/filament-users/zipball/d876d0cf61c9cd8003c35409297399d6049c7c56",
+                "reference": "d876d0cf61c9cd8003c35409297399d6049c7c56",
                 "shasum": ""
             },
             "require": {
-                "filament/filament": "^3.0.0",
+                "filament/filament": "^3.2",
                 "php": "^8.1|^8.2",
                 "tomatophp/console-helpers": "^1.1"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.18",
+                "livewire/livewire": "^2.10|^3.0",
+                "nunomaduro/larastan": "^2.9",
+                "orchestra/testbench": "^9.5",
+                "pestphp/pest": "^2.36",
+                "pestphp/pest-plugin-laravel": "^2.4",
+                "pestphp/pest-plugin-livewire": "^2.1",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^1.2",
+                "phpstan/phpstan-phpunit": "^1.4"
             },
             "type": "library",
             "extra": {
@@ -9102,7 +9114,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tomatophp/filament-users/issues",
-                "source": "https://github.com/tomatophp/filament-users/tree/v1.0.12"
+                "source": "https://github.com/tomatophp/filament-users/tree/v2.0.1"
             },
             "funding": [
                 {
@@ -9110,7 +9122,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-09-17T16:47:27+00:00"
+            "time": "2024-10-19T16:19:27+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
