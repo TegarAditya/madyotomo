@@ -39,8 +39,6 @@ class Order extends Model
             $status = 'Surat Jalan Dibuat';
         } elseif ($this->spks()->exists()) {
             $status = 'SPK Dibuat';
-        } elseif ($this->spks()->exists()) {
-            $status = 'SPK Dibuat';
         }
 
         return $status;

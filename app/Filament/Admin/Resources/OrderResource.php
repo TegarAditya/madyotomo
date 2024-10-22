@@ -326,12 +326,14 @@ class OrderResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'gray',
-                        'Diproses' => 'primary',
+                        'SPK Dibuat' => 'primary',
+                        'Surat Jalan Dibuat' => 'info',
                         'Invoice Dibuat' => 'success',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
-                        'Diproses' => 'heroicon-o-cog',
+                        'SPK Dibuat' => 'heroicon-o-cog',
+                        'Surat Jalan Dibuat' => 'heroicon-o-truck',
                         'Invoice Dibuat' => 'heroicon-o-printer',
                     }),
                 Tables\Columns\TextColumn::make('paper.name')
