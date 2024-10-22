@@ -68,9 +68,9 @@ class OrderProductsRelationManager extends RelationManager
                             case $deliveryStatus:
                                 return 'Dikirim';
                             case $reportStatus:
-                                return 'Dicetak';
+                                return 'Cover Dicetak';
                             case $spkStatus:
-                                return 'Diproses';
+                                return 'SPK Dibuat';
                             default:
                                 return 'Pending';
                         }
@@ -78,15 +78,15 @@ class OrderProductsRelationManager extends RelationManager
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         'Pending' => 'gray',
-                        'Diproses' => 'primary',
-                        'Dicetak' => 'info',
+                        'SPK Dibuat' => 'primary',
+                        'Cover Dicetak' => 'info',
                         'Dikirim' => 'success',
                         'Ditolak' => 'danger',
                     })
                     ->icon(fn(string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
-                        'Diproses' => 'heroicon-o-clipboard-document-check',
-                        'Dicetak' => 'heroicon-o-printer',
+                        'SPK Dibuat' => 'heroicon-o-clipboard-document-check',
+                        'Cover Dicetak' => 'heroicon-o-printer',
                         'Dikirim' => 'heroicon-o-truck',
                         'Ditolak' => 'heroicon-o-ban',
                     }),

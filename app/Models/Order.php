@@ -24,6 +24,28 @@ class Order extends Model
         'material_size',
     ];
 
+    protected $casts = [
+        'entry_date' => 'date',
+        'deadline_date' => 'date',
+    ];
+
+    public function getStatusAttribute()
+    {
+        $status = 'Belum Selesai';
+
+        if ($this->invoices()->exists()) {
+            $status = 'Invoice Dibuat';
+        } elseif ($this->deliveryOrders()->exists()) {
+            $status = 'Surat Jalan Dibuat';
+        } elseif ($this->spks()->exists()) {
+            $status = 'SPK Dibuat';
+        } elseif ($this->spks()->exists()) {
+            $status = 'SPK Dibuat';
+        }
+
+        return $status;
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);
