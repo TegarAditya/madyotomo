@@ -3,13 +3,11 @@
 namespace App\Filament\Admin\Resources\OrderResource\RelationManagers;
 
 use App\Models\OrderProduct;
-use App\Models\Semester;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use stdClass;
 
 class OrderProductsRelationManager extends RelationManager
 {
@@ -57,36 +55,18 @@ class OrderProductsRelationManager extends RelationManager
                     ->numeric()
                     ->default(0),
                 Tables\Columns\TextColumn::make('status')
-                    ->default(function (OrderProduct $record) {
-                        $spkStatus = $record->hasSpkProducts();
-                        $reportStatus = $record->hasReport();
-                        $deliveryStatus = $record->hasDeliveryOders();
-
-                        $record->result;
-
-                        switch (true) {
-                            case $deliveryStatus:
-                                return 'Dikirim';
-                            case $reportStatus:
-                                return 'Cover Dicetak';
-                            case $spkStatus:
-                                return 'SPK Dibuat';
-                            default:
-                                return 'Pending';
-                        }
-                    })
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         'Pending' => 'gray',
                         'SPK Dibuat' => 'primary',
-                        'Cover Dicetak' => 'info',
+                        'Dicetak' => 'info',
                         'Dikirim' => 'success',
                         'Ditolak' => 'danger',
                     })
                     ->icon(fn(string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
                         'SPK Dibuat' => 'heroicon-o-clipboard-document-check',
-                        'Cover Dicetak' => 'heroicon-o-printer',
+                        'Dicetak' => 'heroicon-o-printer',
                         'Dikirim' => 'heroicon-o-truck',
                         'Ditolak' => 'heroicon-o-ban',
                     }),

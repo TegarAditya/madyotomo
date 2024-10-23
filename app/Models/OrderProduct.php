@@ -70,6 +70,23 @@ class OrderProduct extends Model
         return array_sum($printedCountArray);
     }
 
+    public function getStatusAttribute()
+    {
+        $spkStatus = $this->hasSpkProducts();
+        $reportStatus = $this->hasReport();
+        $deliveryStatus = $this->hasDeliveryOders();
+
+        switch (true) {
+            case $deliveryStatus:
+                return 'Dikirim';
+            case $reportStatus:
+                return 'Dicetak';
+            case $spkStatus:
+                return 'SPK Dibuat';
+            default:
+                return 'Belum Selesai';
+        }
+    }
 
     public function order()
     {
