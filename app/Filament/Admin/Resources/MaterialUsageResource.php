@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\MaterialUsageResource\Pages;
-use App\Filament\Admin\Resources\MaterialUsageResource\RelationManagers;
 use App\Models\MaterialUsage;
 use Filament\Forms;
 use Filament\Forms\Components\Repeater;
@@ -11,9 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\App;
 
 class MaterialUsageResource extends Resource
 {
@@ -60,7 +56,10 @@ class MaterialUsageResource extends Resource
                                     ->label('Jumlah')
                                     ->suffix(function ($get) {
                                         $unit = \App\Models\Material::find($get('material_id'));
-                                        if (!$unit) return '';
+                                        if (! $unit) {
+                                            return '';
+                                        }
+
                                         return $unit->unit;
                                     })
                                     ->numeric()

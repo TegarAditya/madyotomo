@@ -21,13 +21,13 @@ class SpkProduct extends Model
 
     public function getProductsAttribute()
     {
-        $products = "";
+        $products = '';
 
         foreach ($this->order_products as $index => $item) {
             if ($index === 0) {
                 $products .= OrderProduct::find($item)->product->short_name;
             } else {
-                $products .= ", " . OrderProduct::find($item)->product->short_name;
+                $products .= ', '.OrderProduct::find($item)->product->short_name;
             }
         }
 

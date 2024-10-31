@@ -43,7 +43,7 @@ class OrderResource extends Resource
                     ->tabs([
                         Forms\Components\Tabs\Tab::make('Informasi Order')
                             ->columns([
-                                'md' => 2
+                                'md' => 2,
                             ])
                             ->schema([
                                 Forms\Components\Placeholder::make('document_number_pc')

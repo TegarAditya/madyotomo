@@ -39,7 +39,7 @@ class FillReport extends Page implements HasForms, HasInfolists
 
     public function getTitle(): string|Htmlable
     {
-        return $this->record->order->proof_number . ' - ' . $this->record->report_number;
+        return $this->record->order->proof_number.' - '.$this->record->report_number;
     }
 
     protected function getHeaderActions(): array
@@ -53,7 +53,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                 ->modalHeading()
                 ->stickyModalHeader()
                 ->modalWidth(MaxWidth::FiveExtraLarge)
-                ->infolist(fn(Spk $record) => SpkResource::generateInfolist($record)),
+                ->infolist(fn (Spk $record) => SpkResource::generateInfolist($record)),
             Action::make('Ringkasan')
                 ->button()
                 ->icon('heroicon-o-information-circle')
@@ -61,10 +61,10 @@ class FillReport extends Page implements HasForms, HasInfolists
                 ->modalCancelAction(false)
                 ->stickyModalHeader()
                 ->modalWidth(MaxWidth::FiveExtraLarge)
-                ->infolist(fn(Spk $record) => $this->generateSummaryInfolist($record)),
+                ->infolist(fn (Spk $record) => $this->generateSummaryInfolist($record)),
             Action::make('view')
                 ->label('Lihat SPK')
-                ->visible(fn() => Auth::user()->can('view_order'))
+                ->visible(fn () => Auth::user()->can('view_order'))
                 ->url(route('filament.admin.resources.orders.view', ['record' => $this->record->order->id])),
         ];
     }
@@ -86,48 +86,48 @@ class FillReport extends Page implements HasForms, HasInfolists
                         Infolists\Components\TextEntry::make('order.name')
                             ->label('Order')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => $record->order->name ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->order->name ?? '-'),
                         Infolists\Components\TextEntry::make('order.customer')
                             ->label('Pelanggan')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => $record->order->customer->name ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->order->customer->name ?? '-'),
                         Infolists\Components\TextEntry::make('document_number')
                             ->label('Nomor Order')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => $record->order->document_number ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->order->document_number ?? '-'),
                         Infolists\Components\TextEntry::make('document_number')
                             ->label('Nomor Laporan')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => $record->document_number ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->document_number ?? '-'),
                         Infolists\Components\TextEntry::make('entry_date')
                             ->label('Tanggal Masuk')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => Carbon::parse($record->entry_date)->translatedFormat('l, j F Y')),
+                            ->formatStateUsing(fn ($record) => Carbon::parse($record->entry_date)->translatedFormat('l, j F Y')),
                         Infolists\Components\TextEntry::make('deadline_date')
                             ->label('Tanggal Deadline')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => Carbon::parse($record->deadline_date)->translatedFormat('l, j F Y')),
+                            ->formatStateUsing(fn ($record) => Carbon::parse($record->deadline_date)->translatedFormat('l, j F Y')),
                         Infolists\Components\TextEntry::make('paper_config')
                             ->label('Konfigurasi Kertas')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => $record->paper_config ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->paper_config ?? '-'),
                         Infolists\Components\TextEntry::make('configuration')
                             ->label('Konfigurasi Warna')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => $record->configuration ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->configuration ?? '-'),
                         Infolists\Components\TextEntry::make('print_type')
                             ->label('Jenis Cetak')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => $record->print_type ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->print_type ?? '-'),
                         Infolists\Components\TextEntry::make('spare')
                             ->label('Spare')
                             ->inlineLabel()
-                            ->formatStateUsing(fn($record) => $record->spare ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->spare ?? '-'),
                         Infolists\Components\TextEntry::make('note')
                             ->columnSpanFull()
                             ->label('Catatan')
                             ->html()
-                            ->formatStateUsing(fn($record) => $record->note ?? '-'),
+                            ->formatStateUsing(fn ($record) => $record->note ?? '-'),
                     ]),
             ]);
     }
@@ -143,7 +143,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                             ->relationship()
                             ->itemLabel(function ($state) {
                                 if ($state['spk_order_product_id']) {
-                                    return $this->getProductQuantity($state['spk_order_product_id']) . ' sheet';
+                                    return $this->getProductQuantity($state['spk_order_product_id']).' sheet';
                                 }
 
                                 return 'Oplah';
@@ -172,7 +172,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                                                     foreach ($spkProduct->order_products as $index => $item) {
                                                         $orderProduct = OrderProduct::find($item);
                                                         $product = $orderProduct->product;
-                                                        $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
+                                                        $productName .= $product->educationSubject->name.' - '.$product->educationClass->name;
 
                                                         if ($index < count($spkProduct->order_products) - 1) {
                                                             $productName .= ' & ';
@@ -217,7 +217,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                                     ->validationMessages([
                                         'after_or_equal' => 'Jam selesai harus setelah jam mulai',
                                     ])
-                                    ->disabled(fn($get) => $get('start_time') === null)
+                                    ->disabled(fn ($get) => $get('start_time') === null)
                                     ->suffixIcon('heroicon-o-clock')
                                     ->required(),
                                 Forms\Components\TextInput::make('success_count')
@@ -266,7 +266,7 @@ class FillReport extends Page implements HasForms, HasInfolists
 
             foreach ($spkProduct as $index => $productId) {
                 $product = OrderProduct::find($productId)->product;
-                $productName .= $product->educationSubject->name . ' - ' . $product->educationClass->name;
+                $productName .= $product->educationSubject->name.' - '.$product->educationClass->name;
 
                 if ($index < count($spkProduct) - 1) {
                     $productName .= '&nbsp;&nbsp; | &nbsp;&nbsp; ';
@@ -275,13 +275,13 @@ class FillReport extends Page implements HasForms, HasInfolists
                 $oplage += OrderProduct::find($productId)->quantity / 2;
             }
 
-            $productNameHtml = new HtmlString('<span class="font-thin">' . $productName . '</span>');
+            $productNameHtml = new HtmlString('<span class="font-thin">'.$productName.'</span>');
 
             $infolist[] = Infolists\Components\TextEntry::make('id')
-                ->label(fn() => $productNameHtml)
+                ->label(fn () => $productNameHtml)
                 ->inlineLabel()
                 ->columnSpanFull()
-                ->formatStateUsing(fn() => new HtmlString('<span class="font-bold">' . formatNumber($printed) . '&nbsp/&nbsp' . formatNumber($oplage) . '</span>'));
+                ->formatStateUsing(fn () => new HtmlString('<span class="font-bold">'.formatNumber($printed).'&nbsp/&nbsp'.formatNumber($oplage).'</span>'));
         }
 
         return $infolist;
@@ -309,8 +309,8 @@ class FillReport extends Page implements HasForms, HasInfolists
         try {
             $data = $this->form->getState();
 
-            $hasReportArray = fn() => count($this->data['productReports']) > 0;
-            $hasReportData = fn() => $this->record->productReports->count() > 0;
+            $hasReportArray = fn () => count($this->data['productReports']) > 0;
+            $hasReportData = fn () => $this->record->productReports->count() > 0;
 
             if ($hasReportData) {
                 if ($hasReportArray) {

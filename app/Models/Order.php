@@ -31,32 +31,35 @@ class Order extends Model
 
     public function getStatusAttribute()
     {
-        $status = 'Pending';
-
-        // Cache order products and statuses to avoid redundant calls
         $orderProducts = $this->orderProducts;
         $statuses = $orderProducts->pluck('status');
 
-        if ($this->invoices()->exists()) {
-            $status = 'Invoice Dibuat';
-        } elseif ($this->deliveryOrders()->exists()) {
-            $status = 'Surat Jalan Dibuat';
-        } elseif ($statuses->every(fn($status) => $status === 'Dicetak')) {
-            $status = 'Cetak Semua';
-        } elseif ($statuses->contains('Dicetak')) {
-            $status = 'Cetak Sebagian';
-        } elseif ($this->spks()->exists()) {
-            $status = 'SPK Dibuat';
-        }
+        switch (true) {
+            case $this->invoices()->exists():
+                return 'Invoice Dibuat';
 
-        return $status;
+            case $this->deliveryOrders()->exists():
+                return 'Surat Jalan Dibuat';
+
+            case $statuses->every(fn ($status) => $status === 'Dicetak'):
+                return 'Cetak Semua';
+
+            case $statuses->contains('Dicetak'):
+                return 'Cetak Sebagian';
+
+            case $this->spks()->exists():
+                return 'SPK Dibuat';
+
+            default:
+                return 'Pending';
+        }
     }
 
     public function getIsPrintedAttribute()
     {
         $statuses = $this->orderProducts->pluck('status');
 
-        return $statuses->every(fn($status) => $status === 'Dicetak');
+        return $statuses->every(fn ($status) => $status === 'Dicetak');
     }
 
     public function customer()
