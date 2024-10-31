@@ -297,6 +297,7 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->columns([
                 Tables\Columns\TextColumn::make('document_number')
                     ->label('Nomor Order')
@@ -327,12 +328,16 @@ class OrderResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'gray',
                         'SPK Dibuat' => 'primary',
+                        'Cetak Sebagian' => 'info',
+                        'Cetak Semua' => 'success',
                         'Surat Jalan Dibuat' => 'info',
                         'Invoice Dibuat' => 'success',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
                         'SPK Dibuat' => 'heroicon-o-cog',
+                        'Cetak Sebagian' => 'heroicon-o-printer',
+                        'Cetak Semua' => 'heroicon-o-printer',
                         'Surat Jalan Dibuat' => 'heroicon-o-truck',
                         'Invoice Dibuat' => 'heroicon-o-printer',
                     }),

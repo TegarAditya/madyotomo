@@ -33,10 +33,18 @@ class Order extends Model
     {
         $status = 'Pending';
 
+        // Cache order products and statuses to avoid redundant calls
+        $orderProducts = $this->orderProducts;
+        $statuses = $orderProducts->pluck('status');
+
         if ($this->invoices()->exists()) {
             $status = 'Invoice Dibuat';
         } elseif ($this->deliveryOrders()->exists()) {
             $status = 'Surat Jalan Dibuat';
+        } elseif ($statuses->every(fn($status) => $status === 'Dicetak')) {
+            $status = 'Cetak Semua';
+        } elseif ($statuses->contains('Dicetak')) {
+            $status = 'Cetak Sebagian';
         } elseif ($this->spks()->exists()) {
             $status = 'SPK Dibuat';
         }
@@ -46,7 +54,9 @@ class Order extends Model
 
     public function getIsPrintedAttribute()
     {
-        return $this->spks()->exists();
+        $statuses = $this->orderProducts->pluck('status');
+
+        return $statuses->every(fn($status) => $status === 'Dicetak');
     }
 
     public function customer()
