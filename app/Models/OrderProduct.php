@@ -84,7 +84,7 @@ class OrderProduct extends Model
             case $spkStatus:
                 return 'SPK Dibuat';
             default:
-                return 'Belum Selesai';
+                return 'Pending';
         }
     }
 

@@ -31,7 +31,7 @@ class Order extends Model
 
     public function getStatusAttribute()
     {
-        $status = 'Belum Selesai';
+        $status = 'Pending';
 
         if ($this->invoices()->exists()) {
             $status = 'Invoice Dibuat';
@@ -42,6 +42,11 @@ class Order extends Model
         }
 
         return $status;
+    }
+
+    public function getIsPrintedAttribute()
+    {
+        return $this->spks()->exists();
     }
 
     public function customer()
