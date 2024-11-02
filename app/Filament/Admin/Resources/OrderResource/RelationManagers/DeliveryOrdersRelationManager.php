@@ -148,10 +148,10 @@ class DeliveryOrdersRelationManager extends RelationManager
         if (Auth::user()->can('create_order')) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     protected function downloadDeliveryOrder(DeliveryOrder $record): StreamedResponse
     {
         return response()->streamDownload(function () use ($record) {

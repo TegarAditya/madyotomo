@@ -28,6 +28,7 @@ class Material extends Model
     public function getPricesAttribute()
     {
         $latestPurchase = $this->purchases()->orderBy('material_purchase_items.created_at', 'desc')->first();
+
         return $latestPurchase ? $latestPurchase->pivot->price * $this->stocks : null;
     }
 

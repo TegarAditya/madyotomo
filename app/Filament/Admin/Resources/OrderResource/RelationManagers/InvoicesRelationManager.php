@@ -85,7 +85,7 @@ class InvoicesRelationManager extends RelationManager
         if (Auth::user()->can('create_order')) {
             return false;
         }
-        
+
         return true;
     }
 

@@ -226,16 +226,14 @@ class SpksRelationManager extends RelationManager
             ]);
     }
 
-    public function generateDocumentNumber() {
-
-    }
+    public function generateDocumentNumber() {}
 
     public function isReadOnly(): bool
     {
         if (Auth::user()->can('create_order')) {
             return false;
         }
-        
+
         return true;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,7 +25,7 @@ class OrderProduct extends Model
         foreach ($orderProduct->order->spks as $spk) {
 
             $spkProducts = $spk->spkProducts()
-                ->whereRaw('order_products REGEXP ?', ['\\b' . $orderProduct->id . '\\b'])
+                ->whereRaw('order_products REGEXP ?', ['\\b'.$orderProduct->id.'\\b'])
                 ->whereHas('productReports')
                 ->first();
 
@@ -56,7 +55,7 @@ class OrderProduct extends Model
         foreach ($orderProduct->order->spks as $spk) {
 
             $spkProducts = $spk->spkProducts()
-                ->whereRaw('order_products REGEXP ?', ['\\b' . $orderProduct->id . '\\b'])
+                ->whereRaw('order_products REGEXP ?', ['\\b'.$orderProduct->id.'\\b'])
                 ->whereHas('productReports')
                 ->first();
 

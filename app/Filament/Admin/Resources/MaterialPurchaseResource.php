@@ -13,7 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
 class MaterialPurchaseResource extends Resource
@@ -73,16 +72,16 @@ class MaterialPurchaseResource extends Resource
                                     ->schema([
                                         Forms\Components\Placeholder::make('material_supplier_id')
                                             ->label('Supplier')
-                                            ->content(fn(MaterialPurchase $record) => $record->materialSupplier->name),
+                                            ->content(fn (MaterialPurchase $record) => $record->materialSupplier->name),
                                         Forms\Components\Placeholder::make('proof_number')
                                             ->label('Nomor Faktur')
-                                            ->content(fn(MaterialPurchase $record) => $record->proof_number),
+                                            ->content(fn (MaterialPurchase $record) => $record->proof_number),
                                         Forms\Components\Placeholder::make('purchase_date')
                                             ->label('Tanggal Pembelian')
-                                            ->content(fn(MaterialPurchase $record) => $record->purchase_date),
+                                            ->content(fn (MaterialPurchase $record) => $record->purchase_date),
                                         Forms\Components\Placeholder::make('paid_off_date')
                                             ->label('Tanggal Pelunasan')
-                                            ->content(fn(MaterialPurchase $record) => $record->paid_off_date ?? '-'),
+                                            ->content(fn (MaterialPurchase $record) => $record->paid_off_date ?? '-'),
                                     ])
                                     ->visibleOn('view'),
                                 Forms\Components\Fieldset::make()
@@ -90,7 +89,7 @@ class MaterialPurchaseResource extends Resource
                                     ->schema([
                                         Forms\Components\Placeholder::make('notes_ph')
                                             ->hiddenLabel()
-                                            ->hidden(fn($get) => $get('is_paid'))
+                                            ->hidden(fn ($get) => $get('is_paid'))
                                             ->hiddenOn('view')
                                             ->content(function (MaterialPurchase $record) {
                                                 if (! $record->is_paid) {
@@ -108,7 +107,7 @@ class MaterialPurchaseResource extends Resource
                                             })
                                             ->columnSpanFull(),
                                         Forms\Components\RichEditor::make('notes')
-                                            ->hidden(fn($get) => ! $get('is_paid'))
+                                            ->hidden(fn ($get) => ! $get('is_paid'))
                                             ->hiddenOn('view')
                                             ->columnSpanFull(),
                                     ]),
@@ -119,7 +118,7 @@ class MaterialPurchaseResource extends Resource
                                 Repeater::make('items')
                                     ->relationship('items')
                                     ->columns([
-                                        'lg' => 4
+                                        'lg' => 4,
                                     ])
                                     ->schema([
                                         Forms\Components\Select::make('material_id')
@@ -152,11 +151,12 @@ class MaterialPurchaseResource extends Resource
                                                 $quantity = intval($get('quantity')) ?? 0;
                                                 $price = intval($get('price')) ?? 0;
                                                 $total = $quantity * $price;
-                                                return new HtmlString('<span class="text-right">Rp. ' . formatNumber($total) . '</span>');
+
+                                                return new HtmlString('<span class="text-right">Rp. '.formatNumber($total).'</span>');
                                             }),
                                     ]),
                             ]),
-                    ])
+                    ]),
             ]);
     }
 

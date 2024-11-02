@@ -43,7 +43,7 @@ class OrderProductsRelationManager extends RelationManager
                     ->label('Kurikulum'),
                 Tables\Columns\TextColumn::make('product.Type.code')
                     ->label('Tipe')
-                    ->tooltip(fn(OrderProduct $record) => $record->product->type->name),
+                    ->tooltip(fn (OrderProduct $record) => $record->product->type->name),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Oplah')
                     ->numeric()
@@ -56,14 +56,14 @@ class OrderProductsRelationManager extends RelationManager
                     ->default(0),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'gray',
                         'SPK Dibuat' => 'primary',
                         'Dicetak' => 'info',
                         'Dikirim' => 'success',
                         'Ditolak' => 'danger',
                     })
-                    ->icon(fn(string $state): string => match ($state) {
+                    ->icon(fn (string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
                         'SPK Dibuat' => 'heroicon-o-clipboard-document-check',
                         'Dicetak' => 'heroicon-o-printer',
@@ -72,7 +72,7 @@ class OrderProductsRelationManager extends RelationManager
                     }),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make()
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),

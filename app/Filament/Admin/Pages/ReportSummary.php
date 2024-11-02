@@ -19,10 +19,10 @@ use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 
-class ReportSummary extends Page implements HasTable, HasForms
+class ReportSummary extends Page implements HasForms, HasTable
 {
-    use InteractsWithTable;
     use InteractsWithForms;
+    use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
@@ -49,23 +49,23 @@ class ReportSummary extends Page implements HasTable, HasForms
                 Tables\Columns\TextColumn::make('products')
                     ->label('Produk')
                     ->weight(FontWeight::SemiBold)
-                    ->default(fn($record) => new HtmlString($this->getProductsName($record))),
+                    ->default(fn ($record) => new HtmlString($this->getProductsName($record))),
                 Tables\Columns\TextColumn::make('success_count')
                     ->label('Hasil Baik')
                     ->weight(FontWeight::Bold)
-                    ->formatStateUsing(fn($record) => new HtmlString($this->getResult($record)))
+                    ->formatStateUsing(fn ($record) => new HtmlString($this->getResult($record)))
                     ->summarize([
                         Summarizer::make()
                             ->label('Total')
-                            ->using(fn($query): int => $query->sum('success_count') * 2)
-                            ->formatStateUsing(fn($state) => formatNumber($state)),
+                            ->using(fn ($query): int => $query->sum('success_count') * 2)
+                            ->formatStateUsing(fn ($state) => formatNumber($state)),
                     ])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn($record) => $record->status ? 'success' : 'info')
-                    ->formatStateUsing(fn($record) => $record->status ? 'Selesai' : 'Belum Selesai')
+                    ->color(fn ($record) => $record->status ? 'success' : 'info')
+                    ->formatStateUsing(fn ($record) => $record->status ? 'Selesai' : 'Belum Selesai')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('machine.name')
                     ->label('Mesin')
@@ -95,11 +95,11 @@ class ReportSummary extends Page implements HasTable, HasForms
                             return null;
                         }
 
-                        return 'Diproduksi pada ' . Carbon::parse($data['date'])->toFormattedDateString();
+                        return 'Diproduksi pada '.Carbon::parse($data['date'])->toFormattedDateString();
                     }),
                 Tables\Filters\SelectFilter::make('machine_id')
                     ->label('Mesin')
-                    ->options(fn() => \App\Models\Machine::pluck('name', 'id')->toArray()),
+                    ->options(fn () => \App\Models\Machine::pluck('name', 'id')->toArray()),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
                     ->options([
@@ -112,25 +112,25 @@ class ReportSummary extends Page implements HasTable, HasForms
                     ->button()
                     ->icon('heroicon-o-eye')
                     ->color('info')
-                    ->visible(fn() => Auth::user()->hasRole('super_admin'))
-                    ->url(fn($record) => route('filament.admin.resources.orders.view', ['record' => $record->spk->order])),
+                    ->visible(fn () => Auth::user()->hasRole('super_admin'))
+                    ->url(fn ($record) => route('filament.admin.resources.orders.view', ['record' => $record->spk->order])),
                 Tables\Actions\Action::make('Lihat Laporan')
                     ->button()
                     ->icon('heroicon-o-document-text')
                     ->color('info')
-                    ->url(fn($record) => route('filament.operator.resources.spks.report', ['record' => $record->spk])),
+                    ->url(fn ($record) => route('filament.operator.resources.spks.report', ['record' => $record->spk])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('Tandai Selesai')
                     ->button()
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->action(fn(Collection $records) => $records->each->update(['status' => true])),
+                    ->action(fn (Collection $records) => $records->each->update(['status' => true])),
                 Tables\Actions\BulkAction::make('Tandai Belum Selesai')
                     ->button()
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->action(fn(Collection $records) => $records->each->update(['status' => false])),
+                    ->action(fn (Collection $records) => $records->each->update(['status' => false])),
             ])
             ->defaultSort('created_at', 'desc');
     }
@@ -146,6 +146,7 @@ class ReportSummary extends Page implements HasTable, HasForms
     {
         if (collect($record->spkProduct->order_products)->count() > 1) {
             $count = formatNumber($record->success_count);
+
             return new HtmlString("{$count}<hr>{$count}");
         } else {
             return formatNumber($record->success_count * 2);

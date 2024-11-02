@@ -9,7 +9,7 @@ if (! function_exists('formatReam')) {
      * This function converts the total quantity of sheets into reams (where 1 ream = 500 sheets)
      * and calculates the remaining sheets. It returns an HTML string with the formatted result.
      *
-     * @param int $totalQuantity The total quantity of sheets (1/2 Plano).
+     * @param  int  $totalQuantity  The total quantity of sheets (1/2 Plano).
      * @return \Illuminate\Support\HtmlString The formatted HTML string displaying reams and remaining sheets.
      */
     function formatReam($totalQuantity)
@@ -21,8 +21,8 @@ if (! function_exists('formatReam')) {
         $remainingSheets = $totalQuantity % $sheetsPerReam;
 
         return new HtmlString(
-            '<span class="font-bold text-lg">' . $totalReam . '<span class="font-thin text-sm"> rim </span></span>' .
-                '<span class="font-bold text-lg">&nbsp&nbsp+' . $remainingSheets . '<span class="font-thin text-sm"> sheet</span></span>'
+            '<span class="font-bold text-lg">'.$totalReam.'<span class="font-thin text-sm"> rim </span></span>'.
+                '<span class="font-bold text-lg">&nbsp&nbsp+'.$remainingSheets.'<span class="font-thin text-sm"> sheet</span></span>'
         );
     }
 }
@@ -34,7 +34,7 @@ if (! function_exists('formatNumber')) {
      * This function formats the given number into locale format and returns an HTML string
      * with the formatted result.
      *
-     * @param float $number The number to format.
+     * @param  float  $number  The number to format.
      * @return \Illuminate\Support\HtmlString The formatted HTML string displaying the currency format.
      */
     function formatNumber($number)

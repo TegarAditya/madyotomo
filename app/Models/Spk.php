@@ -41,6 +41,7 @@ class Spk extends Model
     public function getProgressAttribute()
     {
         $total = $this->order()->first()->orderProducts->sum('quantity') / 2;
+
         return $total > 0 ? ($this->productReports->sum('success_count') / $total) * 100 : 0;
     }
 
