@@ -316,6 +316,7 @@ class OrderResource extends Resource
                     ->label('Jumlah')
                     ->numeric()
                     ->sum('order_products', 'quantity')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.code')
                     ->label('Customer')
@@ -331,7 +332,7 @@ class OrderResource extends Resource
                         'Cetak Sebagian' => 'info',
                         'Cetak Semua' => 'success',
                         'Surat Jalan Dibuat' => 'info',
-                        'Invoice Dibuat' => 'success',
+                        'Invoice Dibuat' => 'danger',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
@@ -340,7 +341,8 @@ class OrderResource extends Resource
                         'Cetak Semua' => 'heroicon-o-printer',
                         'Surat Jalan Dibuat' => 'heroicon-o-truck',
                         'Invoice Dibuat' => 'heroicon-o-printer',
-                    }),
+                    })
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('paper.name')
                     ->label('Kertas')
                     ->numeric()
