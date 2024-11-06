@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,6 +29,16 @@ class ProductReport extends Model
         'end_time' => 'time',
         'status' => 'boolean',
     ];
+
+    public function scopeWithDuration($query)
+    {
+        $query->selectRaw("*, TIMEDIFF(end_time, start_time) as duration");
+    }
+
+    public function getDurationAttribute($value)
+    {
+        return $value ?? \Carbon\Carbon::parse($this->start_time)->diff(\Carbon\Carbon::parse($this->end_time))->format('%H:%I:%S');
+    }
 
     public function spk()
     {
