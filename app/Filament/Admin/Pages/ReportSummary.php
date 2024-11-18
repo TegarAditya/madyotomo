@@ -37,7 +37,7 @@ class ReportSummary extends Page implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(ProductReport::query())
+            ->query(ProductReport::query()->whereHas('spk'))
             ->columns([
                 Tables\Columns\TextColumn::make('spk.order.proof_number')
                     ->label('No. SPK')
