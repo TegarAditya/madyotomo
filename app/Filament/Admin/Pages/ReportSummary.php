@@ -37,7 +37,7 @@ class ReportSummary extends Page implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(ProductReport::query())
+            ->query(ProductReport::query()->whereHas('spk'))
             ->columns([
                 Tables\Columns\TextColumn::make('spk.order.proof_number')
                     ->label('No. SPK')
@@ -116,14 +116,12 @@ class ReportSummary extends Page implements HasForms, HasTable
                     ->icon('heroicon-o-eye')
                     ->color('info')
                     ->visible(fn() => Auth::user()->hasRole('super_admin'))
-                    // ->url(fn($record) => route('filament.admin.resources.orders.view', ['record' => $record->spk->order]))
-                    ,
+                    ->url(fn($record) => route('filament.admin.resources.orders.view', ['record' => $record->spk->order])),
                 Tables\Actions\Action::make('Lihat Laporan')
                     ->button()
                     ->icon('heroicon-o-document-text')
                     ->color('info')
-                    // ->url(fn($record) => route('filament.operator.resources.spks.report', ['record' => $record->spk]))
-                    ,
+                    ->url(fn($record) => route('filament.operator.resources.spks.report', ['record' => $record->spk])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('Tandai Selesai')
