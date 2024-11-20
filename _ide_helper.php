@@ -5,7 +5,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 11.29.0.
+ * Generated for Laravel 11.33.2.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -878,6 +878,17 @@ namespace Illuminate\Support\Facades {
                         $instance->setDeferredServices($services);
         }
                     /**
+         * Determine if the given service is a deferred service.
+         *
+         * @param string $service
+         * @return bool 
+         * @static 
+         */        public static function isDeferredService($service)
+        {
+                        /** @var \Illuminate\Foundation\Application $instance */
+                        return $instance->isDeferredService($service);
+        }
+                    /**
          * Add an array of services to the application's deferred services.
          *
          * @param array $services
@@ -889,15 +900,15 @@ namespace Illuminate\Support\Facades {
                         $instance->addDeferredServices($services);
         }
                     /**
-         * Determine if the given service is a deferred service.
+         * Remove an array of services from the application's deferred services.
          *
-         * @param string $service
-         * @return bool 
+         * @param array $services
+         * @return void 
          * @static 
-         */        public static function isDeferredService($service)
+         */        public static function removeDeferredServices($services)
         {
                         /** @var \Illuminate\Foundation\Application $instance */
-                        return $instance->isDeferredService($service);
+                        $instance->removeDeferredServices($services);
         }
                     /**
          * Configure the real-time facade namespace.
@@ -2728,17 +2739,31 @@ namespace Illuminate\Support\Facades {
                         $instance->aliasInclude($path, $alias);
         }
                     /**
-         * Register a handler for custom directives.
+         * Register a handler for custom directives, binding the handler to the compiler.
          *
          * @param string $name
          * @param callable $handler
          * @return void 
          * @throws \InvalidArgumentException
          * @static 
-         */        public static function directive($name, $handler)
+         */        public static function bindDirective($name, $handler)
         {
                         /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
-                        $instance->directive($name, $handler);
+                        $instance->bindDirective($name, $handler);
+        }
+                    /**
+         * Register a handler for custom directives.
+         *
+         * @param string $name
+         * @param callable $handler
+         * @param bool $bind
+         * @return void 
+         * @throws \InvalidArgumentException
+         * @static 
+         */        public static function directive($name, $handler, $bind = false)
+        {
+                        /** @var \Illuminate\View\Compilers\BladeCompiler $instance */
+                        $instance->directive($name, $handler, $bind);
         }
                     /**
          * Get the list of custom directives.
@@ -3656,6 +3681,17 @@ namespace Illuminate\Support\Facades {
                         return $instance->resolve($name);
         }
                     /**
+         * Build a cache repository with the given configuration.
+         *
+         * @param array $config
+         * @return \Illuminate\Cache\Repository 
+         * @static 
+         */        public static function build($config)
+        {
+                        /** @var \Illuminate\Cache\CacheManager $instance */
+                        return $instance->build($config);
+        }
+                    /**
          * Create a new cache repository with the given implementation.
          *
          * @param \Illuminate\Contracts\Cache\Store $store
@@ -4491,8 +4527,8 @@ namespace Illuminate\Support\Facades {
                     /**
          * Get many configuration values.
          *
-         * @param array $keys
-         * @return array 
+         * @param array<string|int,mixed> $keys
+         * @return array<string,mixed> 
          * @static 
          */        public static function getMany($keys)
         {
@@ -4895,6 +4931,18 @@ namespace Illuminate\Support\Facades {
                         return $instance->push($key, ...$values);
         }
                     /**
+         * Pop the latest value from the key's stack.
+         *
+         * @param string $key
+         * @return mixed 
+         * @throws \RuntimeException
+         * @static 
+         */        public static function pop($key)
+        {
+                        /** @var \Illuminate\Log\Context\Repository $instance */
+                        return $instance->pop($key);
+        }
+                    /**
          * Push the given hidden values onto the key's stack.
          *
          * @param string $key
@@ -4906,6 +4954,18 @@ namespace Illuminate\Support\Facades {
         {
                         /** @var \Illuminate\Log\Context\Repository $instance */
                         return $instance->pushHidden($key, ...$values);
+        }
+                    /**
+         * Pop the latest hidden value from the key's stack.
+         *
+         * @param string $key
+         * @return mixed 
+         * @throws \RuntimeException
+         * @static 
+         */        public static function popHidden($key)
+        {
+                        /** @var \Illuminate\Log\Context\Repository $instance */
+                        return $instance->popHidden($key);
         }
                     /**
          * Determine if the given value is in the given stack.
@@ -5555,6 +5615,17 @@ namespace Illuminate\Support\Facades {
                         return $instance->connection($name);
         }
                     /**
+         * Build a database connection instance from the given configuration.
+         *
+         * @param array $config
+         * @return \Illuminate\Database\MySqlConnection 
+         * @static 
+         */        public static function build($config)
+        {
+                        /** @var \Illuminate\Database\DatabaseManager $instance */
+                        return $instance->build($config);
+        }
+                    /**
          * Get a database connection instance from the given configuration.
          *
          * @param string $name
@@ -5962,7 +6033,7 @@ namespace Illuminate\Support\Facades {
          * @param string $query
          * @param array $bindings
          * @param bool $useReadPdo
-         * @return \Generator 
+         * @return \Generator<int, \stdClass> 
          * @static 
          */        public static function cursor($query, $bindings = [], $useReadPdo = true)
         {            //Method inherited from \Illuminate\Database\Connection         
@@ -6632,11 +6703,14 @@ namespace Illuminate\Support\Facades {
                         return \Illuminate\Database\MySqlConnection::getResolver($driver);
         }
                     /**
-         * Execute a Closure within a transaction.
+         * 
          *
-         * @param \Closure $callback
+         * @template TReturn of mixed
+         * 
+         * Execute a Closure within a transaction.
+         * @param (\Closure(static): TReturn) $callback
          * @param int $attempts
-         * @return mixed 
+         * @return \Illuminate\Database\TReturn 
          * @throws \Throwable
          * @static 
          */        public static function transaction($callback, $attempts = 1)
@@ -8285,6 +8359,16 @@ namespace Illuminate\Support\Facades {
                         return \Illuminate\Http\Client\Factory::response($body, $status, $headers);
         }
                     /**
+         * Create a new connection exception for use during stubbing.
+         *
+         * @param string|null $message
+         * @return \GuzzleHttp\Promise\PromiseInterface 
+         * @static 
+         */        public static function failedConnection($message = null)
+        {
+                        return \Illuminate\Http\Client\Factory::failedConnection($message);
+        }
+                    /**
          * Get an invokable object that returns a sequence of responses in order for use during stubbing.
          *
          * @param array $responses
@@ -8364,7 +8448,7 @@ namespace Illuminate\Support\Facades {
          * Record a request response pair.
          *
          * @param \Illuminate\Http\Client\Request $request
-         * @param \Illuminate\Http\Client\Response $response
+         * @param \Illuminate\Http\Client\Response|null $response
          * @return void 
          * @static 
          */        public static function recordRequestResponsePair($request, $response)
@@ -9142,7 +9226,7 @@ namespace Illuminate\Support\Facades {
      * @method static \Illuminate\Mail\SentMessage|null html(string $html, mixed $callback)
      * @method static \Illuminate\Mail\SentMessage|null plain(string $view, array $data, mixed $callback)
      * @method static string render(string|array $view, array $data = [])
-     * @method static mixed onQueue(string $queue, \Illuminate\Contracts\Mail\Mailable $view)
+     * @method static mixed onQueue(\BackedEnum|string|null $queue, \Illuminate\Contracts\Mail\Mailable $view)
      * @method static mixed queueOn(string $queue, \Illuminate\Contracts\Mail\Mailable $view)
      * @method static mixed laterOn(string $queue, \DateTimeInterface|\DateInterval|int $delay, \Illuminate\Contracts\Mail\Mailable $view)
      * @method static \Symfony\Component\Mailer\Transport\TransportInterface getSymfonyTransport()
@@ -9177,6 +9261,17 @@ namespace Illuminate\Support\Facades {
         {
                         /** @var \Illuminate\Mail\MailManager $instance */
                         return $instance->driver($driver);
+        }
+                    /**
+         * Build a new mailer instance.
+         *
+         * @param array $config
+         * @return \Illuminate\Mail\Mailer 
+         * @static 
+         */        public static function build($config)
+        {
+                        /** @var \Illuminate\Mail\MailManager $instance */
+                        return $instance->build($config);
         }
                     /**
          * Create a new transport instance.
@@ -11755,6 +11850,7 @@ namespace Illuminate\Support\Facades {
          * @param array $files The request files ($_FILES)
          * @param array $server The server parameters ($_SERVER)
          * @param string|resource|null $content The raw body data
+         * @throws BadRequestException When the URI is invalid
          * @static 
          */        public static function create($uri, $method = 'GET', $parameters = [], $cookies = [], $files = [], $server = [], $content = null)
         {            //Method inherited from \Symfony\Component\HttpFoundation\Request         
@@ -12974,6 +13070,19 @@ namespace Illuminate\Support\Facades {
                         return $instance->enum($key, $enumClass);
         }
                     /**
+         * Retrieve input from the request as an array of enums.
+         *
+         * @template TEnum
+         * @param string $key
+         * @param \Illuminate\Http\class-string<TEnum> $enumClass
+         * @return \Illuminate\Http\TEnum[] 
+         * @static 
+         */        public static function enums($key, $enumClass)
+        {
+                        /** @var \Illuminate\Http\Request $instance */
+                        return $instance->enums($key, $enumClass);
+        }
+                    /**
          * Retrieve input from the request as a collection.
          *
          * @param array|string|null $key
@@ -13373,7 +13482,7 @@ namespace Illuminate\Support\Facades {
                     /**
          * Create a new redirect response to a named route.
          *
-         * @param string $route
+         * @param \BackedEnum|string $route
          * @param mixed $parameters
          * @param int $status
          * @param array $headers
@@ -14406,6 +14515,66 @@ namespace Illuminate\Support\Facades {
             /**
      * 
      *
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes withoutOverlapping(int $expiresAt = 1440)
+     * @method static void mergeAttributes(\Illuminate\Console\Scheduling\Event $event)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes user(string $user)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes environments(array|mixed $environments)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes evenInMaintenanceMode()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes onOneServer()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes runInBackground()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes when(\Closure|bool $callback)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes skip(\Closure|bool $callback)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes cron(string $expression)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes between(string $startTime, string $endTime)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes unlessBetween(string $startTime, string $endTime)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everySecond()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyTwoSeconds()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyFiveSeconds()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyTenSeconds()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyFifteenSeconds()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyTwentySeconds()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyThirtySeconds()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyMinute()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyTwoMinutes()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyThreeMinutes()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyFourMinutes()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyFiveMinutes()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyTenMinutes()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyFifteenMinutes()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyThirtyMinutes()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes hourly()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes hourlyAt(array|string|int $offset)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyOddHour(array|string|int $offset = 0)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyTwoHours(array|string|int $offset = 0)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyThreeHours(array|string|int $offset = 0)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everyFourHours(array|string|int $offset = 0)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes everySixHours(array|string|int $offset = 0)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes daily()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes at(string $time)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes dailyAt(string $time)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes twiceDaily(int $first = 1, int $second = 13)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes twiceDailyAt(int $first = 1, int $second = 13, int $offset = 0)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes weekdays()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes weekends()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes mondays()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes tuesdays()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes wednesdays()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes thursdays()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes fridays()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes saturdays()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes sundays()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes weekly()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes weeklyOn(array|mixed $dayOfWeek, string $time = '0:0')
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes monthly()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes monthlyOn(int $dayOfMonth = 1, string $time = '0:0')
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes twiceMonthly(int $first = 1, int $second = 16, string $time = '0:0')
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes lastDayOfMonth(string $time = '0:0')
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes quarterly()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes quarterlyOn(int $dayOfQuarter = 1, string $time = '0:0')
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes yearly()
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes yearlyOn(int $month = 1, int|string $dayOfMonth = 1, string $time = '0:0')
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes days(array|mixed $days)
+     * @method static \Illuminate\Console\Scheduling\PendingEventAttributes timezone(\DateTimeZone|string $timezone)
      * @see \Illuminate\Console\Scheduling\Schedule
      */        class Schedule {
                     /**
@@ -14456,6 +14625,17 @@ namespace Illuminate\Support\Facades {
         {
                         /** @var \Illuminate\Console\Scheduling\Schedule $instance */
                         return $instance->exec($command, $parameters);
+        }
+                    /**
+         * Create new schedule group.
+         *
+         * @param \Illuminate\Console\Scheduling\Event $event
+         * @return void 
+         * @static 
+         */        public static function group($events)
+        {
+                        /** @var \Illuminate\Console\Scheduling\Schedule $instance */
+                        $instance->group($events);
         }
                     /**
          * Compile array input for a command.
@@ -14555,6 +14735,19 @@ namespace Illuminate\Support\Facades {
          */        public static function flushMacros()
         {
                         \Illuminate\Console\Scheduling\Schedule::flushMacros();
+        }
+                    /**
+         * Dynamically handle calls to the class.
+         *
+         * @param string $method
+         * @param array $parameters
+         * @return mixed 
+         * @throws \BadMethodCallException
+         * @static 
+         */        public static function macroCall($method, $parameters)
+        {
+                        /** @var \Illuminate\Console\Scheduling\Schedule $instance */
+                        return $instance->macroCall($method, $parameters);
         }
             }
             /**
@@ -16897,6 +17090,17 @@ namespace Illuminate\Support\Facades {
         {
                         /** @var \Illuminate\Routing\UrlGenerator $instance */
                         $instance->forceScheme($scheme);
+        }
+                    /**
+         * Force the use of the HTTPS scheme for all generated URLs.
+         *
+         * @param bool $force
+         * @return void 
+         * @static 
+         */        public static function forceHttps($force = true)
+        {
+                        /** @var \Illuminate\Routing\UrlGenerator $instance */
+                        $instance->forceHttps($force);
         }
                     /**
          * Set the forced root URL.
@@ -19339,9 +19543,9 @@ namespace BezhanSalleh\FilamentShield\Facades {
          * 
          *
          * @static 
-         */        public static function createRole($name = null)
+         */        public static function createRole($name = null, $tenantId = null)
         {
-                        return \BezhanSalleh\FilamentShield\FilamentShield::createRole($name);
+                        return \BezhanSalleh\FilamentShield\FilamentShield::createRole($name, $tenantId);
         }
                     /**
          * Transform filament resources to key value pair for shield
@@ -19417,6 +19621,17 @@ namespace BezhanSalleh\FilamentShield\Facades {
         {
                         /** @var \BezhanSalleh\FilamentShield\FilamentShield $instance */
                         return $instance->getCustomPermissions();
+        }
+                    /**
+         * Indicate if destructive Shield commands should be prohibited.
+         * 
+         * Prohibits: shield:setup, shield:install, and shield:generate
+         *
+         * @return void 
+         * @static 
+         */        public static function prohibitDestructiveCommands($prohibit = true)
+        {
+                        \BezhanSalleh\FilamentShield\FilamentShield::prohibitDestructiveCommands($prohibit);
         }
                     /**
          * 
@@ -23845,6 +24060,17 @@ namespace  {
             {
                                 /** @var \Illuminate\Database\Eloquent\Builder $instance */
                                 return $instance->create($attributes);
+            }
+                            /**
+             * Save a new model and return the instance without raising model events.
+             *
+             * @param array $attributes
+             * @return \Illuminate\Database\Eloquent\TModel 
+             * @static 
+             */            public static function createQuietly($attributes = [])
+            {
+                                /** @var \Illuminate\Database\Eloquent\Builder $instance */
+                                return $instance->createQuietly($attributes);
             }
                             /**
              * Save a new model and return the instance. Allow mass-assignment.
