@@ -126,7 +126,7 @@ class SpksRelationManager extends RelationManager
                                     $products = $get('order_products');
 
                                     if (count($products) === 1) {
-                                        $quantity = OrderProduct::find($products[0])->quantity / 2;
+                                        $quantity = OrderProduct::find($products[0])->quantity ?? 0 / 2;
 
                                         return new HtmlString("<span class='text-2xl font-bold'>{$quantity}<span class='text-sm font-thin'> sheets</span></span>");
                                     }
