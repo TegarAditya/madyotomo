@@ -194,7 +194,6 @@ class FillReport extends Page implements HasForms, HasInfolists
                                         'md' => 2,
                                     ])
                                     ->options(Machine::all()->pluck('name', 'id')->toArray())
-                                    ->suffixIcon('heroicon-o-printer')
                                     ->required(),
                                 Forms\Components\DatePicker::make('date')
                                     ->columnSpan([
@@ -223,11 +222,13 @@ class FillReport extends Page implements HasForms, HasInfolists
                                 Forms\Components\TextInput::make('success_count')
                                     ->label('Jumlah Sukses')
                                     ->numeric()
+                                    ->suffixIcon('heroicon-o-check')
                                     ->required(),
                                 Forms\Components\TextInput::make('error_count')
                                     ->label('Jumlah Gagal')
                                     ->numeric()
                                     ->default(0)
+                                    ->suffixIcon('heroicon-o-x-mark')
                                     ->required(),
                                 Forms\Components\Select::make('status')
                                     ->label('Sudah Selesai?')
