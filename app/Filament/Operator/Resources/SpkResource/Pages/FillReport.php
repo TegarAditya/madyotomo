@@ -227,6 +227,7 @@ class FillReport extends Page implements HasForms, HasInfolists
                                 Forms\Components\TextInput::make('error_count')
                                     ->label('Jumlah Gagal')
                                     ->numeric()
+                                    ->default(0)
                                     ->required(),
                                 Forms\Components\Select::make('status')
                                     ->label('Sudah Selesai?')
