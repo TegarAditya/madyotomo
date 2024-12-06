@@ -43,11 +43,6 @@ class Product extends Model
         return "{$subject} {$class}";
     }
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
-
     public function order()
     {
         return $this->belongsTo(Order::class);
@@ -81,6 +76,11 @@ class Product extends Model
     public function type()
     {
         return $this->belongsTo(Type::class);
+    }
+
+    public function orderProducts()
+    {
+        return $this->hasMany(OrderProduct::class);
     }
 
     public function spkProducts()
