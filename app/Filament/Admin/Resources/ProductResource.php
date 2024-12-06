@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\ProductResource\Pages;
+use App\Filament\Admin\Resources\ProductResource\RelationManagers;
 use App\Filament\Exports\ProductExporter;
 use App\Filament\Imports\ProductImporter;
 use App\Models\Curriculum;
@@ -15,6 +16,7 @@ use App\Models\Type;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -42,6 +44,7 @@ class ProductResource extends Resource
                         'md' => 4,
                         'sm' => 1,
                     ])
+                    ->hiddenOn(['view'])
                     ->schema([
                         Forms\Components\Select::make('semester_id')
                             ->label('Semester')
@@ -102,6 +105,7 @@ class ProductResource extends Resource
                     ]),
                 Section::make()
                     ->columns(1)
+                    ->hiddenOn(['view'])
                     ->schema([
                         Forms\Components\Placeholder::make('name')
                             ->label('Nama Produk')
@@ -135,6 +139,47 @@ class ProductResource extends Resource
                             ->validationMessages([
                                 'unique' => 'The product has already been registered.',
                             ]),
+                    ]),
+                Section::make()
+                    ->columns(2)
+                    ->visibleOn(['view'])
+                    ->schema([
+                        Forms\Components\Placeholder::make('code')
+                            ->label('Kode MMJ')
+                            ->inlineLabel()
+                            ->content(function (Product $record) {
+                                return $record->code;
+                            }),
+                        Forms\Components\Placeholder::make('education_subject')
+                            ->label('Mata Pelajaran')
+                            ->inlineLabel()
+                            ->content(function (Product $record) {
+                                return $record->educationSubject->name;
+                            }),
+                        Forms\Components\Placeholder::make('education_grade')
+                            ->label('Jenjang Kelas')
+                            ->inlineLabel()
+                            ->content(function (Product $record) {
+                                return $record->educationLevel->name . ' - ' . $record->educationClass->name;
+                            }),
+                        Forms\Components\Placeholder::make('curriculum')
+                            ->label('Kurikulum')
+                            ->inlineLabel()
+                            ->content(function (Product $record) {
+                                return $record->curriculum->name;
+                            }),
+                        Forms\Components\Placeholder::make('semester')
+                            ->label('Semester')
+                            ->inlineLabel()
+                            ->content(function (Product $record) {
+                                return $record->semester->name;
+                            }),
+                        Forms\Components\Placeholder::make('type')
+                            ->label('Tipe')
+                            ->inlineLabel()
+                            ->content(function (Product $record) {
+                                return $record->type->name;
+                            }),
                     ]),
             ]);
     }
@@ -203,8 +248,10 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                ]),
                 Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
@@ -239,6 +286,14 @@ class ProductResource extends Resource
     {
         return [
             'index' => Pages\ManageProducts::route('/'),
+            'view' => Pages\ViewProducts::route('/{record}'),
+        ];
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\OrderProductsRelationManager::class,
         ];
     }
 
