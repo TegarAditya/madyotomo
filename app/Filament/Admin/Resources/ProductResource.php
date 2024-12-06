@@ -231,26 +231,23 @@ class ProductResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
-                Tables\Filters\SelectFilter::make('semester')
-                    ->label('Semester')
-                    ->searchable()
-                    ->relationship('semester', 'name'),
-                Tables\Filters\SelectFilter::make('educationClass')
-                    ->label('Kelas')
-                    ->searchable()
-                    ->relationship('educationClass', 'name'),
                 Tables\Filters\SelectFilter::make('educationSubject')
                     ->label('Mapel')
                     ->searchable()
                     ->relationship('educationSubject', 'name'),
-                Tables\Filters\SelectFilter::make('educationLevel')
-                    ->label('Jenjang')
-                    ->searchable()
-                    ->relationship('educationLevel', 'name'),
                 Tables\Filters\SelectFilter::make('type')
                     ->label('Tipe')
                     ->searchable()
                     ->relationship('type', 'name'),
+                Tables\Filters\SelectFilter::make('semester')
+                    ->label('Semester')
+                    ->relationship('semester', 'name'),
+                Tables\Filters\SelectFilter::make('educationLevel')
+                    ->label('Jenjang')
+                    ->relationship('educationLevel', 'name'),
+                Tables\Filters\SelectFilter::make('educationClass')
+                    ->label('Kelas')
+                    ->relationship('educationClass', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -273,6 +270,7 @@ class ProductResource extends Resource
                 Tables\Actions\ExportAction::make()
                     ->exporter(ProductExporter::class),
             ])
+            ->defaultSort('created_at', 'desc')
             ->deferLoading();
     }
 
