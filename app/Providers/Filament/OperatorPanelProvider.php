@@ -28,6 +28,8 @@ class OperatorPanelProvider extends PanelProvider
             ->brandName('Operator Cover')
             ->login()
             ->databaseNotifications()
+            ->databaseTransactions()
+            ->unsavedChangesAlerts()
             ->colors([
                 'primary' => Color::Blue,
             ])
