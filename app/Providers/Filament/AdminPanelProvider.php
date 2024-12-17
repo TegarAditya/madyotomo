@@ -32,6 +32,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
+            ->databaseTransactions()
+            ->unsavedChangesAlerts()
             ->id('admin')
             ->brandName('Admin Cover')
             ->path('')
