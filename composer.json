@@ -22,7 +22,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "malzariey/filament-daterangepicker-filter": "^3.0",
-        "phpoffice/phpspreadsheet": "^3.3",
+        "phpoffice/phpspreadsheet": "^4.0",
         "stechstudio/filament-impersonate": "^3.14",
         "tomatophp/filament-users": "^2.0"
     },
