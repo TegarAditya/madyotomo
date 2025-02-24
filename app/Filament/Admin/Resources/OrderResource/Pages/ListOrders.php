@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\OrderResource\Pages;
 
 use App\Filament\Admin\Resources\OrderResource;
+use App\Models\Semester;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
@@ -49,6 +50,8 @@ class ListOrders extends ListRecords
 
     public function getDefaultActiveTab(): string|int|null
     {
-        return 2;
+        $default_tab = Semester::count() ?? 0;
+
+        return $default_tab;
     }
 }
