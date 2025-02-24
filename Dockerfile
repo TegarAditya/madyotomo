@@ -29,6 +29,8 @@ COPY . /app
 
 RUN composer install --optimize-autoloader
 
+RUN php artisan key:generate
+
 RUN php artisan optimize
 
 ENTRYPOINT ["php"]
