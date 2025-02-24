@@ -46,43 +46,25 @@ class OrderResource extends Resource
                                 'md' => 2,
                             ])
                             ->schema([
-                                Forms\Components\Placeholder::make('document_number_pc')
-                                    ->label('Nomor Order')
-                                    ->visibleOn(['create'])
-                                    ->content(function (callable $set, $get) {
-                                        $latestOrder = Order::orderBy('created_at', 'desc')->first()->document_number ?? null;
-                                        $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
-
-                                        $nomorTerakhir = (Order::all()->first()) ? $latestNumber + 1 : 1;
-                                        $month = (new DateTime('@'.strtotime($get('entry_date'))))->format('m');
-                                        $year = (new DateTime('@'.strtotime($get('entry_date'))))->format('Y');
-                                        $customer = Customer::find($get('customer_id')) ? Customer::find($get('customer_id'))->code : '-';
-                                        $romanNumerals = [
-                                            '01' => 'I',
-                                            '02' => 'II',
-                                            '03' => 'III',
-                                            '04' => 'IV',
-                                            '05' => 'V',
-                                            '06' => 'VI',
-                                            '07' => 'VII',
-                                            '08' => 'VIII',
-                                            '09' => 'IX',
-                                            '10' => 'X',
-                                            '11' => 'XI',
-                                            '12' => 'XII',
-                                        ];
-                                        $romanMonth = $romanNumerals[$month];
-
-                                        $set('document_number', "{$nomorTerakhir}/MT/OC/{$customer}/{$romanMonth}/{$year}");
-
-                                        return "{$nomorTerakhir}/MT/OC/{$customer}/{$romanMonth}/{$year}";
-                                    }),
-                                Forms\Components\Placeholder::make('document_number_pc')
+                                Forms\Components\Placeholder::make('document_number_ph')
                                     ->label('Nomor Order')
                                     ->content(function (Model $record) {
                                         return $record->document_number;
                                     })
                                     ->visibleOn(['view']),
+                                Forms\Components\TextInput::make('document_index')
+                                    ->label('Nomor Order')
+                                    ->default(fn() => (new static)->getLatestDocumentNumber())
+                                    ->suffix(function ($set, $get, $state) {
+                                        $entryDate = $get('entry_date');
+                                        $customer_id = $get('customer_id');
+
+                                        $set('document_number', $state . (new static)->getDocumentNumber($entryDate, $customer_id));
+
+                                        return (new static)->getDocumentNumber($entryDate, $customer_id);
+                                    })
+                                    ->live()
+                                    ->visibleOn(['create']),
                                 Forms\Components\Hidden::make('document_number')
                                     ->default('-/MT/OC/-/-/-')
                                     ->visibleOn(['create']),
@@ -122,7 +104,7 @@ class OrderResource extends Resource
                                 Forms\Components\Placeholder::make('customer_ph')
                                     ->label('Customer')
                                     ->content(function ($get) {
-                                        return new HtmlString('<strong>'.Customer::find($get('customer_id'))->name.'</strong>');
+                                        return new HtmlString('<strong>' . Customer::find($get('customer_id'))->name . '</strong>');
                                     })
                                     ->visibleOn(['view']),
                                 Forms\Components\DatePicker::make('entry_date')
@@ -136,7 +118,7 @@ class OrderResource extends Resource
                                     ->content(function ($get) {
                                         $dateString = Carbon::parse($get('entry_date'))->translatedFormat('l, j F Y');
 
-                                        return new HtmlString('<strong>'.$dateString.'</strong>');
+                                        return new HtmlString('<strong>' . $dateString . '</strong>');
                                     })
                                     ->visibleOn(['view']),
                                 Forms\Components\DatePicker::make('deadline_date')
@@ -148,7 +130,7 @@ class OrderResource extends Resource
                                     ->content(function ($get) {
                                         $dateString = Carbon::parse($get('deadline_date'))->translatedFormat('l, j F Y');
 
-                                        return new HtmlString('<strong>'.$dateString.'</strong>');
+                                        return new HtmlString('<strong>' . $dateString . '</strong>');
                                     })
                                     ->visibleOn(['view']),
                                 Forms\Components\Select::make('paper_id')
@@ -161,7 +143,7 @@ class OrderResource extends Resource
                                     ->visibleOn(['create', 'edit']),
                                 Forms\Components\Placeholder::make('paper_ph')
                                     ->label('Kertas')
-                                    ->content(fn ($get) => Paper::find($get('paper_id'))->name)
+                                    ->content(fn($get) => Paper::find($get('paper_id'))->name)
                                     ->visibleOn(['view']),
                                 Forms\Components\Select::make('paper_config')
                                     ->label('Paper Config')
@@ -173,7 +155,7 @@ class OrderResource extends Resource
                                     ->visibleOn(['create', 'edit']),
                                 Forms\Components\Placeholder::make('paper_config_ph')
                                     ->label('Paper Config')
-                                    ->content(fn ($get) => $get('paper_config'))
+                                    ->content(fn($get) => $get('paper_config'))
                                     ->visibleOn(['view']),
                                 Forms\Components\TextInput::make('finished_size')
                                     ->label('Ukuran Jadi')
@@ -182,7 +164,7 @@ class OrderResource extends Resource
                                     ->visibleOn(['create', 'edit']),
                                 Forms\Components\Placeholder::make('finished_size_ph')
                                     ->label('Ukuran Jadi')
-                                    ->content(fn ($get) => $get('finished_size'))
+                                    ->content(fn($get) => $get('finished_size'))
                                     ->visibleOn(['view']),
                                 Forms\Components\TextInput::make('material_size')
                                     ->label('Ukuran Bahan')
@@ -191,7 +173,7 @@ class OrderResource extends Resource
                                     ->visibleOn(['create', 'edit']),
                                 Forms\Components\Placeholder::make('material_size_ph')
                                     ->label('Ukuran Bahan')
-                                    ->content(fn ($get) => $get('material_size'))
+                                    ->content(fn($get) => $get('material_size'))
                                     ->visibleOn(['view']),
                             ]),
                         Forms\Components\Tabs\Tab::make('Tambah Produk')
@@ -257,7 +239,7 @@ class OrderResource extends Resource
                                                         ->get();
 
                                                     $formattedData = $productData->mapWithKeys(function ($product) {
-                                                        return [$product->id => $product->educationSubject->name.' - '.$product->educationClass->name];
+                                                        return [$product->id => $product->educationSubject->name . ' - ' . $product->educationClass->name];
                                                     });
 
                                                     return $formattedData;
@@ -285,7 +267,7 @@ class OrderResource extends Resource
                                                     return intval($quantity);
                                                 })->sum();
 
-                                                return new HtmlString('<span class="font-bold text-xl">'.$total.'</span>');
+                                                return new HtmlString('<span class="font-bold text-xl">' . $total . '</span>');
                                             }),
                                     ]),
                             ]),
@@ -320,13 +302,13 @@ class OrderResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.code')
                     ->label('Customer')
-                    ->tooltip(fn ($record) => $record->customer->name)
+                    ->tooltip(fn($record) => $record->customer->name)
                     ->searchable(isIndividual: true)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Pending' => 'gray',
                         'SPK Dibuat' => 'primary',
                         'Cetak Sebagian' => 'info',
@@ -334,7 +316,7 @@ class OrderResource extends Resource
                         'Surat Jalan Dibuat' => 'info',
                         'Invoice Dibuat' => 'danger',
                     })
-                    ->icon(fn (string $state): string => match ($state) {
+                    ->icon(fn(string $state): string => match ($state) {
                         'Pending' => 'heroicon-o-clock',
                         'SPK Dibuat' => 'heroicon-o-cog',
                         'Cetak Sebagian' => 'heroicon-o-printer',
@@ -393,7 +375,7 @@ class OrderResource extends Resource
                         return $query
                             ->when(
                                 $data['semester_form'],
-                                fn (Builder $query, $semester_id): Builder => $query
+                                fn(Builder $query, $semester_id): Builder => $query
                                     ->whereDate('entry_date', '>=', Semester::find($semester_id)->start_date)
                                     ->whereDate('entry_date', '<=', Semester::find($semester_id)->end_date),
                             );
@@ -403,7 +385,7 @@ class OrderResource extends Resource
                             return null;
                         }
 
-                        return 'Semester: '.Semester::find($data['semester_form'])->name;
+                        return 'Semester: ' . Semester::find($data['semester_form'])->name;
                     }),
                 Tables\Filters\SelectFilter::make('customer_id')
                     ->label('Customer')
@@ -423,8 +405,8 @@ class OrderResource extends Resource
                         return $query
                             ->when(
                                 $data['type_form'],
-                                fn (Builder $query, $type_id): Builder => $query
-                                    ->whereHas('orderProducts', fn (Builder $query) => $query->whereHas('product', fn (Builder $query) => $query->where('type_id', $type_id))),
+                                fn(Builder $query, $type_id): Builder => $query
+                                    ->whereHas('orderProducts', fn(Builder $query) => $query->whereHas('product', fn(Builder $query) => $query->where('type_id', $type_id))),
                             );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -432,7 +414,7 @@ class OrderResource extends Resource
                             return null;
                         }
 
-                        return 'Tipe: '.Type::find($data['type_form'])->name;
+                        return 'Tipe: ' . Type::find($data['type_form'])->name;
                     }),
             ])
             ->actions([
@@ -476,5 +458,37 @@ class OrderResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    protected function getLatestDocumentNumber()
+    {
+        $latestOrder = Order::orderBy('created_at', 'desc')->first()->document_number ?? null;
+        $latestNumber = (int) (strpos($latestOrder, '/') !== false ? substr($latestOrder, 0, strpos($latestOrder, '/')) : 0);
+
+        return $latestNumber + 1;
+    }
+
+    protected function getDocumentNumber(string $entryDate, $customer_id)
+    {
+        $month = (new DateTime('@' . strtotime($entryDate)))->format('m');
+        $year = (new DateTime('@' . strtotime($entryDate)))->format('Y');
+        $customer = Customer::find($customer_id) ? Customer::find($customer_id)->code : '-';
+        $romanNumerals = [
+            '01' => 'I',
+            '02' => 'II',
+            '03' => 'III',
+            '04' => 'IV',
+            '05' => 'V',
+            '06' => 'VI',
+            '07' => 'VII',
+            '08' => 'VIII',
+            '09' => 'IX',
+            '10' => 'X',
+            '11' => 'XI',
+            '12' => 'XII',
+        ];
+        $romanMonth = $romanNumerals[$month];
+
+        return "/MT/OC/{$customer}/{$romanMonth}/{$year}";
     }
 }
