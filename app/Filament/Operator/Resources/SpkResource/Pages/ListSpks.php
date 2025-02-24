@@ -3,6 +3,7 @@
 namespace App\Filament\Operator\Resources\SpkResource\Pages;
 
 use App\Filament\Operator\Resources\SpkResource;
+use App\Models\Semester;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
@@ -24,7 +25,7 @@ class ListSpks extends ListRecords
             null => Tab::make('All'),
         ];
 
-        $semesters = \App\Models\Semester::orderBy('created_at', 'asc')->take(2)->pluck('name', 'id')->toArray();
+        $semesters = \App\Models\Semester::orderBy('created_at', 'asc')->pluck('name', 'id')->toArray();
 
         foreach ($semesters as $id => $name) {
             $tabs[$id] = Tab::make($name)->query(function ($query) use ($id) {
@@ -42,6 +43,8 @@ class ListSpks extends ListRecords
 
     public function getDefaultActiveTab(): string|int|null
     {
-        return 2;
+        $default_tab = Semester::count() ?? 0;
+
+        return $default_tab;
     }
 }
