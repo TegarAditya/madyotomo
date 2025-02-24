@@ -1,5 +1,7 @@
 FROM dunglas/frankenphp:php8.3-alpine
 
+RUN apk add --no-cache nodejs npm
+
 RUN install-php-extensions \
     ctype \
     curl \
@@ -27,10 +29,12 @@ WORKDIR /app
 
 COPY . /app
 
-RUN composer install --optimize-autoloader
+RUN npm install
+RUN npm run build
+
+RUN composer install --optimize-autoloader --no-dev
 
 RUN php artisan key:generate
-
 RUN php artisan optimize
 
 ENTRYPOINT ["php"]
