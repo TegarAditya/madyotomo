@@ -3,9 +3,7 @@ services:
     build:
       context: .
     ports:
-      - "8008:8000"
+      - "${APP_PORT}:8000"
     volumes:
-      - .:/app
+      - ./.env:/app/.env
     restart: unless-stopped
-    entrypoint: >
-      sh -c "composer install && npm i && npm run build && exec php artisan octane:frankenphp --workers=1 --max-requests=1"
