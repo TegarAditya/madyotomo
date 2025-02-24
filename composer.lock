@@ -5304,6 +5304,7 @@
                 "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/4.0.0"
             },
             "time": "2025-02-08T02:28:25+00:00"
+
         },
         {
             "name": "phpoption/phpoption",
@@ -12626,12 +12627,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }
