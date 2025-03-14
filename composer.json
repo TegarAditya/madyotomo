@@ -1,4 +1,5 @@
 {
+    "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
@@ -20,7 +21,7 @@
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.4",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9",
+        "laravel/tinker": "^2.10.1",
         "malzariey/filament-daterangepicker-filter": "^3.0",
         "phpoffice/phpspreadsheet": "^4.0",
         "stechstudio/filament-impersonate": "^3.14",
@@ -29,14 +30,15 @@
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",
         "barryvdh/laravel-ide-helper": "^3.1",
-        "fakerphp/faker": "^1.9.1",
+        "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.0",
-        "laravel/pint": "^1.17",
-        "laravel/sail": "^1.31",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^11.3",
-        "spatie/laravel-ignition": "^2.0"
+        "laravel/pail": "^1.2.2",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.41",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "pestphp/pest": "^3.7",
+        "pestphp/pest-plugin-laravel": "^3.1"
     },
     "autoload": {
         "psr-4": {
@@ -67,7 +69,13 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php artisan key:generate --ansi"
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
         ]
     },
     "extra": {
