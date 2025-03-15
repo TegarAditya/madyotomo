@@ -26,6 +26,10 @@ class SpksRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
+        $orderProducts = OrderProduct::where('order_id', $this->getOwnerRecord()->id)
+            ->with(['product.educationSubject', 'product.educationClass'])
+            ->get();
+
         return $form
             ->schema([
                 Forms\Components\Placeholder::make('document_number_ph')
@@ -35,8 +39,8 @@ class SpksRelationManager extends RelationManager
 
                         $nomor_order = $this->getOwnerRecord()->document_number;
                         $nomor = substr($nomor_order, 0, strpos($nomor_order, '/'));
-                        $month = (new DateTime('@'.strtotime($get('entry_date'))))->format('m');
-                        $year = (new DateTime('@'.strtotime($get('entry_date'))))->format('Y');
+                        $month = (new DateTime('@' . strtotime($get('entry_date'))))->format('m');
+                        $year = (new DateTime('@' . strtotime($get('entry_date'))))->format('Y');
                         $romanNumerals = [
                             '01' => 'I',
                             '02' => 'II',
@@ -98,55 +102,38 @@ class SpksRelationManager extends RelationManager
                     ->columnSpanFull(),
                 Forms\Components\Repeater::make('spkProducts')
                     ->relationship('spkProducts')
+                    ->label('Daftar Produk')
                     ->addActionLabel('Tambah Produk')
                     ->columns(3)
                     ->columnSpanFull()
                     ->schema([
-                        Forms\Components\Select::make('order_products')
+                        Forms\Components\Select::make('spkProductOrderProducts')
                             ->multiple()
+                            ->relationship('orderProducts', 'id')
+                            ->label('Produk')
                             ->options(
-                                Order::find($this->getOwnerRecord()->id)
-                                    ->order_products
-                                    ->mapWithKeys(function (OrderProduct $product) {
-                                        $subject = $product->product->educationSubject()->pluck('name')->implode(' ');
-                                        $class = $product->product->educationClass()->pluck('name')->implode(' ');
-                                        $quantity = $product->quantity;
-
-                                        return [$product->id => $subject.' - '.$class.' - '.' ('.'oplah '.$quantity.')'];
-                                    })
+                                $orderProducts
+                                    ->mapWithKeys(fn($orderProduct) => [
+                                        $orderProduct->id => "{$orderProduct->product->educationSubject->name} {$orderProduct->product->educationClass->name} (oplah - {$orderProduct->quantity})",
+                                    ])
+                                    ->toArray()
                             )
                             ->columnSpan(2)
+                            ->maxItems(2)
                             ->reactive()
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                             ->required(),
                         Forms\Components\Placeholder::make('quantity_ph')
                             ->label('Jumlah InSheet')
-                            ->content(function ($get, $set) {
-                                if ($get('order_products') !== null) {
-                                    $products = $get('order_products');
+                            ->content(function ($get) use ($orderProducts) {
+                                if ($get('spkProductOrderProducts') !== null) {
+                                    $products = $get('spkProductOrderProducts');
+                                    $quantities = array_map(function ($product) use ($orderProducts) {
+                                        return $orderProducts->find($product)->quantity;
+                                    }, $products);
 
-                                    if (count($products) === 1) {
-                                        $quantity = OrderProduct::find($products[0])->quantity ?? 0 / 2;
-
-                                        return new HtmlString("<span class='text-2xl font-bold'>{$quantity}<span class='text-sm font-thin'> sheets</span></span>");
-                                    }
-
-                                    $firstQuantity = null;
-                                    $quantitiesEqual = true;
-                                    foreach ($products as $product) {
-                                        $quantity = OrderProduct::find($product)->quantity / 2;
-
-                                        if ($firstQuantity === null) {
-                                            $firstQuantity = $quantity;
-                                        }
-
-                                        if ($quantity !== $firstQuantity) {
-                                            $quantitiesEqual = false;
-                                            break;
-                                        }
-                                    }
-
-                                    $totalQuantity = $firstQuantity * count($products);
+                                    $totalQuantity = $quantities[0];
+                                    $quantitiesEqual = count(array_unique($quantities)) === 1;
 
                                     if ($quantitiesEqual) {
                                         return new HtmlString(
@@ -170,7 +157,7 @@ class SpksRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('number')
                     ->label('No.')
-                    ->default(fn (stdClass $rowLoop) => $rowLoop->index + 1),
+                    ->default(fn(stdClass $rowLoop) => $rowLoop->index + 1),
                 Tables\Columns\TextColumn::make('document_number')
                     ->label('Nomor SPK')
                     ->searchable()
@@ -199,7 +186,7 @@ class SpksRelationManager extends RelationManager
                     ->label('Laporan')
                     ->icon('heroicon-o-document-text')
                     ->color('info')
-                    ->url(fn (Spk $record): string => SpkResource::getUrl('report', ['record' => $record], panel: 'operator')),
+                    ->url(fn(Spk $record): string => SpkResource::getUrl('report', ['record' => $record], panel: 'operator')),
                 Tables\Actions\Action::make('pdf')
                     ->label('Download')
                     ->color('success')
@@ -210,7 +197,7 @@ class SpksRelationManager extends RelationManager
                             echo Pdf::loadHtml(
                                 Blade::render('pdf.spk', ['record' => $record])
                             )->stream();
-                        }, str_replace('/', '_', $record->document_number).'.pdf');
+                        }, str_replace('/', '_', $record->document_number) . '.pdf');
                     }),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ActionGroup::make([
