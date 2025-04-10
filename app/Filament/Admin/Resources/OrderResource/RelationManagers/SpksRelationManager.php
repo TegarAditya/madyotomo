@@ -134,7 +134,8 @@ class SpksRelationManager extends RelationManager
                                     $firstQuantity = null;
                                     $quantitiesEqual = true;
                                     foreach ($products as $product) {
-                                        $quantity = OrderProduct::find($product)->quantity / 2;
+                                        $orderProduct = OrderProduct::find($product);
+                                        $quantity = $orderProduct ? $orderProduct->quantity / 2 : 0;
 
                                         if ($firstQuantity === null) {
                                             $firstQuantity = $quantity;
