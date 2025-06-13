@@ -31,7 +31,7 @@ class InvoiceReport extends Model
     public function getInvoiceReportDocument(string $start_date, string $end_date)
     {
         $document = $this;
-        $invoices = $this->invoices()->orderBy('entry_date')->whereBetween('entry_date', [$start_date, $end_date])->with([
+        $invoices = Invoice::orderBy('entry_date')->whereBetween('entry_date', [$start_date, $end_date])->with([
             'order' => function ($query) {
                 $query->select(['id', 'proof_number', 'name']);
             },
