@@ -34,7 +34,6 @@ RUN composer install --optimize-autoloader --no-dev
 RUN npm install
 RUN npm run build
 
-RUN php artisan key:generate
 RUN php artisan optimize
 
 ENTRYPOINT ["php"]
