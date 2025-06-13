@@ -38,14 +38,6 @@ class InvoiceResource extends Resource
                     ->disableOptionWhen(fn (string $value) => Order::find($value)->hasInvoice())
                     ->searchable(['name', 'proof_number', 'document_number'])
                     ->columnSpanFull()
-                    ->live()
-                    ->afterStateUpdated(function ($state, Set $set) {
-                        $order = Order::find($state);
-
-                        if ($order) {
-                            $set('entry_date', Carbon::parse($order->entry_date)->addDays(14)->format('Y-m-d'));
-                        }
-                    })
                     ->required(),
                 Forms\Components\TextInput::make('document_number')
                     ->label('Nomor Invoice')
@@ -53,13 +45,9 @@ class InvoiceResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Hidden::make('document_number')
                     ->hiddenOn(['update']),
-                Forms\Components\TextInput::make('entry_date')
-                    ->label('Tanggal Input')
-                    ->hiddenOn(['edit'])
-                    ->required(),
                 Forms\Components\DatePicker::make('entry_date')
                     ->label('Tanggal Input')
-                    ->hiddenOn(['create'])
+                    ->default(Carbon::now()->format('Y-m-d'))
                     ->required(),
                 Forms\Components\DatePicker::make('due_date')
                     ->label('Tanggal Jatuh Tempo')
