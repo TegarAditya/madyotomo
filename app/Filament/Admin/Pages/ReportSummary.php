@@ -148,11 +148,11 @@ class ReportSummary extends Page implements HasForms, HasTable
     protected function getResult(ProductReport $record): string
     {
         if (collect($record->spkProduct->order_products)->count() > 1) {
-            $count = formatNumber($record->success_count);
+            $count = $record->success_count;
 
             return new HtmlString("{$count}<hr>{$count}");
         } else {
-            return formatNumber($record->success_count * 2);
+            return $record->success_count * 2;
         }
     }
 }
