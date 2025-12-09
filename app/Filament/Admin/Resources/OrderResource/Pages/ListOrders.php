@@ -32,11 +32,15 @@ class ListOrders extends ListRecords
             null => Tab::make('All'),
         ];
 
-        $semesters = \App\Models\Semester::all()->pluck('name', 'id')->toArray();
+        $semesters = \App\Models\Semester::latest()->take(3)->pluck('name', 'id')->toArray();
+
+        $semesters = array_reverse($semesters, true);
 
         foreach ($semesters as $id => $name) {
             $tabs[$id] = Tab::make($name)->query(function ($query) use ($id) {
                 $semester = \App\Models\Semester::find($id);
+
+                if ($semester->code === '0126') return $query->where('semester_id', $id);
 
                 $startDate = $semester->start_date;
                 $endDate = $semester->end_date;

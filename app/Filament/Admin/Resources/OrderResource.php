@@ -46,6 +46,15 @@ class OrderResource extends Resource
                                 'md' => 2,
                             ])
                             ->schema([
+                                Forms\Components\Select::make('semester_id')
+                                    ->label('Semester')
+                                    ->options(
+                                        Semester::latest()->pluck('name', 'id'),
+                                    )
+                                    ->searchable()
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->visibleOn(['create', 'edit']),
                                 Forms\Components\Placeholder::make('document_number_ph')
                                     ->label('Nomor Order')
                                     ->content(function (Model $record) {

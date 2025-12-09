@@ -11,6 +11,7 @@ class Order extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'semester_id',
         'document_number',
         'proof_number',
         'name',
@@ -60,6 +61,11 @@ class Order extends Model
         $statuses = $this->orderProducts->pluck('status');
 
         return $statuses->every(fn ($status) => $status === 'Dicetak');
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
     }
 
     public function customer()
