@@ -38,7 +38,12 @@ class ListSpks extends ListRecords
                 $startDate = $semester->start_date;
                 $endDate = $semester->end_date;
 
-                return $query->whereBetween('entry_date', [$startDate, $endDate]);
+                return $query
+                    ->whereBetween('entry_date', [$startDate, $endDate])
+                    ->where(function ($q) use ($id) {
+                        $q->where('semester_id', $id)
+                            ->orWhereNull('semester_id');
+                    });
             });
         }
 
