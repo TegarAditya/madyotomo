@@ -38,18 +38,9 @@ class ListOrders extends ListRecords
 
         foreach ($semesters as $semester) {
             $tabs[$semester->id] = Tab::make($semester->name)->query(function ($query) use ($semester) {
-
-                if ($semester->code === '0126') return $query->where('semester_id', $semester->id);
-
-                $startDate = $semester->start_date;
-                $endDate = $semester->end_date;
-
                 return $query
-                    ->whereBetween('entry_date', [$startDate, $endDate])
-                    ->where(function ($q) use ($semester) {
-                        $q->where('semester_id', $semester->id)
-                            ->orWhereNull('semester_id');
-                    })->withCount(['invoices', 'deliveryOrders', 'spks']);
+                    ->where('semester_id', $semester->id)
+                    ->withCount(['invoices', 'deliveryOrders', 'spks']);
             });
         }
 

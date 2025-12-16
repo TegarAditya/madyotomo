@@ -33,21 +33,9 @@ class ListSpks extends ListRecords
             $tabs[$id] = Tab::make($name)->query(function ($query) use ($id) {
                 $semester = \App\Models\Semester::find($id);
 
-                if ($semester->code === '0126') return $query->whereHas('order', function ($q) use ($id) {
+                return $query->whereHas('order', function ($q) use ($id) {
                     $q->where('semester_id', $id);
                 });
-
-                $startDate = $semester->start_date;
-                $endDate = $semester->end_date;
-
-                return $query
-                    ->whereHas('order', function ($q) use ($startDate, $endDate, $id) {
-                        $q->whereBetween('entry_date', [$startDate, $endDate])
-                            ->where(function ($sub) use ($id) {
-                                $sub->where('semester_id', $id)
-                                    ->orWhereNull('semester_id');
-                            });
-                    });
             });
         }
 
