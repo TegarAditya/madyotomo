@@ -36,10 +36,10 @@ class Order extends Model
         $statuses = $orderProducts->pluck('status');
 
         switch (true) {
-            case $this->invoices()->exists():
+            case $this->invoices_count > 0:
                 return 'Invoice Dibuat';
 
-            case $this->deliveryOrders()->exists():
+            case $this->delivery_orders_count > 0:
                 return 'Surat Jalan Dibuat';
 
             case $statuses->every(fn ($status) => $status === 'Dicetak'):
@@ -48,7 +48,7 @@ class Order extends Model
             case $statuses->contains('Dicetak'):
                 return 'Cetak Sebagian';
 
-            case $this->spks()->exists():
+            case $this->spks_count > 0:
                 return 'SPK Dibuat';
 
             default:

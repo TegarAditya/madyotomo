@@ -32,25 +32,15 @@ class ListOrders extends ListRecords
             null => Tab::make('All'),
         ];
 
-        $semesters = \App\Models\Semester::latest()->take(3)->pluck('name', 'id')->toArray();
+        $semesters = \App\Models\Semester::latest()->take(3)->get();
 
-        $semesters = array_reverse($semesters, true);
+        $semesters = $semesters->reverse();
 
-        foreach ($semesters as $id => $name) {
-            $tabs[$id] = Tab::make($name)->query(function ($query) use ($id) {
-                $semester = \App\Models\Semester::find($id);
-
-                if ($semester->code === '0126') return $query->where('semester_id', $id);
-
-                $startDate = $semester->start_date;
-                $endDate = $semester->end_date;
-
+        foreach ($semesters as $semester) {
+            $tabs[$semester->id] = Tab::make($semester->name)->query(function ($query) use ($semester) {
                 return $query
-                    ->whereBetween('entry_date', [$startDate, $endDate])
-                    ->where(function ($q) use ($id) {
-                        $q->where('semester_id', $id)
-                            ->orWhereNull('semester_id');
-                    });
+                    ->where('semester_id', $semester->id)
+                    ->withCount(['invoices', 'deliveryOrders', 'spks']);
             });
         }
 
