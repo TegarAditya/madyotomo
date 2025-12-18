@@ -38,4 +38,4 @@ RUN php artisan optimize
 
 ENTRYPOINT ["php"]
 
-CMD ["artisan", "octane:frankenphp", "--workers=1", "--max-requests=1"]
+CMD ["artisan", "octane:frankenphp", "--workers=2"]

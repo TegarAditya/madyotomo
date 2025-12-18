@@ -63,7 +63,7 @@ class ProductResource extends Resource
                             ->options(
                                 Semester::all()->pluck('name', 'id'),
                             )
-                            ->default(fn () => static::$lastProduct ?->semester_id)
+                            ->default(fn () => session('product_form.semester_id') ?? static::$lastProduct?->semester_id)
                             ->columnSpan([
                                 'md' => 2,
                                 'sm' => 1,
@@ -76,7 +76,7 @@ class ProductResource extends Resource
                             ->options(
                                 Curriculum::all()->pluck('name', 'id'),
                             )
-                            ->default(fn () => static::$lastProduct ?->curriculum_id)
+                            ->default(fn () => session('product_form.curriculum_id') ?? static::$lastProduct?->curriculum_id)
                             ->reactive()
                             ->required(),
                         Forms\Components\Select::make('education_level_id')
@@ -85,13 +85,13 @@ class ProductResource extends Resource
                             ->options(
                                 EducationLevel::all()->pluck('name', 'id')
                             )
-                            ->default(fn () => static::$lastProduct ?->education_level_id)
+                            ->default(fn () => session('product_form.education_level_id') ?? static::$lastProduct?->education_level_id)
                             ->reactive()
                             ->required(),
                         Forms\Components\Select::make('education_subject_id')
                             ->label('Mata Pelajaran')
                             ->searchable()
-                            ->default(fn () => static::$lastProduct ?->education_subject_id)
+                            ->default(fn () => session('product_form.education_subject_id') ?? static::$lastProduct?->education_subject_id)
                             ->columnSpan([
                                 'md' => 2,
                                 'sm' => 1,
@@ -107,7 +107,7 @@ class ProductResource extends Resource
                             ->options(
                                 EducationClass::all()->pluck('name', 'id')
                             )
-                            ->default(fn () => static::$lastProduct ?->education_class_id)
+                            ->default(fn () => session('product_form.education_class_id') ?? static::$lastProduct?->education_class_id)
                             ->reactive()
                             ->required(),
                         Forms\Components\Select::make('type_id')
@@ -117,7 +117,7 @@ class ProductResource extends Resource
                             ->options(
                                 Type::all()->pluck('name', 'id'),
                             )
-                            ->default(fn () => static::$lastProduct ?->type_id)
+                            ->default(fn () => session('product_form.type_id') ?? static::$lastProduct?->type_id)
                             ->required(),
                     ]),
                 Section::make()
