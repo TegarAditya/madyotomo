@@ -25,14 +25,12 @@ class ListSpks extends ListRecords
             null => Tab::make('All'),
         ];
 
-        $semesters = \App\Models\Semester::latest()->take(3)->pluck('name', 'id')->toArray();
+        $semesters = Semester::latest()->take(3)->pluck('name', 'id')->toArray();
 
         $semesters = array_reverse($semesters, true);
 
         foreach ($semesters as $id => $name) {
             $tabs[$id] = Tab::make($name)->query(function ($query) use ($id) {
-                $semester = \App\Models\Semester::find($id);
-
                 return $query->whereHas('order', function ($q) use ($id) {
                     $q->where('semester_id', $id);
                 });

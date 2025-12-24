@@ -32,7 +32,7 @@ class ListOrders extends ListRecords
             null => Tab::make('All'),
         ];
 
-        $semesters = \App\Models\Semester::latest()->take(3)->get();
+        $semesters = Semester::latest()->take(3)->get();
 
         $semesters = $semesters->reverse();
 
