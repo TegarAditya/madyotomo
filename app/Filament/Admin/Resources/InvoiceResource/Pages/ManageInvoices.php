@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\InvoiceResource\Pages;
 
 use App\Filament\Admin\Resources\InvoiceResource;
 use App\Models\Order;
+use App\Models\Semester;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ManageRecords;
@@ -32,16 +33,15 @@ class ManageInvoices extends ManageRecords
             null => Tab::make('All'),
         ];
 
-        $semesters = \App\Models\Semester::all()->pluck('name', 'id')->toArray();
+        $semesters = Semester::latest()->take(3)->pluck('name', 'id')->toArray();
+
+        $semesters = array_reverse($semesters, true);
 
         foreach ($semesters as $id => $name) {
             $tabs[$id] = Tab::make($name)->query(function ($query) use ($id) {
-                $semester = \App\Models\Semester::find($id);
-
-                $startDate = $semester->start_date;
-                $endDate = $semester->end_date;
-
-                return $query->whereBetween('entry_date', [$startDate, $endDate]);
+                return $query->whereHas('order', function ($q) use ($id) {
+                    $q->where('semester_id', $id);
+                });
             });
         }
 
@@ -50,7 +50,9 @@ class ManageInvoices extends ManageRecords
 
     public function getDefaultActiveTab(): string|int|null
     {
-        return 2;
+        $default_tab = Semester::count() ?? 0;
+
+        return $default_tab;
     }
 
     protected function getInvoiceNumber(string $entryDate, int $order_id): string
@@ -58,8 +60,8 @@ class ManageInvoices extends ManageRecords
         $order = Order::find($order_id);
         $used_number = strstr($order->document_number, '/', true);
         $customer = $order->customer->code;
-        $month = (new \DateTime('@'.strtotime($entryDate)))->format('m');
-        $year = (new \DateTime('@'.strtotime($entryDate)))->format('Y');
+        $month = (new \DateTime('@' . strtotime($entryDate)))->format('m');
+        $year = (new \DateTime('@' . strtotime($entryDate)))->format('Y');
         $romanNumerals = [
             '01' => 'I',
             '02' => 'II',
