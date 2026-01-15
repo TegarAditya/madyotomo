@@ -6,4 +6,9 @@ services:
       - "${APP_PORT}:8000"
     volumes:
       - ./.env:/app/.env
+    deploy:
+      resources:
+        limits:
+          cpus: "${FRANKENPHP_CPU_LIMIT:-1}"
+          memory: "${FRANKENPHP_MEMORY_LIMIT:-1024M}"
     restart: unless-stopped
