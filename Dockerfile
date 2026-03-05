@@ -1,19 +1,15 @@
 FROM dunglas/frankenphp:php8.3-alpine
 
-RUN apk add --no-cache nodejs npm
-
 RUN install-php-extensions \
     ctype \
     curl \
     dom \
-    exif \
     fileinfo \
     filter \
     gd \
     hash \
     intl \
     mbstring \
-    opcache \
     openssl \
     pcntl \
     pcre \
@@ -25,16 +21,27 @@ RUN install-php-extensions \
     zip \
     @composer 
 
+RUN addgroup -g 1000 app \
+    && adduser -D -u 1000 -G app app
+
 WORKDIR /app
 
-COPY . /app
+COPY --chown=app:app composer.json composer.lock ./
+RUN composer install --no-scripts --prefer-dist --no-dev
 
-RUN composer install --optimize-autoloader --no-dev
+COPY --chown=app:app . .
 
-RUN npm install
-RUN npm run build
+RUN composer dump-autoload \
+    --optimize \
+    --classmap-authoritative
 
 RUN php artisan optimize
+
+RUN mkdir -p storage bootstrap/cache \
+    && chown -R app:app storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+USER app
 
 ENTRYPOINT ["php"]
 

@@ -1,2 +1,4 @@
-vendor/
-node_modules/
+.git
+/node_modules
+/storage/*.key
+/vendor
