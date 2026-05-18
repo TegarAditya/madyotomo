@@ -100,9 +100,9 @@
             <tr>
                 <td style="padding-top: 36px; padding-left: 90px;">
                     <p>
-                        Jl. Raya Solo-Purwodadi, Km. 26, Kp. Partoyasan, RT 05, Desa Soko, Kec. Miri, Sragen.
+                        Jl. Watuburik, Ceplukan, RT 01 RW 16, Wonorejo, Kec. Gondangrejo, Kab. Karanganyar, Jawa Tengah
                         <br>
-                        Telepon 08122626460 / 08562995018
+                        Telepon 0271-853133
                     </p>
                 </td>
             </tr>
