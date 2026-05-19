@@ -62,7 +62,7 @@ class DeliveryOrdersRelationManager extends RelationManager
                     ->visibleOn(['create']),
                 Forms\Components\TextInput::make('document_number')
                     ->label('Nomor SPK')
-                    ->unique(),
+                    ->unique(ignoreRecord: true),
                 Forms\Components\Hidden::make('document_number')
                     ->visibleOn(['create']),
                 Forms\Components\DatePicker::make('entry_date')

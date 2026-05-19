@@ -152,7 +152,7 @@ class ProductResource extends Resource
                                 return $productName;
                             }),
                         Forms\Components\Hidden::make('name')
-                            ->unique()
+                            ->unique(ignoreRecord: true)
                             ->validationMessages([
                                 'unique' => 'The product has already been registered.',
                             ]),
