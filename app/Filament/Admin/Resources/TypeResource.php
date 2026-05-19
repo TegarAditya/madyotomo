@@ -30,12 +30,12 @@ class TypeResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label('Nama')
                     ->required()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->maxLength(255),
                 Forms\Components\TextInput::make('code')
                     ->label('Kode')
                     ->required()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->maxLength(255),
             ]);
     }
