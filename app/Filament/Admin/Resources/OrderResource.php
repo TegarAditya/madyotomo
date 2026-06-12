@@ -371,6 +371,7 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\Filter::make('semester')
                     ->label('Semester')
                     ->form([
