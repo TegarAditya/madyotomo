@@ -22,6 +22,10 @@ class OrderProduct extends Model
         $printedCountArray = [];
         $orderProduct = $this;
 
+        if (! $orderProduct->order) {
+            return 0;
+        }
+
         foreach ($orderProduct->order->spks as $spk) {
 
             $spkProducts = $spk->spkProducts()
@@ -51,6 +55,10 @@ class OrderProduct extends Model
     {
         $printedCountArray = [];
         $orderProduct = $this;
+
+        if (! $orderProduct->order) {
+            return 0;
+        }
 
         foreach ($orderProduct->order->spks as $spk) {
 
@@ -113,6 +121,10 @@ class OrderProduct extends Model
         $spkProductArray = [];
         $orderProduct = $this;
 
+        if (! $orderProduct->order) {
+            return false;
+        }
+
         foreach ($orderProduct->order->spks as $spk) {
             foreach ($spk->spkProducts as $spkProduct) {
                 foreach ($spkProduct->order_products as $orderProduct) {
@@ -153,6 +165,10 @@ class OrderProduct extends Model
     {
         $reportedProductArray = [];
         $orderProduct = $this;
+
+        if (! $orderProduct->order) {
+            return false;
+        }
 
         foreach ($orderProduct->order->spks as $spk) {
 
