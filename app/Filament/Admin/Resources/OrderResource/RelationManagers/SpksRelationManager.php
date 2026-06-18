@@ -188,7 +188,12 @@ class SpksRelationManager extends RelationManager
                     ->label('Tanggal Deadline')
                     ->date('l, d F Y', 'Asia/Jakarta')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Dibuat')
+                    ->date('l, d F Y H:i:s', 'Asia/Jakarta')
+                    ->sortable(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
