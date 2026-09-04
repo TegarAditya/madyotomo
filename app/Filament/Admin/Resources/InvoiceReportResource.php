@@ -228,7 +228,8 @@ class InvoiceReportResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('entry_date', 'desc');
     }
 
     public static function getRelations(): array
