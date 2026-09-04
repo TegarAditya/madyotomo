@@ -157,7 +157,7 @@ class InvoiceResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('order.proof_number', 'desc');
+            ->defaultSort('order.entry_date', 'desc');
     }
 
     public static function getPages(): array
