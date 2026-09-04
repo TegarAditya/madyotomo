@@ -30,17 +30,20 @@ class InvoiceReport extends Model
 
     public function getInvoiceReportDocument(string $start_date, string $end_date)
     {
+        /**
+         * TODO: Give SPK entry date to invoice report document, not invoice entry date
+         */
         $document = $this;
         $invoices = Invoice::orderBy('entry_date')->whereBetween('entry_date', [$start_date, $end_date])->with([
             'order' => function ($query) {
-                $query->select(['id', 'proof_number', 'name']);
+                $query->select(['id', 'entry_date', 'proof_number', 'name']);
             },
         ])->get()->map(function ($invoice) {
             return [
                 'document_number' => $invoice['document_number'],
                 'proof_number' => $invoice['order']['proof_number'],
                 'order_name' => $invoice['order']['name'],
-                'entry_date' => date('d-m-Y', strtotime($invoice['entry_date'])),
+                'entry_date' => date('d-m-Y', strtotime($invoice['order']['entry_date'])),
                 'price' => $invoice['price'],
                 'quantity' => $invoice['order']['order_products']->sum('quantity'),
                 'amount' => $invoice['price'] * $invoice['order']['order_products']->sum('quantity'),
