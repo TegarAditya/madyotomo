@@ -23,10 +23,13 @@ class Spk extends Model
         'spare',
     ];
 
-    protected $casts = [
-        'entry_date' => 'datetime',
-        'deadline_date' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'entry_date' => 'datetime',
+            'deadline_date' => 'datetime',
+        ];
+    }
 
     public function getResultAttribute()
     {
