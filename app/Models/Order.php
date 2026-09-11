@@ -25,10 +25,13 @@ class Order extends Model
         'material_size',
     ];
 
-    protected $casts = [
-        'entry_date' => 'date',
-        'deadline_date' => 'date',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'entry_date' => 'date',
+            'deadline_date' => 'date',
+        ];
+    }
 
     public function getStatusAttribute()
     {

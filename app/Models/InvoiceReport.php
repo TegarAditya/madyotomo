@@ -30,9 +30,6 @@ class InvoiceReport extends Model
 
     public function getInvoiceReportDocument(string $start_date, string $end_date)
     {
-        /**
-         * TODO: Give SPK entry date to invoice report document, not invoice entry date
-         */
         $document = $this;
         $invoices = Invoice::orderBy('entry_date')->whereBetween('entry_date', [$start_date, $end_date])->with([
             'order' => function ($query) {
@@ -43,7 +40,7 @@ class InvoiceReport extends Model
                 'document_number' => $invoice['document_number'],
                 'proof_number' => $invoice['order']['proof_number'],
                 'order_name' => $invoice['order']['name'],
-                'entry_date' => date('d-m-Y', strtotime($invoice['order']['entry_date'])),
+                'order_date' => date('d-m-Y', strtotime($invoice['order']['entry_date'])),
                 'price' => $invoice['price'],
                 'quantity' => $invoice['order']['order_products']->sum('quantity'),
                 'amount' => $invoice['price'] * $invoice['order']['order_products']->sum('quantity'),
@@ -55,7 +52,7 @@ class InvoiceReport extends Model
 
         $data = [
             'report' => [
-                'entry_date' => date('d-m-Y', strtotime($document->entry_date)),
+                'order_date' => date('d-m-Y', strtotime($document->order_date)),
                 'document_number' => $document->document_number,
                 'customer' => $document->customer->name,
                 'representative' => $document->customer->representative,

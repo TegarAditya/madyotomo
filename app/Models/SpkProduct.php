@@ -15,9 +15,12 @@ class SpkProduct extends Model
         'order_products',
     ];
 
-    protected $casts = [
-        'order_products' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'order_products' => 'array',
+        ];
+    }
 
     public function getProductsAttribute()
     {
