@@ -20,13 +20,13 @@
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.4",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9",
+        "laravel/tinker": "^3.0",
         "phpoffice/phpspreadsheet": "^5.0",
         "stechstudio/filament-impersonate": "^3.14",
         "tomatophp/filament-users": "^2.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.9",
+        "barryvdh/laravel-debugbar": "^4.4",
         "barryvdh/laravel-ide-helper": "^3.1",
         "fakerphp/faker": "^1.9.1",
         "larastan/larastan": "^3.0",
